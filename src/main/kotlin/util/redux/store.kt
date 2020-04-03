@@ -2,11 +2,22 @@ package util.redux
 
 class DefaultStore<Action, State>(
     initialState: State,
-    reducer: Reducer<Action, State>
+    reducer: Reducer<Action, State>,
+    middlewareList: List<Middleware<Action, State>>
 ) : Store<Action, State> {
 
     private val subscribers = mutableSetOf<StoreSubscriber<State>>()
-    private val dispatcher: Dispatcher<Action> = { action -> state = reducer(state, action) }
+    private val dispatcher: Dispatcher<Action>
+
+    init {
+        var wrapped: Dispatcher<Action> = { action -> state = reducer(state, action) }
+
+        middlewareList.forEach {
+            wrapped = it(wrapped) { state }
+        }
+
+        dispatcher = wrapped
+    }
 
     private var state: State = initialState
         set(value) {

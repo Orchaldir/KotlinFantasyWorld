@@ -35,5 +35,5 @@ class StoreTest {
         assertEquals(listOf(15, 14), stateList)
     }
 
-    private fun createStore() = DefaultStore<Int, Int>(10, { state, action -> state + action })
+    private fun createStore() = DefaultStore<Int, Int>(10, { state, action -> state + action }, listOf())
 }
