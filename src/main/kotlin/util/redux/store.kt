@@ -2,10 +2,11 @@ package util.redux
 
 class DefaultStore<Action, State>(
     initialState: State,
-    private val reducer: Reducer<Action, State>
+    reducer: Reducer<Action, State>
 ) : Store<Action, State> {
 
     private val subscribers = mutableSetOf<StoreSubscriber<State>>()
+    private val dispatcher: Dispatcher<Action> = { action -> state = reducer(state, action) }
 
     private var state: State = initialState
         set(value) {
@@ -16,7 +17,7 @@ class DefaultStore<Action, State>(
     override fun getState(): State = state
 
     override fun dispatch(action: Action) {
-        state = reducer(state, action)
+        dispatcher(action)
     }
 
     override fun subscribe(subscriber: StoreSubscriber<State>): Boolean = subscribers.add(subscriber)
