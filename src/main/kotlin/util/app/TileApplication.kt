@@ -7,6 +7,7 @@ import javafx.scene.canvas.Canvas
 import javafx.stage.Stage
 import util.rendering.CanvasRenderer
 import util.rendering.Renderer
+import util.requireGreater
 
 abstract class TileApplication : Application() {
     private var columns = 0
@@ -27,10 +28,10 @@ abstract class TileApplication : Application() {
         tileWidth: Int,
         tileHeight: Int
     ): Scene {
-        this.columns = columns
-        this.rows = rows
-        this.tileWidth = tileWidth
-        this.tileHeight = tileHeight
+        this.columns = requireGreater(columns, 0, "columns")
+        this.rows = requireGreater(rows, 0, "rows")
+        this.tileWidth = requireGreater(tileWidth, 0, "tileWidth")
+        this.tileHeight = requireGreater(tileHeight, 0, "tileHeight")
 
         val root = Group()
         val canvasWidth = columns * tileWidth.toDouble()

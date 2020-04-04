@@ -26,6 +26,8 @@ class RenderingDemo : TileApplication() {
             setFont(32)
             renderUnicode("@", 100, 100)
             renderUnicode("🌳", 200, 200)
+            setColor(Color.BLUE)
+            renderRectangle(400, 300, 100, 200)
         }
 
         logger.info("render(): finished")
