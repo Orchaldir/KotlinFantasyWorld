@@ -35,21 +35,50 @@ class TileRendererTest {
     fun testRenderUnicode() {
         tileRenderer.renderUnicode("T", COLOR, 2, 7, 3)
 
+        verifyUnicode("T")
+    }
+
+    private fun verifyUnicode(text: String) {
         val x = (START_X + TILE_WIDTH * 3.5).toInt()
         val y = (START_Y + TILE_HEIGHT * 8.5).toInt()
 
         verify(renderer).setColor(COLOR)
         verify(renderer).setFont(60)
-        verify(renderer).renderUnicode("T", x, y)
+        verify(renderer).renderUnicode(text, x, y)
         verifyNoMoreInteractions(renderer)
     }
 
     @Test
-    fun testRenderTile() {
-        tileRenderer.renderTile(COLOR, 3, 7)
+    fun testRenderFullTile() {
+        tileRenderer.renderFullTile(COLOR, 3, 7)
 
         verify(renderer).setColor(COLOR)
         verify(renderer).renderRectangle(130, 340, 10, 20)
         verifyNoMoreInteractions(renderer)
+    }
+
+    // render tile
+
+    @Test
+    fun testRenderTileEmpty() {
+        tileRenderer.renderTile(EmptyTile, 3, 7, 4)
+
+        verifyNoMoreInteractions(renderer)
+    }
+
+    @Test
+    fun testRenderTileFull() {
+        tileRenderer.renderTile(FullTile(COLOR), 3, 7, 4)
+
+        verify(renderer).setColor(COLOR)
+        verify(renderer).renderRectangle(130, 340, 40, 80)
+        verifyNoMoreInteractions(renderer)
+    }
+
+    @Test
+    fun testRenderTileUnicode() {
+        tileRenderer.renderTile(UnicodeTile("S", COLOR), 2, 7, 3)
+
+        verifyUnicode("S")
     }
 }

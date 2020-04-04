@@ -30,9 +30,26 @@ class TileRenderer(
         }
     }
 
-    fun renderTile(color: Color, x: Int, y: Int) {
+    fun renderFullTile(
+        color: Color,
+        x: Int,
+        y: Int,
+        size: Int = 1
+    ) {
         renderer.setColor(color)
-        renderer.renderRectangle(getStartPixelX(x), getStartPixelY(y), tileWidth, tileHeight)
+        renderer.renderRectangle(getStartPixelX(x), getStartPixelY(y), tileWidth * size, tileHeight * size)
+    }
+
+    fun renderTile(
+        tile: Tile,
+        x: Int,
+        y: Int,
+        size: Int = 1
+    ) {
+        when (tile) {
+            is FullTile -> renderFullTile(tile.color, x, y, size)
+            is UnicodeTile -> renderUnicode(tile.symbol, tile.color, x, y, size)
+        }
     }
 
     fun getX(pixelX: Int): Int {

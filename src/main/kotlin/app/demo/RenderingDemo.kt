@@ -31,8 +31,8 @@ class RenderingDemo : TileApplication() {
         }
 
         with(createTileRenderer()) {
-            renderTile(Color.GREEN, 5, 10)
-            renderTile(Color.BLUE, 6, 10)
+            renderFullTile(Color.GREEN, 5, 10)
+            renderFullTile(Color.BLUE, 6, 10)
             renderUnicode("@", Color.CYAN, 5, 11, 2)
         }
 
