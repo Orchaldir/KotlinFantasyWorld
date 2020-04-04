@@ -30,6 +30,9 @@ dependencies {
 
     // Use the Kotlin JUnit integration.
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+
+    implementation(group = "io.github.microutils", name = "kotlin-logging", version = "1.4.6")
+    implementation(group = "org.slf4j", name = "slf4j-simple", version = "1.7.26")
 }
 
 application {
