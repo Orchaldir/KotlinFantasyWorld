@@ -32,6 +32,8 @@ class RenderingDemo : TileApplication() {
 
         with(createTileRenderer()) {
             renderTile(5, 10, Color.GREEN)
+            renderTile(6, 10, Color.BLUE)
+            renderUnicode("@", Color.CYAN, 5, 11, 2)
         }
 
         logger.info("render(): finished")

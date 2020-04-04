@@ -16,14 +16,18 @@ class TileRenderer(
     private val tileWidth = requireGreater(tileWidth, 0, "tileWidth")
     private val tileHeight = requireGreater(tileHeight, 0, "tileHeight")
 
-    fun renderCharacter(
+    fun renderUnicode(
         text: String,
+        color: Color,
         x: Int,
         y: Int,
-        color: Color
+        size: Int = 1
     ) {
-        renderer.setColor(color)
-        renderer.renderUnicode(text, getCenterPixelX(x), getCenterPixelY(y))
+        with(renderer) {
+            setColor(color)
+            setFont(size * tileHeight)
+            renderUnicode(text, getCenterPixelX(x, size), getCenterPixelY(y, size))
+        }
     }
 
     fun renderTile(x: Int, y: Int, color: Color) {
@@ -47,11 +51,11 @@ class TileRenderer(
         return startPixelY + y * tileHeight
     }
 
-    private fun getCenterPixelX(x: Int): Int {
-        return getStartPixelX(x) + tileWidth / 2
+    private fun getCenterPixelX(x: Int, size: Int): Int {
+        return getStartPixelX(x) + size * tileWidth / 2
     }
 
-    private fun getCenterPixelY(y: Int): Int {
-        return getStartPixelY(y) + tileHeight / 2
+    private fun getCenterPixelY(y: Int, size: Int): Int {
+        return getStartPixelY(y) + size * tileHeight / 2
     }
 }
