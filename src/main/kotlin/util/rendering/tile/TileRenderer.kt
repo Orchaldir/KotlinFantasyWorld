@@ -30,7 +30,7 @@ class TileRenderer(
         }
     }
 
-    fun renderTile(x: Int, y: Int, color: Color) {
+    fun renderTile(color: Color, x: Int, y: Int) {
         renderer.setColor(color)
         renderer.renderRectangle(getStartPixelX(x), getStartPixelY(y), tileWidth, tileHeight)
     }

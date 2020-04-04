@@ -33,6 +33,8 @@ dependencies {
 
     implementation(group = "io.github.microutils", name = "kotlin-logging", version = "1.4.6")
     implementation(group = "org.slf4j", name = "slf4j-simple", version = "1.7.26")
+
+    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
 }
 
 application {
