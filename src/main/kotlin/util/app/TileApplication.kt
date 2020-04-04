@@ -5,12 +5,17 @@ import javafx.scene.Group
 import javafx.scene.Scene
 import javafx.scene.canvas.Canvas
 import javafx.stage.Stage
+import util.rendering.CanvasRenderer
+import util.rendering.Renderer
 
 abstract class TileApplication : Application() {
     private var columns = 0
     private var rows = 0
     private var tileWidth = 0
     private var tileHeight = 0
+    private var canvasRenderer: CanvasRenderer? = null
+    val renderer: Renderer
+        get() = canvasRenderer as Renderer
     val tiles: Int
         get() = columns * rows
 
@@ -40,6 +45,8 @@ abstract class TileApplication : Application() {
             isResizable = false
             show()
         }
+
+        canvasRenderer = CanvasRenderer(canvas.graphicsContext2D)
 
         return windowScene
     }

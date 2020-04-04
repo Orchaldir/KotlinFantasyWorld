@@ -1,5 +1,6 @@
 package app.demo
 
+import javafx.scene.paint.Color
 import javafx.stage.Stage
 import mu.KotlinLogging
 import util.app.TileApplication
@@ -19,6 +20,14 @@ class RenderingDemo : TileApplication() {
 
     private fun render() {
         logger.info("render()")
+
+        with(this.renderer) {
+            setColor(Color.RED)
+            setFont(32)
+            renderUnicode("@", 100, 100)
+            renderUnicode("🌳", 200, 200)
+        }
+
         logger.info("render(): finished")
     }
 
