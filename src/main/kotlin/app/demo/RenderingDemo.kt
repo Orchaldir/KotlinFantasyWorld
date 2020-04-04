@@ -30,6 +30,10 @@ class RenderingDemo : TileApplication() {
             renderRectangle(400, 300, 100, 200)
         }
 
+        with(createTileRenderer()) {
+            renderTile(5, 10, Color.GREEN)
+        }
+
         logger.info("render(): finished")
     }
 

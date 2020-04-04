@@ -7,6 +7,7 @@ import javafx.scene.canvas.Canvas
 import javafx.stage.Stage
 import util.rendering.CanvasRenderer
 import util.rendering.Renderer
+import util.rendering.tile.TileRenderer
 import util.requireGreater
 
 abstract class TileApplication : Application() {
@@ -14,11 +15,11 @@ abstract class TileApplication : Application() {
     private var rows = 0
     private var tileWidth = 0
     private var tileHeight = 0
+    val tiles: Int
+        get() = columns * rows
     private var canvasRenderer: CanvasRenderer? = null
     val renderer: Renderer
         get() = canvasRenderer as Renderer
-    val tiles: Int
-        get() = columns * rows
 
     protected fun init(
         primaryStage: Stage,
@@ -51,4 +52,6 @@ abstract class TileApplication : Application() {
 
         return windowScene
     }
+
+    fun createTileRenderer(): TileRenderer = TileRenderer(renderer, 0, 0, tileWidth, tileWidth)
 }
