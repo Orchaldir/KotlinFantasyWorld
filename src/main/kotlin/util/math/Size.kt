@@ -16,7 +16,7 @@ class Size(
         return y * this.x + x
     }
 
-    private fun requireInside(x: Int, y: Int) {
+    fun requireInside(x: Int, y: Int) {
         require(x in 0 until this.x) { "x=$x must be inside!" }
         require(y in 0 until this.y) { "y=$y must be inside!" }
     }

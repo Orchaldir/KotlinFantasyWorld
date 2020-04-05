@@ -35,6 +35,7 @@ dependencies {
     implementation(group = "org.slf4j", name = "slf4j-simple", version = "1.7.26")
 
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
+    testImplementation("com.willowtreeapps.assertk:assertk:0.22")
 }
 
 application {

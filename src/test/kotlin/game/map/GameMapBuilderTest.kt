@@ -1,9 +1,12 @@
 package game.map
 
+import assertk.assertThat
+import assertk.assertions.containsExactly
 import game.map.Terrain.FLOOR
 import game.map.Terrain.WALL
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class GameMapBuilderTest {
 
@@ -24,21 +27,12 @@ class GameMapBuilderTest {
         val builder = GameMapBuilder(3, 4, FLOOR)
             .addBorder(WALL)
 
-        assertEquals(WALL, builder.getTerrain(0, 0))
-        assertEquals(WALL, builder.getTerrain(1, 0))
-        assertEquals(WALL, builder.getTerrain(2, 0))
-
-        assertEquals(WALL, builder.getTerrain(0, 1))
-        assertEquals(FLOOR, builder.getTerrain(1, 1))
-        assertEquals(WALL, builder.getTerrain(2, 1))
-
-        assertEquals(WALL, builder.getTerrain(0, 2))
-        assertEquals(FLOOR, builder.getTerrain(1, 2))
-        assertEquals(WALL, builder.getTerrain(2, 2))
-
-        assertEquals(WALL, builder.getTerrain(0, 3))
-        assertEquals(WALL, builder.getTerrain(1, 3))
-        assertEquals(WALL, builder.getTerrain(2, 3))
+        assertThat(builder.getTerrainList()).containsExactly(
+            WALL, WALL, WALL,
+            WALL, FLOOR, WALL,
+            WALL, FLOOR, WALL,
+            WALL, WALL, WALL
+        )
     }
 
 
@@ -47,30 +41,37 @@ class GameMapBuilderTest {
         val builder = GameMapBuilder(4, 5, FLOOR)
             .addRectangle(0, 0, 3, 4, WALL)
 
-        assertEquals(WALL, builder.getTerrain(0, 0))
-        assertEquals(WALL, builder.getTerrain(1, 0))
-        assertEquals(WALL, builder.getTerrain(2, 0))
-        assertEquals(FLOOR, builder.getTerrain(3, 0))
+        assertThat(builder.getTerrainList()).containsExactly(
+            WALL, WALL, WALL, FLOOR,
+            WALL, FLOOR, WALL, FLOOR,
+            WALL, FLOOR, WALL, FLOOR,
+            WALL, WALL, WALL, FLOOR,
+            FLOOR, FLOOR, FLOOR, FLOOR
+        )
+    }
 
-        assertEquals(WALL, builder.getTerrain(0, 1))
-        assertEquals(FLOOR, builder.getTerrain(1, 1))
-        assertEquals(WALL, builder.getTerrain(2, 1))
-        assertEquals(FLOOR, builder.getTerrain(3, 1))
+    @Test
+    fun testAddRectangleWithInvalidStart() {
+        val builder = GameMapBuilder(4, 5, FLOOR)
 
-        assertEquals(WALL, builder.getTerrain(0, 2))
-        assertEquals(FLOOR, builder.getTerrain(1, 2))
-        assertEquals(WALL, builder.getTerrain(2, 2))
-        assertEquals(FLOOR, builder.getTerrain(3, 2))
+        assertFailsWith<IllegalArgumentException> { builder.addRectangle(-1, 0, 3, 4, WALL) }
+        assertFailsWith<IllegalArgumentException> { builder.addRectangle(0, -1, 3, 4, WALL) }
+    }
 
-        assertEquals(WALL, builder.getTerrain(0, 3))
-        assertEquals(WALL, builder.getTerrain(1, 3))
-        assertEquals(WALL, builder.getTerrain(2, 3))
-        assertEquals(FLOOR, builder.getTerrain(3, 3))
+    @Test
+    fun testAddRectangleWithInvalidSize() {
+        val builder = GameMapBuilder(4, 5, FLOOR)
 
-        assertEquals(FLOOR, builder.getTerrain(0, 4))
-        assertEquals(FLOOR, builder.getTerrain(1, 4))
-        assertEquals(FLOOR, builder.getTerrain(2, 4))
-        assertEquals(FLOOR, builder.getTerrain(3, 4))
+        assertFailsWith<IllegalArgumentException> { builder.addRectangle(0, 0, -1, 4, WALL) }
+        assertFailsWith<IllegalArgumentException> { builder.addRectangle(0, 0, 3, -1, WALL) }
+    }
+
+    @Test
+    fun testAddRectangleReachesOutside() {
+        val builder = GameMapBuilder(4, 5, FLOOR)
+
+        assertFailsWith<IllegalArgumentException> { builder.addRectangle(1, 1, 4, 4, WALL) }
+        assertFailsWith<IllegalArgumentException> { builder.addRectangle(1, 1, 3, 5, WALL) }
     }
 
 }

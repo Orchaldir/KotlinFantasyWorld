@@ -35,6 +35,8 @@ class GameMapBuilder(
         return this
     }
 
+    fun getTerrainList(): List<Terrain> = terrainList
+
     fun getTerrain(x: Int, y: Int): Terrain {
         return terrainList[size.getIndex(x, y)]
     }
