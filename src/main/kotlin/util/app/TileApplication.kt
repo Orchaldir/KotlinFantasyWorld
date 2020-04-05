@@ -1,14 +1,20 @@
 package util.app
 
 import javafx.application.Application
+import javafx.event.EventHandler
 import javafx.scene.Group
 import javafx.scene.Scene
 import javafx.scene.canvas.Canvas
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
+import mu.KotlinLogging
 import util.rendering.CanvasRenderer
 import util.rendering.Renderer
 import util.rendering.tile.TileRenderer
 import util.requireGreater
+
+private val logger = KotlinLogging.logger {}
 
 abstract class TileApplication : Application() {
     private var columns = 0
@@ -20,6 +26,7 @@ abstract class TileApplication : Application() {
     private var canvasRenderer: CanvasRenderer? = null
     val renderer: Renderer
         get() = canvasRenderer as Renderer
+    lateinit var tileRenderer: TileRenderer
 
     protected fun init(
         primaryStage: Stage,
@@ -34,9 +41,12 @@ abstract class TileApplication : Application() {
         this.tileWidth = requireGreater(tileWidth, 0, "tileWidth")
         this.tileHeight = requireGreater(tileHeight, 0, "tileHeight")
 
-        val root = Group()
         val canvasWidth = columns * tileWidth.toDouble()
         val canvasHeight = rows * tileHeight.toDouble()
+
+        logger.info { "init(): width=$columns*$tileWidth=$canvasWidth height=$rows*$tileHeight=$canvasHeight" }
+
+        val root = Group()
         val canvas = Canvas(canvasWidth, canvasHeight)
         root.children.add(canvas)
         val windowScene = Scene(root)
@@ -49,9 +59,27 @@ abstract class TileApplication : Application() {
         }
 
         canvasRenderer = CanvasRenderer(canvas.graphicsContext2D)
+        tileRenderer = TileRenderer(renderer, 0, 0, tileWidth, tileHeight)
+
+        windowScene.onKeyReleased = EventHandler { event: KeyEvent ->
+            onKeyReleased(event.code)
+        }
+
+        windowScene.onMouseClicked = EventHandler { event ->
+            onTileClicked(
+                tileRenderer.getX(event.x.toInt()),
+                tileRenderer.getY(event.y.toInt())
+            )
+        }
 
         return windowScene
     }
 
-    fun createTileRenderer(): TileRenderer = TileRenderer(renderer, 0, 0, tileWidth, tileWidth)
+    open fun onKeyReleased(keyCode: KeyCode) {
+
+    }
+
+    open fun onTileClicked(x: Int, y: Int) {
+
+    }
 }
