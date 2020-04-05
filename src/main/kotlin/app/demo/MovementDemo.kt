@@ -22,7 +22,12 @@ class MovementDemo : TileApplication() {
     private fun create() {
         logger.info("create(): tiles={}", tiles)
 
-        gameMap = GameMapBuilder(columns, rows, Terrain.FLOOR).build()
+        gameMap = GameMapBuilder(columns, rows, Terrain.FLOOR)
+            .addBorder(Terrain.WALL)
+            .addRectangle(20, 10, 10, 10, Terrain.WALL)
+            .addRectangle(40, 25, 10, 10, Terrain.WALL)
+            .setTerrain(25, 19, Terrain.FLOOR)
+            .build()
 
         render()
     }
