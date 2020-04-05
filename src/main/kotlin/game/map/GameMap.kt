@@ -1,21 +1,18 @@
 package game.map
 
 import javafx.scene.paint.Color
+import util.math.Size
 import util.rendering.tile.TileRenderer
-import util.requireGreater
 
 class GameMap(
-    sizeX: Int,
-    sizeY: Int,
+    val size: Size,
     private val terrainList: List<Terrain>
 ) {
-    private val sizeX = requireGreater(sizeX, 0, "sizeX")
-    private val sizeY = requireGreater(sizeY, 0, "sizeY")
 
     fun render(renderer: TileRenderer, startX: Int, startY: Int) {
         var index = 0
-        for (y in startY until startY + sizeY) {
-            for (x in startX until startX + sizeX) {
+        for (y in startY until startY + size.y) {
+            for (x in startX until startX + size.x) {
                 val terrain = terrainList[index++]
                 val symbol = if (terrain == Terrain.FLOOR) {
                     "."

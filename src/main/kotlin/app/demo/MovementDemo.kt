@@ -8,6 +8,7 @@ import javafx.scene.input.KeyCode
 import javafx.stage.Stage
 import mu.KotlinLogging
 import util.app.TileApplication
+import util.math.Size
 
 private val logger = KotlinLogging.logger {}
 
@@ -22,7 +23,8 @@ class MovementDemo : TileApplication() {
     private fun create() {
         logger.info("create(): tiles={}", tiles)
 
-        gameMap = GameMapBuilder(columns, rows, Terrain.FLOOR)
+        val size = Size(columns, rows)
+        gameMap = GameMapBuilder(size, Terrain.FLOOR)
             .addBorder(Terrain.WALL)
             .addRectangle(20, 10, 10, 10, Terrain.WALL)
             .addRectangle(40, 25, 10, 10, Terrain.WALL)
