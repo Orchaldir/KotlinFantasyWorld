@@ -17,8 +17,10 @@ import util.requireGreater
 private val logger = KotlinLogging.logger {}
 
 abstract class TileApplication : Application() {
-    private var columns = 0
-    private var rows = 0
+    var columns = 0
+        private set
+    var rows = 0
+        private set
     private var tileWidth = 0
     private var tileHeight = 0
     val tiles: Int
