@@ -7,6 +7,7 @@ import javafx.scene.Scene
 import javafx.scene.canvas.Canvas
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
+import javafx.scene.paint.Color
 import javafx.stage.Stage
 import mu.KotlinLogging
 import util.rendering.CanvasRenderer
@@ -51,7 +52,7 @@ abstract class TileApplication : Application() {
         val root = Group()
         val canvas = Canvas(canvasWidth, canvasHeight)
         root.children.add(canvas)
-        val windowScene = Scene(root)
+        val windowScene = Scene(root, Color.BLACK)
 
         with(primaryStage) {
             title = windowTitle

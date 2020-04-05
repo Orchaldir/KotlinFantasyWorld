@@ -30,6 +30,8 @@ class MovementDemo : TileApplication() {
     private fun render() {
         logger.info("render()")
 
+        gameMap.render(tileRenderer, 0, 0)
+
         logger.info("render(): finished")
     }
 
