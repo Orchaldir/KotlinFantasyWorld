@@ -9,6 +9,9 @@ class GameMapBuilder(
     constructor(size: Size, terrain: Terrain) :
             this(size, MutableList(size.getCells()) { terrain })
 
+    constructor(x: Int, y: Int, terrain: Terrain) :
+            this(Size(x, y), terrain)
+
     fun build(): GameMap = GameMap(size, terrainList)
 
     fun addBorder(terrain: Terrain): GameMapBuilder {
@@ -30,6 +33,14 @@ class GameMapBuilder(
         }
 
         return this
+    }
+
+    fun getTerrain(x: Int, y: Int): Terrain {
+        return terrainList[size.getIndex(x, y)]
+    }
+
+    fun getTerrain(index: Int): Terrain {
+        return terrainList[index]
     }
 
     fun setTerrain(x: Int, y: Int, terrain: Terrain): GameMapBuilder {
