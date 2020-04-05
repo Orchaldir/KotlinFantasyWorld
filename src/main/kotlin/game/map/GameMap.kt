@@ -4,9 +4,9 @@ import javafx.scene.paint.Color
 import util.math.Size
 import util.rendering.tile.TileRenderer
 
-class GameMap(
+data class GameMap(
     val size: Size,
-    private val terrainList: List<Terrain>
+    val terrainList: List<Terrain>
 ) {
 
     fun render(renderer: TileRenderer, startX: Int, startY: Int) {
@@ -24,4 +24,5 @@ class GameMap(
             }
         }
     }
+
 }

@@ -27,14 +27,8 @@ class GameMapBuilderTest {
         val builder = GameMapBuilder(3, 4, FLOOR)
             .addBorder(WALL)
 
-        assertThat(builder.getTerrainList()).containsExactly(
-            WALL, WALL, WALL,
-            WALL, FLOOR, WALL,
-            WALL, FLOOR, WALL,
-            WALL, WALL, WALL
-        )
+        assertBorder(builder.getTerrainList())
     }
-
 
     @Test
     fun testAddRectangle() {
@@ -72,6 +66,37 @@ class GameMapBuilderTest {
 
         assertFailsWith<IllegalArgumentException> { builder.addRectangle(1, 1, 4, 4, WALL) }
         assertFailsWith<IllegalArgumentException> { builder.addRectangle(1, 1, 3, 5, WALL) }
+    }
+
+    @Test
+    fun testSetTerrain() {
+        val builder = GameMapBuilder(2, 2, FLOOR)
+            .setTerrain(1, 0, WALL)
+
+        assertThat(builder.getTerrainList()).containsExactly(
+            FLOOR, WALL,
+            FLOOR, FLOOR
+        )
+
+        assertEquals(WALL, builder.getTerrain(1))
+        assertEquals(WALL, builder.getTerrain(1, 0))
+    }
+
+    @Test
+    fun testBuild() {
+        val map = GameMapBuilder(3, 4, FLOOR)
+            .addBorder(WALL).build()
+
+        assertBorder(map.terrainList)
+    }
+
+    private fun assertBorder(list: List<Terrain>) {
+        assertThat(list).containsExactly(
+            WALL, WALL, WALL,
+            WALL, FLOOR, WALL,
+            WALL, FLOOR, WALL,
+            WALL, WALL, WALL
+        )
     }
 
 }
