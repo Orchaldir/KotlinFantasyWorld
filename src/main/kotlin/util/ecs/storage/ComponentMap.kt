@@ -20,7 +20,7 @@ data class ComponentMap<T>(
         return componentMap.keys
     }
 
-    override fun copy(updated: Map<Int, T>, removed: Set<Int>): ComponentStorage<T> {
+    override fun updateAndRemove(updated: Map<Int, T>, removed: Set<Int>): ComponentStorage<T> {
         val newComponentMap = componentMap + updated - removed
         return ComponentMap(newComponentMap)
     }

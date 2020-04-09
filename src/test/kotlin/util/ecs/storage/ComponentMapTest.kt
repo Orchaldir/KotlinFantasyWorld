@@ -72,13 +72,24 @@ class ComponentMapTest {
     }
 
     @Test
-    fun `Test copy()`() {
+    fun `Test updateAndRemove()`() {
         val storage = ComponentMap(components)
-        val copy = storage.copy(mapOf(ID0 to D, ID3 to E), setOf(ID2))
+        val copy = storage.updateAndRemove(mapOf(ID0 to D, ID3 to E), setOf(ID2))
 
         assertThat(copy[ID0]).isSameAs(D)
         assertThat(copy[ID1]).isSameAs(B)
         assertNull(copy[ID2])
+        assertThat(copy[ID3]).isSameAs(E)
+    }
+
+    @Test
+    fun `Test updateAndRemove() without removed`() {
+        val storage = ComponentMap(components)
+        val copy = storage.updateAndRemove(mapOf(ID0 to D, ID3 to E))
+
+        assertThat(copy[ID0]).isSameAs(D)
+        assertThat(copy[ID1]).isSameAs(B)
+        assertThat(copy[ID2]).isSameAs(C)
         assertThat(copy[ID3]).isSameAs(E)
     }
 

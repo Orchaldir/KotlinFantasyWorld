@@ -5,5 +5,5 @@ interface ComponentStorage<T> {
     operator fun get(entityId: Int): T?
     fun getAll(): Collection<T>
     fun getIds(): Set<Int>
-    fun copy(updated: Map<Int, T>, removed: Set<Int>): ComponentStorage<T>
+    fun updateAndRemove(updated: Map<Int, T>, removed: Set<Int> = emptySet()): ComponentStorage<T>
 }
