@@ -18,9 +18,7 @@ class EcsBuilder(
         return this
     }
 
-    inline fun <reified T : Any> register(): EcsBuilder {
-        return register<T>(T::class)
-    }
+    inline fun <reified T : Any> register() = register<T>(T::class)
 
     fun newEntity(): EcsBuilder {
         entityIds.add(entityId)
@@ -36,9 +34,7 @@ class EcsBuilder(
         return this
     }
 
-    inline fun <reified T : Any> add(component: T): EcsBuilder {
-        return add(T::class, component)
-    }
+    inline fun <reified T : Any> add(component: T) = add(T::class, component)
 
     private fun getFirstFreeId(): Int {
         val maxId = entityIds.max() ?: 0
@@ -52,8 +48,6 @@ class EcsBuilder(
         return maxId + 1
     }
 
-    fun build(): EcsState {
-        return EcsState(entityIds, storageMap)
-    }
+    fun build() = EcsState(entityIds, storageMap)
 
 }

@@ -14,9 +14,7 @@ class GameMapBuilder(
 
     fun build(): GameMap = GameMap(size, terrainList)
 
-    fun addBorder(terrain: Terrain): GameMapBuilder {
-        return addRectangle(0, 0, size.x, size.y, terrain)
-    }
+    fun addBorder(terrain: Terrain) = addRectangle(0, 0, size.x, size.y, terrain)
 
     fun addRectangle(startX: Int, startY: Int, sizeX: Int, sizeY: Int, terrain: Terrain): GameMapBuilder {
         val endX = startX + sizeX
@@ -35,11 +33,9 @@ class GameMapBuilder(
         return this
     }
 
-    fun getTerrainList(): List<Terrain> = terrainList
+    fun getTerrainList() = terrainList
 
-    fun getTerrain(x: Int, y: Int): Terrain {
-        return terrainList[size.getIndex(x, y)]
-    }
+    fun getTerrain(x: Int, y: Int) = terrainList[size.getIndex(x, y)]
 
     fun getTerrain(index: Int): Terrain {
         return terrainList[index]

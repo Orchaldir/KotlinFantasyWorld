@@ -17,17 +17,13 @@ class EcsState(
         return storage as ComponentStorage<T>?
     }
 
-    inline fun <reified T : Any> get(): ComponentStorage<T>? {
-        return get(T::class)
-    }
+    inline fun <reified T : Any> get(): ComponentStorage<T>? = get(T::class)
 
     fun copy(updated: Map<KClass<*>, ComponentStorage<*>>): EcsState {
         val newStorageMap = storageMap + updated
         return EcsState(entityIds, newStorageMap)
     }
 
-    fun builder(): EcsBuilder {
-        return EcsBuilder(entityIds.toMutableSet(), storageMap.toMutableMap())
-    }
+    fun builder() = EcsBuilder(entityIds.toMutableSet(), storageMap.toMutableMap())
 
 }

@@ -53,27 +53,15 @@ class TileRenderer(
         }
     }
 
-    fun getX(pixelX: Int): Int {
-        return (pixelX - startPixelX) / tileWidth
-    }
+    fun getX(pixelX: Int) = (pixelX - startPixelX) / tileWidth
 
-    fun getY(pixelY: Int): Int {
-        return (pixelY - startPixelY) / tileHeight
-    }
+    fun getY(pixelY: Int) = (pixelY - startPixelY) / tileHeight
 
-    private fun getStartPixelX(x: Int): Int {
-        return startPixelX + x * tileWidth
-    }
+    private fun getStartPixelX(x: Int) = startPixelX + x * tileWidth
 
-    private fun getStartPixelY(y: Int): Int {
-        return startPixelY + y * tileHeight
-    }
+    private fun getStartPixelY(y: Int) = startPixelY + y * tileHeight
 
-    private fun getCenterPixelX(x: Int, size: Int): Int {
-        return getStartPixelX(x) + size * tileWidth / 2
-    }
+    private fun getCenterPixelX(x: Int, size: Int) = getStartPixelX(x) + size * tileWidth / 2
 
-    private fun getCenterPixelY(y: Int, size: Int): Int {
-        return getStartPixelY(y) + size * tileHeight / 2
-    }
+    private fun getCenterPixelY(y: Int, size: Int) = getStartPixelY(y) + size * tileHeight / 2
 }
