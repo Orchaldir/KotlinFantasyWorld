@@ -3,7 +3,12 @@ package util.ecs
 import util.ecs.storage.ComponentStorage
 import kotlin.reflect.KClass
 
-class EcsState(private val storageMap: Map<KClass<*>, ComponentStorage<*>>) {
+class EcsState(
+    private val entityIds: Set<Int>,
+    private val storageMap: Map<KClass<*>, ComponentStorage<*>>
+) {
+
+    constructor(storageMap: Map<KClass<*>, ComponentStorage<*>>) : this(mutableSetOf(), storageMap)
 
     fun <T> get(type: KClass<*>): ComponentStorage<T>? {
         val storage = storageMap[type]
@@ -18,7 +23,11 @@ class EcsState(private val storageMap: Map<KClass<*>, ComponentStorage<*>>) {
 
     fun copy(updated: Map<KClass<*>, ComponentStorage<*>>): EcsState {
         val newStorageMap = storageMap + updated
-        return EcsState(newStorageMap)
+        return EcsState(entityIds, newStorageMap)
+    }
+
+    fun builder(): EcsBuilder {
+        return EcsBuilder(entityIds.toMutableSet(), storageMap.toMutableMap())
     }
 
 }

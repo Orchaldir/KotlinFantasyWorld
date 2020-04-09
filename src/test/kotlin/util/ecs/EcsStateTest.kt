@@ -7,7 +7,7 @@ import org.junit.Test
 import util.ecs.storage.ComponentStorage
 import kotlin.test.assertNull
 
-class ComponentMapTest {
+class EcsStateTest {
 
     @Test
     fun `Test get() with existing type`() {
