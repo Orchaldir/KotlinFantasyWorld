@@ -26,4 +26,17 @@ class ComponentMapTest {
 
         assertNull(state.get<String>())
     }
+
+    @Test
+    fun `Test copy()`() {
+        val c0 = mockk<ComponentStorage<Int>>()
+        val c1 = mockk<ComponentStorage<String>>()
+        val state = EcsState(mapOf(Int::class to c0, String::class to c1))
+
+        val newC1 = mockk<ComponentStorage<String>>()
+        val copy = state.copy(mapOf(String::class to newC1))
+
+        assertThat(copy.get<Int>()).isSameAs(c0)
+        assertThat(copy.get<String>()).isSameAs(newC1)
+    }
 }
