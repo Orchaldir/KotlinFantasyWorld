@@ -1,6 +1,6 @@
 package app.demo
 
-import javafx.scene.input.KeyCode
+import javafx.application.Application
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import mu.KotlinLogging
@@ -39,19 +39,8 @@ class RenderingDemo : TileApplication() {
 
         logger.info("render(): finished")
     }
+}
 
-    override fun onKeyReleased(keyCode: KeyCode) {
-        logger.info("onKeyReleased(): keyCode=$keyCode")
-    }
-
-    override fun onTileClicked(x: Int, y: Int) {
-        logger.info("onTileClicked(): x=$x y=$y")
-    }
-
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            launch(RenderingDemo::class.java)
-        }
-    }
+fun main() {
+    Application.launch(RenderingDemo::class.java)
 }
