@@ -10,6 +10,7 @@ class EcsBuilder(
 ) {
     var entityId = getFirstFreeId()
         private set
+    private var hasComponents = false
 
     constructor() : this(mutableSetOf(), mutableMapOf())
 
@@ -20,13 +21,15 @@ class EcsBuilder(
 
     inline fun <reified T : Any> register() = register<T>(T::class)
 
-    fun newEntity(): EcsBuilder {
+    fun buildEntity(): EcsBuilder {
         entityIds.add(entityId)
         entityId = getFirstFreeId()
+        hasComponents = false
         return this
     }
 
     fun <T> add(type: KClass<*>, component: T): EcsBuilder {
+        hasComponents = true
         @Suppress("UNCHECKED_CAST")
         val storage =
             storageMap[type] as ComponentStorage<T>? ?: throw IllegalArgumentException("Type '$type' is unregistered!")
@@ -48,6 +51,11 @@ class EcsBuilder(
         return maxId + 1
     }
 
-    fun build() = EcsState(entityIds, storageMap)
+    fun build(): EcsState {
+        if (hasComponents) {
+            entityIds.add(entityId)
+        }
+        return EcsState(entityIds, storageMap)
+    }
 
 }

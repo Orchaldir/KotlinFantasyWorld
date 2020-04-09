@@ -1,6 +1,7 @@
 package util.ecs
 
 import assertk.assertThat
+import assertk.assertions.containsOnly
 import assertk.assertions.isSameAs
 import org.junit.Test
 import kotlin.test.assertFailsWith
@@ -39,6 +40,7 @@ class EcsBuilderTest {
             .add(STRING0)
             .build()
 
+        assertThat(state.entityIds).containsOnly(0)
         assertEntity(state, 0, INT0, STRING0)
     }
 
@@ -49,11 +51,12 @@ class EcsBuilderTest {
             .register<String>()
             .add(INT0)
             .add(STRING0)
-            .newEntity()
+            .buildEntity()
             .add(INT1)
             .add(STRING1)
             .build()
 
+        assertThat(state.entityIds).containsOnly(0, 1)
         assertEntity(state, 0, INT0, STRING0)
         assertEntity(state, 1, INT1, STRING1)
     }
@@ -65,11 +68,12 @@ class EcsBuilderTest {
             .register<String>()
             .add(INT0)
             .add(STRING0)
-            .newEntity()
+            .buildEntity()
             .add(INT1)
             .add(STRING1)
             .build()
 
+        assertThat(state.entityIds).containsOnly(0, 1, 2, 3)
         assertEntity(state, 1, INT0, STRING0)
         assertEntity(state, 3, INT1, STRING1)
     }

@@ -4,7 +4,7 @@ import util.ecs.storage.ComponentStorage
 import kotlin.reflect.KClass
 
 class EcsState(
-    private val entityIds: Set<Int>,
+    val entityIds: Set<Int>,
     private val storageMap: Map<KClass<*>, ComponentStorage<*>>
 ) {
 
