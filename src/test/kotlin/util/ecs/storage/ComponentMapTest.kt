@@ -11,10 +11,13 @@ import kotlin.test.assertTrue
 private const val ID0 = 0
 private const val ID1 = 9
 private const val ID2 = 42
+private const val ID3 = 99
 
 private const val A = "A"
 private const val B = "B"
 private const val C = "C"
+private const val D = "D"
+private const val E = "E"
 
 private const val NO_ID = 1
 
@@ -66,6 +69,17 @@ class ComponentMapTest {
         val storage = ComponentMap(components)
 
         assertThat(storage.getIds()).containsOnly(ID0, ID1, ID2)
+    }
+
+    @Test
+    fun `Test copy()`() {
+        val storage = ComponentMap(components)
+        val copy = storage.copy(mapOf(ID0 to D, ID3 to E), setOf(ID2))
+
+        assertThat(copy[ID0]).isSameAs(D)
+        assertThat(copy[ID1]).isSameAs(B)
+        assertNull(copy[ID2])
+        assertThat(copy[ID3]).isSameAs(E)
     }
 
 }

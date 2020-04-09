@@ -49,6 +49,7 @@ class TileRenderer(
         when (tile) {
             is FullTile -> renderFullTile(tile.color, x, y, size)
             is UnicodeTile -> renderUnicode(tile.symbol, tile.color, x, y, size)
+            is EmptyTile -> return
         }
     }
 
