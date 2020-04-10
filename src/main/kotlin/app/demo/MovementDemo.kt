@@ -58,6 +58,7 @@ class MovementDemo : TileApplication() {
                 ) as Body
             )
             add(Graphic(UnicodeTile("S", Color.GREEN)))
+            buildEntity()
             build()
         }
 

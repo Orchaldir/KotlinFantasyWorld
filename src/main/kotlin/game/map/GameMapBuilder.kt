@@ -51,8 +51,31 @@ class GameMapBuilder(
 
     // entities
 
-    fun setEntity(x: Int, y: Int, entity: Int): GameMapBuilder {
-        entities[size.getIndex(x, y)] = entity
+    fun setEntity(index: Int, entity: Int): GameMapBuilder {
+        val overwritten = entities.put(index, entity)
+
+        if (overwritten != null && overwritten != entity) {
+            throw IllegalArgumentException("Overwritten entity $overwritten with $entity at index $index!")
+        }
+
         return this
     }
+
+    fun setEntity(x: Int, y: Int, entity: Int) = setEntity(size.getIndex(x, y), entity)
+
+    fun getEntity(index: Int) = entities[index]
+
+    fun getEntity(x: Int, y: Int) = getEntity(size.getIndex(x, y))
+
+    fun removeEntity(index: Int, entity: Int): GameMapBuilder {
+        val removed = entities.remove(index)
+
+        if (removed != entity) {
+            throw IllegalArgumentException("Removed entity $removed instead of $entity at index $index!")
+        }
+
+        return this
+    }
+
+    fun removeEntity(x: Int, y: Int, entity: Int) = removeEntity(size.getIndex(x, y), entity)
 }

@@ -2,12 +2,17 @@ package game.map
 
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isSameAs
 import game.map.Terrain.FLOOR
 import game.map.Terrain.WALL
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
+
+private const val ENTITY0 = 1
+private const val ENTITY1 = 2
 
 class GameMapBuilderTest {
 
@@ -35,7 +40,7 @@ class GameMapBuilderTest {
     inner class AddRectangle {
 
         @Test
-        fun `Successfully add a rectangle`() {
+        fun `Add a rectangle with type WALL`() {
             val builder = GameMapBuilder(4, 5, FLOOR)
                 .addRectangle(0, 0, 3, 4, WALL)
 
@@ -74,7 +79,7 @@ class GameMapBuilderTest {
     }
 
     @Test
-    fun `Set terrain`() {
+    fun `Set terrain from FLOOR to WALL`() {
         val builder = GameMapBuilder(2, 2, FLOOR)
             .setTerrain(1, 0, WALL)
 
@@ -85,6 +90,68 @@ class GameMapBuilderTest {
 
         assertEquals(WALL, builder.getTerrain(1))
         assertEquals(WALL, builder.getTerrain(1, 0))
+    }
+
+    @Nested
+    inner class SetEntity {
+
+        @Test
+        fun `Set entity on map`() {
+            val builder = GameMapBuilder(2, 2, FLOOR)
+                .setEntity(1, 0, ENTITY0)
+
+            assertThat(builder.getEntity(1, 0)).isSameAs(ENTITY0)
+        }
+
+        @Test
+        fun `Overwrite entity with itself`() {
+            val builder = GameMapBuilder(2, 2, FLOOR)
+                .setEntity(1, 0, ENTITY0)
+                .setEntity(1, 0, ENTITY0)
+
+            assertThat(builder.getEntity(1, 0)).isSameAs(ENTITY0)
+        }
+
+        @Test
+        fun `Overwrite other entity`() {
+            assertFailsWith<IllegalArgumentException>("Overwritten entity $ENTITY0 with $ENTITY1 at index 1!") {
+                GameMapBuilder(2, 2, FLOOR)
+                    .setEntity(1, 0, ENTITY0)
+                    .setEntity(1, 0, ENTITY1)
+            }
+        }
+
+    }
+
+    @Nested
+    inner class RemoveEntity {
+
+        @Test
+        fun `Remove entity from map`() {
+            val builder = GameMapBuilder(2, 2, FLOOR)
+                .setEntity(1, 0, ENTITY0)
+                .removeEntity(1, 0, ENTITY0)
+
+            assertNull(builder.getEntity(1, 0))
+        }
+
+        @Test
+        fun `Remove entity that is not there`() {
+            assertFailsWith<IllegalArgumentException>("Removed null instead of $ENTITY0 at index 1!") {
+                GameMapBuilder(2, 2, FLOOR)
+                    .removeEntity(1, 0, ENTITY0)
+            }
+        }
+
+        @Test
+        fun `Remove wrong entity`() {
+            assertFailsWith<IllegalArgumentException>("Removed $ENTITY0 instead of $ENTITY1 at index 3!") {
+                GameMapBuilder(2, 2, FLOOR)
+                    .setEntity(1, 1, ENTITY0)
+                    .removeEntity(1, 1, ENTITY1)
+            }
+        }
+
     }
 
     @Test
