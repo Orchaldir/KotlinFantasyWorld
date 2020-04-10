@@ -8,6 +8,8 @@ val DEFAULT_GRAPHIC = UnicodeTile("?", Color.PINK)
 
 data class Graphic(val tiles: List<Tile>) {
 
+    constructor(tile: Tile) : this(listOf(tile))
+
     fun get(index: Int): Tile = tiles.getOrElse(index) { DEFAULT_GRAPHIC }
 
 }

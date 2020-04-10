@@ -16,8 +16,22 @@ class Size(
         return y * this.x + x
     }
 
-    fun requireInside(x: Int, y: Int) {
+    fun getX(index: Int): Int {
+        requireInside(index)
+        return index % x
+    }
+
+    fun getY(index: Int): Int {
+        requireInside(index)
+        return index / x
+    }
+
+    private fun requireInside(x: Int, y: Int) {
         require(x in 0 until this.x) { "x=$x must be inside!" }
         require(y in 0 until this.y) { "y=$y must be inside!" }
+    }
+
+    private fun requireInside(index: Int) {
+        require(index in 0 until getCells()) { "index=$index must be inside!" }
     }
 }

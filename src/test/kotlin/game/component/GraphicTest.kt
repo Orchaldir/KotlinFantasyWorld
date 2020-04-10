@@ -9,21 +9,33 @@ import util.rendering.tile.FullTile
 
 class GraphicTest {
 
-    @Test
-    fun `Get tile with index`() {
-        val tile0 = EmptyTile
-        val tile1 = FullTile(Color.BLACK)
-        val graphic = Graphic(listOf(tile0, tile1))
+    private val tile = FullTile(Color.BLACK)
 
-        assertThat(graphic.get(0)).isSameAs(tile0)
-        assertThat(graphic.get(1)).isSameAs(tile1)
+    @Test
+    fun `List of 2 tiles`() {
+        val graphic = Graphic(listOf(EmptyTile, tile))
+
+        assertThat(graphic.get(-1)).isSameAs(DEFAULT_GRAPHIC)
+        assertThat(graphic.get(0)).isSameAs(EmptyTile)
+        assertThat(graphic.get(1)).isSameAs(tile)
+        assertThat(graphic.get(2)).isSameAs(DEFAULT_GRAPHIC)
     }
 
     @Test
-    fun `Get default tile with invalid index`() {
+    fun `List of 1 tile`() {
         val graphic = Graphic(listOf(EmptyTile))
 
         assertThat(graphic.get(-1)).isSameAs(DEFAULT_GRAPHIC)
+        assertThat(graphic.get(0)).isSameAs(EmptyTile)
+        assertThat(graphic.get(1)).isSameAs(DEFAULT_GRAPHIC)
+    }
+
+    @Test
+    fun `Single tile constructor`() {
+        val graphic = Graphic(tile)
+
+        assertThat(graphic.get(-1)).isSameAs(DEFAULT_GRAPHIC)
+        assertThat(graphic.get(0)).isSameAs(tile)
         assertThat(graphic.get(1)).isSameAs(DEFAULT_GRAPHIC)
     }
 
