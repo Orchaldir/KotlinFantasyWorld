@@ -1,8 +1,11 @@
 package util.ecs
 
+import mu.KotlinLogging
 import util.ecs.storage.ComponentMap
 import util.ecs.storage.ComponentStorage
 import kotlin.reflect.KClass
+
+private val logger = KotlinLogging.logger {}
 
 class EcsBuilder(
     private val entityIds: MutableSet<Int>,
@@ -14,27 +17,27 @@ class EcsBuilder(
 
     constructor() : this(mutableSetOf(), mutableMapOf())
 
-    fun <T> register(type: KClass<*>): EcsBuilder {
+    fun <T> register(type: KClass<*>) {
         storageMap[type] = ComponentMap<T>(mapOf())
-        return this
     }
 
     inline fun <reified T : Any> register() = register<T>(T::class)
 
-    fun buildEntity(): EcsBuilder {
+    fun buildEntity(): Int {
+        logger.info("Add entity $entityId")
+        val lastId = entityId
         entityIds.add(entityId)
         entityId = getFirstFreeId()
         hasComponents = false
-        return this
+        return lastId
     }
 
-    fun <T> add(type: KClass<*>, component: T): EcsBuilder {
+    fun <T> add(type: KClass<*>, component: T) {
         hasComponents = true
         @Suppress("UNCHECKED_CAST")
         val storage =
             storageMap[type] as ComponentStorage<T>? ?: throw IllegalArgumentException("Type '$type' is unregistered!")
         storageMap[type] = storage.updateAndRemove(mapOf(entityId to component))
-        return this
     }
 
     inline fun <reified T : Any> add(component: T) = add(T::class, component)
@@ -53,6 +56,7 @@ class EcsBuilder(
 
     fun build(): EcsState {
         if (hasComponents) {
+            logger.warn("Did not call buildEntity() for entity $entityId!")
             entityIds.add(entityId)
         }
         return EcsState(entityIds, storageMap)

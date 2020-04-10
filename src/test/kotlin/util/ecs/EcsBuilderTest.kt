@@ -17,10 +17,11 @@ class EcsBuilderTest {
 
     @Test
     fun `Registering of component types`() {
-        val state = EcsBuilder()
-            .register<Int>()
-            .register<String>()
-            .build()
+        val state = with(EcsBuilder()) {
+            register<Int>()
+            register<String>()
+            build()
+        }
 
         assertNotNull(state.get<Int>())
         assertNotNull(state.get<String>())
@@ -33,12 +34,13 @@ class EcsBuilderTest {
 
     @Test
     fun `Creating an entity`() {
-        val state = EcsBuilder()
-            .register<Int>()
-            .register<String>()
-            .add(INT0)
-            .add(STRING0)
-            .build()
+        val state = with(EcsBuilder()) {
+            register<Int>()
+            register<String>()
+            add(INT0)
+            add(STRING0)
+            build()
+        }
 
         assertThat(state.entityIds).containsOnly(0)
         assertEntity(state, 0, INT0, STRING0)
@@ -46,15 +48,16 @@ class EcsBuilderTest {
 
     @Test
     fun `Creating 2 entities`() {
-        val state = EcsBuilder()
-            .register<Int>()
-            .register<String>()
-            .add(INT0)
-            .add(STRING0)
-            .buildEntity()
-            .add(INT1)
-            .add(STRING1)
-            .build()
+        val state = with(EcsBuilder()) {
+            register<Int>()
+            register<String>()
+            add(INT0)
+            add(STRING0)
+            assertThat(buildEntity()).isSameAs(0)
+            add(INT1)
+            add(STRING1)
+            build()
+        }
 
         assertThat(state.entityIds).containsOnly(0, 1)
         assertEntity(state, 0, INT0, STRING0)
@@ -63,15 +66,16 @@ class EcsBuilderTest {
 
     @Test
     fun `Skip used ids`() {
-        val state = EcsBuilder(mutableSetOf(0, 2), mutableMapOf())
-            .register<Int>()
-            .register<String>()
-            .add(INT0)
-            .add(STRING0)
-            .buildEntity()
-            .add(INT1)
-            .add(STRING1)
-            .build()
+        val state = with(EcsBuilder(mutableSetOf(0, 2), mutableMapOf())) {
+            register<Int>()
+            register<String>()
+            add(INT0)
+            add(STRING0)
+            assertThat(buildEntity()).isSameAs(1)
+            add(INT1)
+            add(STRING1)
+            build()
+        }
 
         assertThat(state.entityIds).containsOnly(0, 1, 2, 3)
         assertEntity(state, 1, INT0, STRING0)

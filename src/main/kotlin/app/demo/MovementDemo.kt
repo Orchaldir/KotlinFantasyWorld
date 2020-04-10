@@ -37,16 +37,16 @@ class MovementDemo : TileApplication() {
             .setTerrain(25, 19, Terrain.FLOOR)
             .build()
 
-        ecsState = EcsBuilder()
-            .register<Body>()
-            .register<Graphic>()
-            .add(SimpleBody(size.getIndex(10, 5)) as Body)
-            .add(Graphic(UnicodeTile("@", Color.BLUE)))
-            .buildEntity()
-            .add(BigBody(size.getIndex(10, 25), 4) as Body)
-            .add(Graphic(UnicodeTile("D", Color.RED)))
-            .buildEntity()
-            .add(
+        ecsState = with(EcsBuilder()) {
+            register<Body>()
+            register<Graphic>()
+            add(SimpleBody(size.getIndex(10, 5)) as Body)
+            add(Graphic(UnicodeTile("@", Color.BLUE)))
+            buildEntity()
+            add(BigBody(size.getIndex(10, 25), 4) as Body)
+            add(Graphic(UnicodeTile("D", Color.RED)))
+            buildEntity()
+            add(
                 SnakeBody(
                     listOf(
                         size.getIndex(49, 5),
@@ -57,8 +57,9 @@ class MovementDemo : TileApplication() {
                     )
                 ) as Body
             )
-            .add(Graphic(UnicodeTile("S", Color.GREEN)))
-            .build()
+            add(Graphic(UnicodeTile("S", Color.GREEN)))
+            build()
+        }
 
         render()
     }
