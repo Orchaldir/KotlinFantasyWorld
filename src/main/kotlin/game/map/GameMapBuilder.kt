@@ -61,11 +61,19 @@ class GameMapBuilder(
         return this
     }
 
-    fun setEntity(x: Int, y: Int, entity: Int) = setEntity(size.getIndex(x, y), entity)
+    fun setEntity(index: Int, entity: Int, size: Int): GameMapBuilder {
+        val indices = this.size.getIndices(index, size)
+
+        if (indices.isEmpty()) {
+            throw IllegalArgumentException("Can not set entity $entity at index $index with size $size!")
+        }
+
+        indices.forEach { i -> setEntity(i, entity) }
+
+        return this
+    }
 
     fun getEntity(index: Int) = entities[index]
-
-    fun getEntity(x: Int, y: Int) = getEntity(size.getIndex(x, y))
 
     fun removeEntity(index: Int, entity: Int): GameMapBuilder {
         val removed = entities.remove(index)
@@ -76,6 +84,4 @@ class GameMapBuilder(
 
         return this
     }
-
-    fun removeEntity(x: Int, y: Int, entity: Int) = removeEntity(size.getIndex(x, y), entity)
 }

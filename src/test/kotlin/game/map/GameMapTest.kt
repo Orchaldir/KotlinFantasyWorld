@@ -24,7 +24,7 @@ class GameMapTest {
     @Test
     fun `Entity can walk in its own cell`() {
         val map = GameMapBuilder(2, 1, FLOOR)
-            .setEntity(0, 0, ENTITY0)
+            .setEntity(0, ENTITY0)
             .build()
 
         assertTrue(map.isWalkable(0, ENTITY0))
@@ -33,7 +33,7 @@ class GameMapTest {
     @Test
     fun `Entity is blocked by another entity`() {
         val map = GameMapBuilder(2, 1, FLOOR)
-            .setEntity(0, 0, ENTITY0)
+            .setEntity(0, ENTITY0)
             .build()
 
         assertFalse(map.isWalkable(0, ENTITY1))

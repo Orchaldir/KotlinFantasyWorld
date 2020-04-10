@@ -98,26 +98,58 @@ class GameMapBuilderTest {
         @Test
         fun `Set entity on map`() {
             val builder = GameMapBuilder(2, 2, FLOOR)
-                .setEntity(1, 0, ENTITY0)
+                .setEntity(1, ENTITY0)
 
-            assertThat(builder.getEntity(1, 0)).isSameAs(ENTITY0)
+            assertThat(builder.getEntity(1)).isSameAs(ENTITY0)
+        }
+
+        @Test
+        fun `Set entity of size 2`() {
+            val builder = GameMapBuilder(2, 3, FLOOR)
+                .setEntity(index = 2, entity = ENTITY0, size = 2)
+
+            assertThat(builder.getEntity(2)).isSameAs(ENTITY0)
+            assertThat(builder.getEntity(3)).isSameAs(ENTITY0)
+            assertThat(builder.getEntity(4)).isSameAs(ENTITY0)
+            assertThat(builder.getEntity(5)).isSameAs(ENTITY0)
         }
 
         @Test
         fun `Overwrite entity with itself`() {
             val builder = GameMapBuilder(2, 2, FLOOR)
-                .setEntity(1, 0, ENTITY0)
-                .setEntity(1, 0, ENTITY0)
+                .setEntity(1, ENTITY0)
+                .setEntity(1, ENTITY0)
 
-            assertThat(builder.getEntity(1, 0)).isSameAs(ENTITY0)
+            assertThat(builder.getEntity(1)).isSameAs(ENTITY0)
+        }
+
+        @Test
+        fun `Overwrite entity of size 2 with itself`() {
+            val builder = GameMapBuilder(2, 2, FLOOR)
+                .setEntity(2, ENTITY0)
+                .setEntity(index = 0, entity = ENTITY0, size = 2)
+
+            assertThat(builder.getEntity(0)).isSameAs(ENTITY0)
+            assertThat(builder.getEntity(1)).isSameAs(ENTITY0)
+            assertThat(builder.getEntity(2)).isSameAs(ENTITY0)
+            assertThat(builder.getEntity(3)).isSameAs(ENTITY0)
         }
 
         @Test
         fun `Overwrite other entity`() {
             assertFailsWith<IllegalArgumentException>("Overwritten entity $ENTITY0 with $ENTITY1 at index 1!") {
                 GameMapBuilder(2, 2, FLOOR)
-                    .setEntity(1, 0, ENTITY0)
-                    .setEntity(1, 0, ENTITY1)
+                    .setEntity(1, ENTITY0)
+                    .setEntity(1, ENTITY1)
+            }
+        }
+
+        @Test
+        fun `Overwrite other entity with size 2`() {
+            assertFailsWith<IllegalArgumentException>("Overwritten entity $ENTITY0 with $ENTITY1 at index 1!") {
+                GameMapBuilder(2, 2, FLOOR)
+                    .setEntity(1, ENTITY0)
+                    .setEntity(index = 0, entity = ENTITY1, size = 2)
             }
         }
 
@@ -129,17 +161,17 @@ class GameMapBuilderTest {
         @Test
         fun `Remove entity from map`() {
             val builder = GameMapBuilder(2, 2, FLOOR)
-                .setEntity(1, 0, ENTITY0)
-                .removeEntity(1, 0, ENTITY0)
+                .setEntity(1, ENTITY0)
+                .removeEntity(1, ENTITY0)
 
-            assertNull(builder.getEntity(1, 0))
+            assertNull(builder.getEntity(1))
         }
 
         @Test
         fun `Remove entity that is not there`() {
             assertFailsWith<IllegalArgumentException>("Removed null instead of $ENTITY0 at index 1!") {
                 GameMapBuilder(2, 2, FLOOR)
-                    .removeEntity(1, 0, ENTITY0)
+                    .removeEntity(1, ENTITY0)
             }
         }
 
@@ -147,8 +179,8 @@ class GameMapBuilderTest {
         fun `Remove wrong entity`() {
             assertFailsWith<IllegalArgumentException>("Removed $ENTITY0 instead of $ENTITY1 at index 3!") {
                 GameMapBuilder(2, 2, FLOOR)
-                    .setEntity(1, 1, ENTITY0)
-                    .removeEntity(1, 1, ENTITY1)
+                    .setEntity(3, ENTITY0)
+                    .removeEntity(3, ENTITY1)
             }
         }
 
