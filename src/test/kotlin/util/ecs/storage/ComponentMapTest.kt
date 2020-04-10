@@ -3,7 +3,7 @@ package util.ecs.storage
 import assertk.assertThat
 import assertk.assertions.containsOnly
 import assertk.assertions.isSameAs
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue

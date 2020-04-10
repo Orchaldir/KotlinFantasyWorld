@@ -4,9 +4,9 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import javafx.scene.paint.Color
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import util.rendering.Renderer
-import kotlin.test.BeforeTest
-import kotlin.test.Test
 
 private const val START_X = 100
 private const val START_Y = 200
@@ -19,7 +19,7 @@ class TileRendererTest {
     private lateinit var renderer: Renderer
     private lateinit var tileRenderer: TileRenderer
 
-    @BeforeTest
+    @BeforeEach
     fun setup() {
         renderer = mock()
         tileRenderer = TileRenderer(

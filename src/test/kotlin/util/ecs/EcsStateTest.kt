@@ -3,7 +3,7 @@ package util.ecs
 import assertk.assertThat
 import assertk.assertions.isSameAs
 import io.mockk.mockk
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import util.ecs.storage.ComponentStorage
 import kotlin.test.assertNull
 

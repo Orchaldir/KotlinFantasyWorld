@@ -3,7 +3,7 @@ package game.component
 import assertk.assertThat
 import assertk.assertions.isSameAs
 import javafx.scene.paint.Color
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import util.rendering.tile.EmptyTile
 import util.rendering.tile.FullTile
 

@@ -2,7 +2,7 @@ package game.map
 
 import game.map.Terrain.FLOOR
 import game.map.Terrain.WALL
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 

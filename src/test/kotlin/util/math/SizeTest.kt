@@ -2,7 +2,7 @@ package util.math
 
 import assertk.assertThat
 import assertk.assertions.isSameAs
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
