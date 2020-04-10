@@ -22,6 +22,22 @@ data class GameMap(
         }
     }
 
+    fun isWalkable(index: Int, size: Int, entity: Int): Boolean {
+        val indices = this.size.getIndices(index, size)
+
+        if (indices.isEmpty()) {
+            return false
+        }
+
+        indices.forEach { i ->
+            if (!isWalkable(i, entity)) {
+                return false
+            }
+        }
+
+        return true
+    }
+
     fun render(renderer: TileRenderer, startX: Int, startY: Int) {
         var index = 0
         for (y in startY until startY + size.y) {
