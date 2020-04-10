@@ -4,15 +4,18 @@ import util.math.Size
 
 class GameMapBuilder(
     val size: Size,
-    private val terrainList: MutableList<Terrain>
+    private val terrainList: MutableList<Terrain>,
+    private val entities: MutableMap<Int, Int>
 ) {
     constructor(size: Size, terrain: Terrain) :
-            this(size, MutableList(size.getCells()) { terrain })
+            this(size, MutableList(size.getCells()) { terrain }, mutableMapOf())
 
     constructor(x: Int, y: Int, terrain: Terrain) :
             this(Size(x, y), terrain)
 
-    fun build(): GameMap = GameMap(size, terrainList)
+    fun build(): GameMap = GameMap(size, terrainList, entities)
+
+    // terrain
 
     fun addBorder(terrain: Terrain) = addRectangle(0, 0, size.x, size.y, terrain)
 
@@ -43,6 +46,13 @@ class GameMapBuilder(
 
     fun setTerrain(x: Int, y: Int, terrain: Terrain): GameMapBuilder {
         terrainList[size.getIndex(x, y)] = terrain
+        return this
+    }
+
+    // entities
+
+    fun setEntity(x: Int, y: Int, entity: Int): GameMapBuilder {
+        entities[size.getIndex(x, y)] = entity
         return this
     }
 }

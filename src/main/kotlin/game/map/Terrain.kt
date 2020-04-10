@@ -2,5 +2,7 @@ package game.map
 
 enum class Terrain {
     FLOOR,
-    WALL,
+    WALL;
+
+    fun isWalkable() = this == FLOOR
 }
