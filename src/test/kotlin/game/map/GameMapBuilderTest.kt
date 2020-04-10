@@ -168,6 +168,18 @@ class GameMapBuilderTest {
         }
 
         @Test
+        fun `Remove entity with size 2`() {
+            val builder = GameMapBuilder(2, 2, FLOOR)
+                .setEntity(index = 0, entity = ENTITY0, size = 2)
+                .removeEntity(index = 0, entity = ENTITY0, size = 2)
+
+            assertNull(builder.getEntity(0))
+            assertNull(builder.getEntity(1))
+            assertNull(builder.getEntity(2))
+            assertNull(builder.getEntity(3))
+        }
+
+        @Test
         fun `Remove entity that is not there`() {
             assertFailsWith<IllegalArgumentException>("Removed null instead of $ENTITY0 at index 1!") {
                 GameMapBuilder(2, 2, FLOOR)
@@ -181,6 +193,15 @@ class GameMapBuilderTest {
                 GameMapBuilder(2, 2, FLOOR)
                     .setEntity(3, ENTITY0)
                     .removeEntity(3, ENTITY1)
+            }
+        }
+
+        @Test
+        fun `Remove wrong entity with size 2`() {
+            assertFailsWith<IllegalArgumentException>("Removed $ENTITY0 instead of $ENTITY1 at index 0!") {
+                GameMapBuilder(2, 2, FLOOR)
+                    .setEntity(index = 0, entity = ENTITY0, size = 2)
+                    .removeEntity(index = 0, entity = ENTITY1, size = 2)
             }
         }
 

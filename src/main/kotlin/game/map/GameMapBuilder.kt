@@ -84,4 +84,16 @@ class GameMapBuilder(
 
         return this
     }
+
+    fun removeEntity(index: Int, entity: Int, size: Int): GameMapBuilder {
+        val indices = this.size.getIndices(index, size)
+
+        if (indices.isEmpty()) {
+            throw IllegalArgumentException("Can not remove entity $entity at index $index with size $size!")
+        }
+
+        indices.forEach { i -> removeEntity(i, entity) }
+
+        return this
+    }
 }
