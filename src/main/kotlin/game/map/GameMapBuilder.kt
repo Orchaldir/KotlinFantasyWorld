@@ -8,7 +8,7 @@ class GameMapBuilder(
     private val entities: MutableMap<Int, Int>
 ) {
     constructor(size: Size, terrain: Terrain) :
-            this(size, MutableList(size.getCells()) { terrain }, mutableMapOf())
+            this(size, MutableList(size.cells) { terrain }, mutableMapOf())
 
     constructor(x: Int, y: Int, terrain: Terrain) :
             this(Size(x, y), terrain)

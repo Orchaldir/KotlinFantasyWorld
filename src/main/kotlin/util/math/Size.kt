@@ -8,30 +8,62 @@ class Size(
 ) {
     val x = requireGreater(x, 0, "x")
     val y = requireGreater(y, 0, "y")
-
-    fun getCells(): Int = x * y
+    val cells: Int
+        get() = x * y
 
     fun getIndex(x: Int, y: Int): Int {
         requireInside(x, y)
         return y * this.x + x
     }
 
-    fun getX(index: Int): Int {
-        requireInside(index)
-        return index % x
+    fun getIndices(index: Int, size: Int): List<Int> {
+        if (!isAreaInside(index, size)) {
+            return emptyList()
+        }
+
+        val indices = mutableListOf<Int>()
+
+        for (dy in 0 until size) {
+            var currentIndex = index + dy * x
+
+            for (dx in 0 until size) {
+                indices.add(currentIndex++)
+            }
+        }
+
+        return indices
     }
 
-    fun getY(index: Int): Int {
-        requireInside(index)
-        return index / x
+    fun getX(index: Int) = index % x
+
+    fun getY(index: Int) = index / x
+
+    fun getPos(index: Int) = Pair(getX(index), getY(index))
+
+    // inside check
+
+    fun isInside(index: Int) = index in 0 until cells
+
+    fun isInside(x: Int, y: Int) = isInsideForX(x) && isInsideForY(y)
+
+    fun isAreaInside(index: Int, size: Int): Boolean {
+        val (startX, startY) = getPos(index)
+        val endX = startX + size - 1
+        val endY = startY + size - 1
+
+        return isInside(startX, startY) && isInside(endX, endY)
     }
+
+    fun isInsideForX(x: Int) = x in 0 until this.x
+
+    fun isInsideForY(y: Int) = y in 0 until this.y
 
     private fun requireInside(x: Int, y: Int) {
-        require(x in 0 until this.x) { "x=$x must be inside!" }
-        require(y in 0 until this.y) { "y=$y must be inside!" }
+        require(isInsideForX(x)) { "x=$x must be inside!" }
+        require(isInsideForY(y)) { "y=$y must be inside!" }
     }
 
     private fun requireInside(index: Int) {
-        require(index in 0 until getCells()) { "index=$index must be inside!" }
+        require(isInside(index)) { "index=$index must be inside!" }
     }
 }
