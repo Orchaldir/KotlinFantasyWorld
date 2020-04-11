@@ -1,6 +1,8 @@
 package game.reducer
 
 import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.isNotSameAs
 import assertk.assertions.isSameAs
 import game.component.BigBody
 import game.component.SimpleBody
@@ -14,6 +16,7 @@ import util.math.Direction.NORTH
 import util.math.Direction.WEST
 import util.math.Size
 import kotlin.test.assertNull
+import kotlin.test.fail
 
 private const val ENTITY = 1
 private val MAP = GameMapBuilder(3, 3, FLOOR)
@@ -98,7 +101,7 @@ class MoveReducerTest {
     }
 
     @Nested
-    inner class UpdateEntityOnMap {
+    inner class UpdateMap {
 
         @Test
         fun `Update a simple body on the map`() {
@@ -107,7 +110,7 @@ class MoveReducerTest {
                 .setEntity(4, ENTITY)
                 .build()
 
-            val newMap = updateEntityOnMap(map, ENTITY, body, 1)
+            val newMap = updateMap(map, ENTITY, body, 1)
 
             assertNull(newMap.entities[4])
             assertThat(newMap.entities[1]).isSameAs(ENTITY)
@@ -120,7 +123,7 @@ class MoveReducerTest {
                 .setEntity(index = 4, entity = ENTITY, size = 2)
                 .build()
 
-            val newMap = updateEntityOnMap(map, ENTITY, body, 1)
+            val newMap = updateMap(map, ENTITY, body, 1)
 
             assertThat(newMap.entities[1]).isSameAs(ENTITY)
             assertThat(newMap.entities[2]).isSameAs(ENTITY)
@@ -140,7 +143,7 @@ class MoveReducerTest {
                 .setEntity(6, ENTITY)
                 .build()
 
-            val newMap = updateEntityOnMap(map, ENTITY, body, 1)
+            val newMap = updateMap(map, ENTITY, body, 1)
 
             assertThat(newMap.entities[1]).isSameAs(ENTITY)
             assertThat(newMap.entities[4]).isSameAs(ENTITY)
@@ -158,12 +161,59 @@ class MoveReducerTest {
                 .setEntity(6, ENTITY)
                 .build()
 
-            val newMap = updateEntityOnMap(map, ENTITY, body, 1)
+            val newMap = updateMap(map, ENTITY, body, 1)
 
             assertThat(newMap.entities[1]).isSameAs(ENTITY)
             assertThat(newMap.entities[4]).isSameAs(ENTITY)
             assertThat(newMap.entities[3]).isSameAs(ENTITY)
             assertThat(newMap.entities[6]).isSameAs(ENTITY)
+        }
+    }
+
+    @Nested
+    inner class UpdateBody {
+
+        @Test
+        fun `Update a simple body`() {
+            val body = SimpleBody(4)
+            val newBody = updateBody(body, 1)
+
+            assertThat(newBody).isNotSameAs(body)
+
+            if (newBody is SimpleBody) {
+                assertThat(newBody.position).isSameAs(1)
+            } else {
+                fail("Wrong body type!")
+            }
+        }
+
+        @Test
+        fun `Update a big body`() {
+            val body = BigBody(4, 2)
+            val newBody = updateBody(body, 1)
+
+            assertThat(newBody).isNotSameAs(body)
+
+            if (newBody is BigBody) {
+                assertThat(newBody.position).isSameAs(1)
+                assertThat(newBody.size).isSameAs(2)
+            } else {
+                fail("Wrong body type!")
+            }
+        }
+
+        @Test
+        fun `Update a snake body`() {
+            val body = SnakeBody(listOf(4, 3, 6))
+            val newBody = updateBody(body, 1)
+
+            assertThat(newBody).isNotSameAs(body)
+
+            if (newBody is SnakeBody) {
+                assertThat(newBody.positions).containsExactly(1, 4, 3)
+            } else {
+                fail("Wrong body type!")
+            }
         }
     }
 }

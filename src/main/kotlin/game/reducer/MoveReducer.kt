@@ -18,53 +18,59 @@ val MOVE_REDUCER: Reducer<MoveAction, EcsState> = { state, action ->
     val newPosition = getNewPosition(map, action.entity, body, action.direction)
 
     if (newPosition != null) {
-        val newMap = updateEntityOnMap(map, action.entity, body, newPosition)
+        val newMap = updateMap(map, action.entity, body, newPosition)
     }
 
     state
 }
 
-fun getNewPosition(map: GameMap, entity: Int, body: Body, direction: Direction): Int? {
-    return when (body) {
-        is SimpleBody -> map.size.getNeighbor(body.position, direction)?.takeIf {
-            map.isWalkable(
-                index = it,
-                entity = entity
-            )
-        }
-        is BigBody -> map.size.getNeighbor(body.position, direction)?.takeIf {
-            map.isWalkable(
-                index = it,
-                size = body.size,
-                entity = entity
-            )
-        }
-        is SnakeBody -> map.size.getNeighbor(body.positions.first(), direction)?.takeIf {
-            map.isWalkable(
-                index = it,
-                entity = entity
-            )
-        }
+fun getNewPosition(map: GameMap, entity: Int, body: Body, direction: Direction) = when (body) {
+    is SimpleBody -> map.size.getNeighbor(body.position, direction)?.takeIf {
+        map.isWalkable(
+            index = it,
+            entity = entity
+        )
+    }
+    is BigBody -> map.size.getNeighbor(body.position, direction)?.takeIf {
+        map.isWalkable(
+            index = it,
+            size = body.size,
+            entity = entity
+        )
+    }
+    is SnakeBody -> map.size.getNeighbor(body.positions.first(), direction)?.takeIf {
+        map.isWalkable(
+            index = it,
+            entity = entity
+        )
     }
 }
 
-fun updateEntityOnMap(map: GameMap, entity: Int, body: Body, position: Int): GameMap {
-    return when (body) {
-        is SimpleBody -> map.builder()
-            .removeEntity(index = body.position, entity = entity)
-            .setEntity(index = position, entity = entity)
-            .build()
-        is BigBody -> map.builder()
-            .removeEntity(index = body.position, entity = entity, size = body.size)
-            .setEntity(index = position, entity = entity, size = body.size)
-            .build()
-        is SnakeBody -> with(map.builder()) {
-            val last = body.positions.last()
-            if (body.positions.count { i -> i == last } == 1) {
-                removeEntity(index = last, entity = entity)
-            }
-            setEntity(index = position, entity = entity)
-            build()
+fun updateMap(map: GameMap, entity: Int, body: Body, position: Int) = when (body) {
+    is SimpleBody -> map.builder()
+        .removeEntity(index = body.position, entity = entity)
+        .setEntity(index = position, entity = entity)
+        .build()
+    is BigBody -> map.builder()
+        .removeEntity(index = body.position, entity = entity, size = body.size)
+        .setEntity(index = position, entity = entity, size = body.size)
+        .build()
+    is SnakeBody -> with(map.builder()) {
+        val last = body.positions.last()
+        if (body.positions.count { i -> i == last } == 1) {
+            removeEntity(index = last, entity = entity)
         }
+        setEntity(index = position, entity = entity)
+        build()
+    }
+}
+
+fun updateBody(body: Body, position: Int) = when (body) {
+    is SimpleBody -> SimpleBody(position)
+    is BigBody -> BigBody(position, body.size)
+    is SnakeBody -> {
+        val positions = body.positions.toMutableList()
+        positions.removeAt(positions.lastIndex)
+        SnakeBody(listOf(position) + positions)
     }
 }
