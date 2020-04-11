@@ -18,7 +18,6 @@ import util.rendering.tile.UnicodeTile
 private val logger = KotlinLogging.logger {}
 
 class MovementDemo : TileApplication() {
-    private lateinit var gameMap: GameMap
     private lateinit var ecsState: EcsState
 
     override fun start(primaryStage: Stage) {
@@ -30,7 +29,7 @@ class MovementDemo : TileApplication() {
         logger.info("create(): tiles={}", tiles)
 
         val size = Size(columns, rows)
-        gameMap = GameMapBuilder(size, Terrain.FLOOR)
+        val gameMap = GameMapBuilder(size, Terrain.FLOOR)
             .addBorder(Terrain.WALL)
             .addRectangle(20, 10, 10, 10, Terrain.WALL)
             .addRectangle(40, 25, 10, 10, Terrain.WALL)
@@ -38,6 +37,7 @@ class MovementDemo : TileApplication() {
             .build()
 
         ecsState = with(EcsBuilder()) {
+            addData(gameMap)
             register<Body>()
             register<Graphic>()
             add(SimpleBody(size.getIndex(10, 5)) as Body)
@@ -68,7 +68,7 @@ class MovementDemo : TileApplication() {
     private fun render() {
         logger.info("render()")
 
-        gameMap.render(tileRenderer, 0, 0)
+        ecsState.getData<GameMap>()?.render(tileRenderer, 0, 0)
 
         renderEntities()
 

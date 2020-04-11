@@ -9,13 +9,14 @@ private val logger = KotlinLogging.logger {}
 
 class EcsBuilder(
     private val entityIds: MutableSet<Int>,
-    private val storageMap: MutableMap<KClass<*>, ComponentStorage<*>>
+    private val storageMap: MutableMap<KClass<*>, ComponentStorage<*>>,
+    private val dataMap: MutableMap<KClass<*>, Any>
 ) {
     var entityId = getFirstFreeId()
         private set
     private var hasComponents = false
 
-    constructor() : this(mutableSetOf(), mutableMapOf())
+    constructor() : this(mutableSetOf(), mutableMapOf(), mutableMapOf())
 
     fun <T> register(type: KClass<*>) {
         storageMap[type] = ComponentMap<T>(mapOf())
@@ -54,12 +55,20 @@ class EcsBuilder(
         return maxId + 1
     }
 
+    // data
+
+    fun <T : Any> addData(type: KClass<*>, data: T) {
+        dataMap[type] = data
+    }
+
+    inline fun <reified T : Any> addData(data: T) = addData(T::class, data)
+
     fun build(): EcsState {
         if (hasComponents) {
             logger.warn("Did not call buildEntity() for entity $entityId!")
             entityIds.add(entityId)
         }
-        return EcsState(entityIds, storageMap)
+        return EcsState(entityIds, storageMap, dataMap)
     }
 
 }
