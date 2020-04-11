@@ -42,6 +42,11 @@ data class GameMap(
         var index = 0
         for (y in startY until startY + size.y) {
             for (x in startX until startX + size.x) {
+                if (entities.containsKey(index)) {
+                    index++
+                    continue
+                }
+
                 val terrain = terrainList[index++]
                 val symbol = if (terrain == Terrain.FLOOR) {
                     "."
