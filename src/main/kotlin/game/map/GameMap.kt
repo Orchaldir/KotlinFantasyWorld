@@ -54,4 +54,6 @@ data class GameMap(
         }
     }
 
+    fun builder() = GameMapBuilder(size, terrainList.toMutableList(), entities.toMutableMap())
+
 }

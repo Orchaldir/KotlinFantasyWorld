@@ -14,6 +14,13 @@ val MOVE_REDUCER: Reducer<MoveAction, EcsState> = { state, action ->
     val map = state.getData<GameMap>() ?: throw IllegalStateException("No map!")
     val bodyStorage = state.get<Body>() ?: throw IllegalStateException("No body storage!")
     val body = bodyStorage[action.entity] ?: throw IllegalStateException("Entity ${action.entity} has no body!")
+
+    val newPosition = getNewPosition(map, action.entity, body, action.direction)
+
+    if (newPosition != null) {
+        val newMap = updateEntityOnMap(map, action.entity, body, newPosition)
+    }
+
     state
 }
 
@@ -37,6 +44,27 @@ fun getNewPosition(map: GameMap, entity: Int, body: Body, direction: Direction):
                 index = it,
                 entity = entity
             )
+        }
+    }
+}
+
+fun updateEntityOnMap(map: GameMap, entity: Int, body: Body, position: Int): GameMap {
+    return when (body) {
+        is SimpleBody -> map.builder()
+            .removeEntity(index = body.position, entity = entity)
+            .setEntity(index = position, entity = entity)
+            .build()
+        is BigBody -> map.builder()
+            .removeEntity(index = body.position, entity = entity, size = body.size)
+            .setEntity(index = position, entity = entity, size = body.size)
+            .build()
+        is SnakeBody -> with(map.builder()) {
+            val last = body.positions.last()
+            if (body.positions.count { i -> i == last } == 1) {
+                removeEntity(index = last, entity = entity)
+            }
+            setEntity(index = position, entity = entity)
+            build()
         }
     }
 }
