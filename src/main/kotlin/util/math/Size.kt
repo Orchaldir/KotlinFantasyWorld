@@ -1,5 +1,6 @@
 package util.math
 
+import util.math.Direction.*
 import util.requireGreater
 
 class Size(
@@ -39,6 +40,27 @@ class Size(
     fun getY(index: Int) = index / x
 
     fun getPos(index: Int) = Pair(getX(index), getY(index))
+
+    fun getNeighbor(index: Int, direction: Direction): Int? {
+        return when (direction) {
+            NORTH -> getOffset(index, 0, -1)
+            EAST -> getOffset(index, 1, 0)
+            SOUTH -> getOffset(index, 0, 1)
+            WEST -> getOffset(index, -1, 0)
+        }
+    }
+
+    private fun getOffset(index: Int, deltaX: Int, deltaY: Int): Int? {
+        val (x, y) = getPos(index)
+        val offsetX = x + deltaX
+        val offsetY = y + deltaY
+
+        return if (isInside(offsetX, offsetY)) {
+            getIndex(offsetX, offsetY)
+        } else {
+            null
+        }
+    }
 
     // inside check
 

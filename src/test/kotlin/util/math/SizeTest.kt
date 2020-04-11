@@ -6,10 +6,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isSameAs
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 private val size = Size(2, 3)
 
@@ -93,6 +90,28 @@ class SizeTest {
             assertThat(size.getY(3)).isSameAs(1)
             assertThat(size.getY(4)).isSameAs(2)
             assertThat(size.getY(5)).isSameAs(2)
+        }
+    }
+
+    @Nested
+    inner class GetNeighbor {
+
+        private val size = Size(3, 3)
+
+        @Test
+        fun `Get each neighbors`() {
+            assertThat(size.getNeighbor(4, Direction.NORTH)).isSameAs(1)
+            assertThat(size.getNeighbor(4, Direction.EAST)).isSameAs(5)
+            assertThat(size.getNeighbor(4, Direction.SOUTH)).isSameAs(7)
+            assertThat(size.getNeighbor(4, Direction.WEST)).isSameAs(3)
+        }
+
+        @Test
+        fun `No neighbor outside map`() {
+            assertNull(size.getNeighbor(1, Direction.NORTH))
+            assertNull(size.getNeighbor(5, Direction.EAST))
+            assertNull(size.getNeighbor(7, Direction.SOUTH))
+            assertNull(size.getNeighbor(3, Direction.WEST))
         }
     }
 
