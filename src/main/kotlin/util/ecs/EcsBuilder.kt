@@ -14,27 +14,28 @@ class EcsBuilder(
 ) {
     var entityId = getFirstFreeId()
         private set
-    private var hasComponents = false
+    private var numberOfComponents = 0
 
     constructor() : this(mutableSetOf(), mutableMapOf(), mutableMapOf())
 
-    fun <T> register(type: KClass<*>) {
+    fun <T> registerComponent(type: KClass<*>) {
+        logger.info("Register component ${type.simpleName}")
         storageMap[type] = ComponentMap<T>(mapOf())
     }
 
-    inline fun <reified T : Any> register() = register<T>(T::class)
+    inline fun <reified T : Any> registerComponent() = registerComponent<T>(T::class)
 
     fun buildEntity(): Int {
-        logger.info("Add entity $entityId")
+        logger.info("Add entity $entityId with $numberOfComponents components")
         val lastId = entityId
         entityIds.add(entityId)
         entityId = getFirstFreeId()
-        hasComponents = false
+        numberOfComponents = 0
         return lastId
     }
 
     fun <T> add(type: KClass<*>, component: T) {
-        hasComponents = true
+        numberOfComponents++
         @Suppress("UNCHECKED_CAST")
         val storage =
             storageMap[type] as ComponentStorage<T>? ?: throw IllegalArgumentException("Type '$type' is unregistered!")
@@ -58,13 +59,14 @@ class EcsBuilder(
     // data
 
     fun <T : Any> addData(type: KClass<*>, data: T) {
+        logger.info("Add data for ${type.simpleName}")
         dataMap[type] = data
     }
 
     inline fun <reified T : Any> addData(data: T) = addData(T::class, data)
 
     fun build(): EcsState {
-        if (hasComponents) {
+        if (numberOfComponents > 0) {
             logger.warn("Did not call buildEntity() for entity $entityId!")
             entityIds.add(entityId)
         }

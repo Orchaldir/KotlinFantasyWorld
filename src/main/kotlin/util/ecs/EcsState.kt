@@ -4,12 +4,10 @@ import util.ecs.storage.ComponentStorage
 import kotlin.reflect.KClass
 
 class EcsState(
-    val entityIds: Set<Int>,
-    private val storageMap: Map<KClass<*>, ComponentStorage<*>>,
-    private val dataMap: Map<KClass<*>, Any>
+    val entityIds: Set<Int> = emptySet(),
+    private val storageMap: Map<KClass<*>, ComponentStorage<*>> = emptyMap(),
+    private val dataMap: Map<KClass<*>, Any> = emptyMap()
 ) {
-
-    constructor(storageMap: Map<KClass<*>, ComponentStorage<*>>) : this(mutableSetOf(), storageMap, mapOf())
 
     fun <T> get(type: KClass<*>): ComponentStorage<T>? {
         val storage = storageMap[type]
@@ -29,9 +27,23 @@ class EcsState(
 
     inline fun <reified T : Any> getData(): T? = getData(T::class)
 
-    fun copy(updated: Map<KClass<*>, ComponentStorage<*>>): EcsState {
-        val newStorageMap = storageMap + updated
-        return EcsState(entityIds, newStorageMap, dataMap)
+    fun copy(
+        updatedStorageMap: Map<KClass<*>, ComponentStorage<*>> = emptyMap(),
+        updatedDataMap: Map<KClass<*>, Any> = emptyMap()
+    ): EcsState {
+        val newStorageMap = if (updatedStorageMap.isEmpty()) {
+            storageMap
+        } else {
+            storageMap + updatedStorageMap
+        }
+
+        val newDataMap = if (updatedDataMap.isEmpty()) {
+            dataMap
+        } else {
+            dataMap + updatedDataMap
+        }
+
+        return EcsState(entityIds, newStorageMap, newDataMap)
     }
 
 }

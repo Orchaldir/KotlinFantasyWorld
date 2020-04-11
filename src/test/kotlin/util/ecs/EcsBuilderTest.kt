@@ -23,8 +23,8 @@ class EcsBuilderTest {
         @Test
         fun `Registering of component types`() {
             val state = with(EcsBuilder()) {
-                register<Int>()
-                register<String>()
+                registerComponent<Int>()
+                registerComponent<String>()
                 build()
             }
 
@@ -44,8 +44,8 @@ class EcsBuilderTest {
         @Test
         fun `Creating an entity`() {
             val state = with(EcsBuilder()) {
-                register<Int>()
-                register<String>()
+                registerComponent<Int>()
+                registerComponent<String>()
                 add(INT0)
                 add(STRING0)
                 build()
@@ -58,8 +58,8 @@ class EcsBuilderTest {
         @Test
         fun `Creating 2 entities`() {
             val state = with(EcsBuilder()) {
-                register<Int>()
-                register<String>()
+                registerComponent<Int>()
+                registerComponent<String>()
                 add(INT0)
                 add(STRING0)
                 assertThat(buildEntity()).isSameAs(0)
@@ -76,8 +76,8 @@ class EcsBuilderTest {
         @Test
         fun `Skip used ids`() {
             val state = with(EcsBuilder(mutableSetOf(0, 2), mutableMapOf(), mutableMapOf())) {
-                register<Int>()
-                register<String>()
+                registerComponent<Int>()
+                registerComponent<String>()
                 add(INT0)
                 add(STRING0)
                 assertThat(buildEntity()).isSameAs(1)

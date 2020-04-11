@@ -38,8 +38,8 @@ class MovementDemo : TileApplication() {
 
         ecsState = with(EcsBuilder()) {
             addData(gameMap)
-            register<Body>()
-            register<Graphic>()
+            registerComponent<Body>()
+            registerComponent<Graphic>()
             add(SimpleBody(size.getIndex(10, 5)) as Body)
             add(Graphic(UnicodeTile("@", Color.BLUE)))
             buildEntity()
