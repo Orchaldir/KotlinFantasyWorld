@@ -3,7 +3,7 @@ package util.rendering
 import javafx.scene.paint.Color
 
 interface Renderer {
-    fun clear(x: Int, y: Int, width: Int, height: Int)
+    fun clear()
 
     fun renderUnicode(text: String, centerX: Int, centerY: Int)
     fun renderRectangle(x: Int, y: Int, width: Int, height: Int)

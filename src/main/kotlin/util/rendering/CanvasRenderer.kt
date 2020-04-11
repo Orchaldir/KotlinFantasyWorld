@@ -9,8 +9,10 @@ import javafx.scene.text.TextAlignment
 class CanvasRenderer(
     private val graphicsContext: GraphicsContext
 ) : Renderer {
-    override fun clear(x: Int, y: Int, width: Int, height: Int) =
-        graphicsContext.clearRect(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
+    override fun clear() {
+        val canvas = graphicsContext.canvas
+        graphicsContext.clearRect(0.0, 0.0, canvas.width, canvas.height)
+    }
 
     override fun renderUnicode(text: String, centerX: Int, centerY: Int) =
         graphicsContext.fillText(text, centerX.toDouble(), centerY.toDouble())

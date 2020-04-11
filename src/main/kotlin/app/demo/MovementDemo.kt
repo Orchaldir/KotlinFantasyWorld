@@ -86,6 +86,8 @@ class MovementDemo : TileApplication() {
     private fun render(state: EcsState) {
         logger.info("render()")
 
+        renderer.clear()
+
         state.getData<GameMap>()?.render(tileRenderer, 0, 0)
 
         renderEntities(state)
