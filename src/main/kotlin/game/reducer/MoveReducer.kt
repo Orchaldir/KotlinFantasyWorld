@@ -19,9 +19,12 @@ val MOVE_REDUCER: Reducer<MoveAction, EcsState> = { state, action ->
 
     if (newPosition != null) {
         val newMap = updateMap(map, action.entity, body, newPosition)
+        val newBody = updateBody(body, newPosition)
+        val newBodyStorage = bodyStorage.updateAndRemove(mapOf(action.entity to newBody))
+        state.copy(mapOf(Body::class to newBodyStorage), mapOf(GameMap::class to newMap))
+    } else {
+        state
     }
-
-    state
 }
 
 fun getNewPosition(map: GameMap, entity: Int, body: Body, direction: Direction) = when (body) {
