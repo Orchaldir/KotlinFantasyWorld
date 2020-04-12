@@ -17,7 +17,6 @@ import util.app.TileApplication
 import util.ecs.EcsBuilder
 import util.ecs.EcsState
 import util.math.Direction.*
-import util.math.Size
 import util.redux.DefaultStore
 import util.redux.Reducer
 import util.redux.middleware.logAction
@@ -33,18 +32,17 @@ val REDUCER: Reducer<Any, EcsState> = { state, action ->
     }
 }
 
-class MovementDemo : TileApplication() {
+class MovementDemo : TileApplication(60, 40, 20, 20) {
     private lateinit var store: DefaultStore<Any, EcsState>
 
     override fun start(primaryStage: Stage) {
-        init(primaryStage, "Movement Demo", 60, 40, 20, 20)
+        init(primaryStage, "Movement Demo")
         create()
     }
 
     private fun create() {
-        logger.info("create(): tiles={}", tiles)
+        logger.info("create(): tiles={}", size.cells)
 
-        val size = Size(columns, rows)
         val gameMap = GameMapBuilder(size, Terrain.FLOOR)
             .addBorder(Terrain.WALL)
             .addRectangle(20, 10, 10, 10, Terrain.WALL)
@@ -96,7 +94,6 @@ class MovementDemo : TileApplication() {
     }
 
     private fun renderEntities(state: EcsState) {
-        val size = Size(columns, rows)
         val bodyStore = state.get<Body>()
         val graphicStore = state.get<Graphic>()
 
@@ -105,23 +102,25 @@ class MovementDemo : TileApplication() {
             val graphic = graphicStore!![entityId]
 
             if (body != null && graphic != null) {
-                when (body) {
-                    is SimpleBody -> tileRenderer.renderTile(
-                        graphic.get(0),
-                        size.getX(body.position),
-                        size.getY(body.position)
-                    )
-                    is BigBody -> tileRenderer.renderTile(
-                        graphic.get(0),
-                        size.getX(body.position),
-                        size.getY(body.position),
-                        body.size
-                    )
-                    is SnakeBody -> for (pos in body.positions) {
-                        tileRenderer.renderTile(graphic.get(0), size.getX(pos), size.getY(pos))
-                    }
-                }
+                renderBody(body, graphic)
             }
+        }
+    }
+
+    private fun renderBody(body: Body, graphic: Graphic) = when (body) {
+        is SimpleBody -> tileRenderer.renderTile(
+            graphic.get(0),
+            size.getX(body.position),
+            size.getY(body.position)
+        )
+        is BigBody -> tileRenderer.renderTile(
+            graphic.get(0),
+            size.getX(body.position),
+            size.getY(body.position),
+            body.size
+        )
+        is SnakeBody -> for (pos in body.positions) {
+            tileRenderer.renderTile(graphic.get(0), size.getX(pos), size.getY(pos))
         }
     }
 

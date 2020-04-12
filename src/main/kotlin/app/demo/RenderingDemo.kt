@@ -8,14 +8,15 @@ import util.app.TileApplication
 
 private val logger = KotlinLogging.logger {}
 
-class RenderingDemo : TileApplication() {
+class RenderingDemo : TileApplication(50, 20, 22, 32) {
+
     override fun start(primaryStage: Stage) {
-        init(primaryStage, "Rendering Demo", 50, 20, 22, 32)
+        init(primaryStage, "Rendering Demo")
         create()
     }
 
     private fun create() {
-        logger.info("create(): tiles={}", tiles)
+        logger.info("create(): tiles={}", size.cells)
         render()
     }
 

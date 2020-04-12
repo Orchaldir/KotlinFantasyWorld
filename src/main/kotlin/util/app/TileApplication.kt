@@ -10,6 +10,7 @@ import javafx.scene.input.KeyEvent
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import mu.KotlinLogging
+import util.math.Size
 import util.rendering.CanvasRenderer
 import util.rendering.Renderer
 import util.rendering.tile.TileRenderer
@@ -17,15 +18,15 @@ import util.requireGreater
 
 private val logger = KotlinLogging.logger {}
 
-abstract class TileApplication : Application() {
-    var columns = 0
-        private set
-    var rows = 0
-        private set
-    private var tileWidth = 0
-    private var tileHeight = 0
-    val tiles: Int
-        get() = columns * rows
+abstract class TileApplication(
+    sizeX: Int,
+    sizeY: Int,
+    tileWidth: Int,
+    tileHeight: Int
+) : Application() {
+    val size = Size(requireGreater(sizeX, 0, "sizeX"), requireGreater(sizeY, 0, "sizeY"))
+    private val tileWidth = requireGreater(tileWidth, 0, "tileWidth")
+    private val tileHeight = requireGreater(tileHeight, 0, "tileHeight")
     private var canvasRenderer: CanvasRenderer? = null
     val renderer: Renderer
         get() = canvasRenderer as Renderer
@@ -33,21 +34,13 @@ abstract class TileApplication : Application() {
 
     protected fun init(
         primaryStage: Stage,
-        windowTitle: String,
-        columns: Int,
-        rows: Int,
-        tileWidth: Int,
-        tileHeight: Int
+        windowTitle: String
     ): Scene {
-        this.columns = requireGreater(columns, 0, "columns")
-        this.rows = requireGreater(rows, 0, "rows")
-        this.tileWidth = requireGreater(tileWidth, 0, "tileWidth")
-        this.tileHeight = requireGreater(tileHeight, 0, "tileHeight")
 
-        val canvasWidth = columns * tileWidth.toDouble()
-        val canvasHeight = rows * tileHeight.toDouble()
+        val canvasWidth = size.x * tileWidth.toDouble()
+        val canvasHeight = size.y * tileHeight.toDouble()
 
-        logger.info { "init(): width=$columns*$tileWidth=$canvasWidth height=$rows*$tileHeight=$canvasHeight" }
+        logger.info { "init(): width=${size.x}*$tileWidth=$canvasWidth height=${size.y}*$tileHeight=$canvasHeight" }
 
         val root = Group()
         val canvas = Canvas(canvasWidth, canvasHeight)
