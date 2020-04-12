@@ -6,7 +6,6 @@ import assertk.assertions.isSameAs
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFailsWith
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 private const val INT0 = 111
@@ -22,14 +21,11 @@ class EcsBuilderTest {
 
         @Test
         fun `Registering of component types`() {
-            val state = with(EcsBuilder()) {
+            with(EcsBuilder()) {
                 registerComponent<Int>()
                 registerComponent<String>()
                 build()
             }
-
-            assertNotNull(state.get<Int>())
-            assertNotNull(state.get<String>())
         }
 
         @Test
@@ -115,7 +111,7 @@ class EcsBuilderTest {
     }
 
     private fun assertEntity(state: EcsState, id: Int, i: Int, s: String) {
-        assertThat(state.get<Int>()?.get(id)).isSameAs(i)
-        assertThat(state.get<String>()?.get(id)).isSameAs(s)
+        assertThat(state.getStorage<Int>()[id]).isSameAs(i)
+        assertThat(state.getStorage<String>()[id]).isSameAs(s)
     }
 }

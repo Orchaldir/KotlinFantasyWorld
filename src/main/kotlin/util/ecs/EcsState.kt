@@ -9,14 +9,14 @@ class EcsState(
     private val dataMap: Map<KClass<*>, Any> = emptyMap()
 ) {
 
-    fun <T> get(type: KClass<*>): ComponentStorage<T>? {
+    fun <T> getStorage(type: KClass<*>): ComponentStorage<T> {
         val storage = storageMap[type]
 
         @Suppress("UNCHECKED_CAST")
-        return storage as ComponentStorage<T>?
+        return storage as ComponentStorage<T>? ?: throw IllegalArgumentException("No storage for $type!")
     }
 
-    inline fun <reified T : Any> get(): ComponentStorage<T>? = get(T::class)
+    inline fun <reified T : Any> getStorage(): ComponentStorage<T> = getStorage(T::class)
 
     fun <T> getData(type: KClass<*>): T? {
         val data = dataMap[type]

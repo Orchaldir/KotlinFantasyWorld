@@ -8,26 +8,31 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import util.ecs.storage.ComponentStorage
-import kotlin.test.assertNull
+import kotlin.test.assertFailsWith
 
 class EcsStateTest {
 
-    @Test
-    fun `Test get() with existing type`() {
-        val c0 = mockk<ComponentStorage<Int>>()
-        val c1 = mockk<ComponentStorage<String>>()
-        val state = EcsState(storageMap = mapOf(Int::class to c0, String::class to c1))
+    @Nested
+    inner class GetStorage {
 
-        assertThat(state.get<Int>()).isSameAs(c0)
-        assertThat(state.get<String>()).isSameAs(c1)
-    }
+        @Test
+        fun `Test getStorage() with existing type`() {
+            val c0 = mockk<ComponentStorage<Int>>()
+            val c1 = mockk<ComponentStorage<String>>()
+            val state = EcsState(storageMap = mapOf(Int::class to c0, String::class to c1))
 
-    @Test
-    fun `Test get() with non-existing type`() {
-        val c0 = mockk<ComponentStorage<Int>>()
-        val state = EcsState(storageMap = mapOf(Int::class to c0))
+            assertThat(state.getStorage<Int>()).isSameAs(c0)
+            assertThat(state.getStorage<String>()).isSameAs(c1)
+        }
 
-        assertNull(state.get<String>())
+        @Test
+        fun `Test getStorage() with non-existing type`() {
+            val c0 = mockk<ComponentStorage<Int>>()
+            val state = EcsState(storageMap = mapOf(Int::class to c0))
+
+            assertFailsWith<IllegalArgumentException> { state.getStorage<String>() }
+        }
+
     }
 
     @Nested
@@ -42,8 +47,8 @@ class EcsStateTest {
             val newC1 = mockk<ComponentStorage<String>>()
             val copy = state.copy(updatedStorageMap = mapOf(String::class to newC1))
 
-            assertThat(copy.get<Int>()).isSameAs(c0)
-            assertThat(copy.get<String>()).all {
+            assertThat(copy.getStorage<Int>()).isSameAs(c0)
+            assertThat(copy.getStorage<String>()).all {
                 isSameAs(newC1)
                 isNotSameAs(c1)
             }

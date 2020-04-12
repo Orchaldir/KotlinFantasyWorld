@@ -10,14 +10,14 @@ import game.map.GameMapBuilder
 import util.ecs.EcsState
 import util.redux.Reducer
 
-val INIT_REDUCER: Reducer<InitAction, EcsState> = { state, action ->
+val INIT_REDUCER: Reducer<InitAction, EcsState> = { state, _ ->
     val map = state.getData<GameMap>() ?: throw IllegalStateException("No map!")
-    val bodyStorage = state.get<Body>() ?: throw IllegalStateException("No body storage!")
+    val bodyStorage = state.getStorage<Body>()
 
     val mapBuilder = map.builder()
 
     for (id in bodyStorage.getIds()) {
-        val body = bodyStorage.get(id) ?: throw IllegalStateException("No body for entity $id!")
+        val body = bodyStorage[id] ?: throw IllegalStateException("No body for entity $id!")
         addToMap(mapBuilder, id, body)
     }
 

@@ -12,7 +12,7 @@ import util.redux.Reducer
 
 val MOVE_REDUCER: Reducer<MoveAction, EcsState> = { state, action ->
     val map = state.getData<GameMap>() ?: throw IllegalStateException("No map!")
-    val bodyStorage = state.get<Body>() ?: throw IllegalStateException("No body storage!")
+    val bodyStorage = state.getStorage<Body>()
     val body = bodyStorage[action.entity] ?: throw IllegalStateException("Entity ${action.entity} has no body!")
 
     val newPosition = getNewPosition(map, action.entity, body, action.direction)

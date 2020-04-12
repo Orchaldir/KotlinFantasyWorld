@@ -7,10 +7,10 @@ import util.ecs.EcsState
 import util.redux.Reducer
 
 val SUFFER_DAMAGE_REDUCER: Reducer<SufferDamageAction, EcsState> = { state, action ->
-    val healthStorage = state.get<Health>() ?: throw IllegalStateException("No health storage!")
+    val healthStorage = state.getStorage<Health>()
     val health = healthStorage[action.entity] ?: throw IllegalStateException("Entity ${action.entity} has no health!")
 
-    val statisticsStorage = state.get<Statistics>() ?: throw IllegalStateException("No statistics storage!")
+    val statisticsStorage = state.getStorage<Statistics>()
     val statistics =
         statisticsStorage[action.entity] ?: throw IllegalStateException("Entity ${action.entity} has no statistics!")
 

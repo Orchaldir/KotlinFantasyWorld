@@ -87,12 +87,12 @@ class MovementDemo : TileApplication(60, 40, 20, 20) {
     }
 
     private fun renderEntities(state: EcsState) {
-        val bodyStore = state.get<Body>()
-        val graphicStore = state.get<Graphic>()
+        val bodyStore = state.getStorage<Body>()
+        val graphicStore = state.getStorage<Graphic>()
 
         for (entityId in state.entityIds) {
-            val body = bodyStore!![entityId]
-            val graphic = graphicStore!![entityId]
+            val body = bodyStore[entityId]
+            val graphic = graphicStore[entityId]
 
             if (body != null && graphic != null) {
                 renderBody(body, graphic)
