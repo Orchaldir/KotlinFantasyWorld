@@ -34,6 +34,7 @@ val REDUCER: Reducer<Any, EcsState> = { state, action ->
 
 class MovementDemo : TileApplication(60, 40, 20, 20) {
     private lateinit var store: DefaultStore<Any, EcsState>
+    private var entityId = 0
 
     override fun start(primaryStage: Stage) {
         init(primaryStage, "Movement Demo")
@@ -61,15 +62,7 @@ class MovementDemo : TileApplication(60, 40, 20, 20) {
             add(Graphic(UnicodeTile("D", Color.RED)))
             buildEntity()
             add(
-                SnakeBody(
-                    listOf(
-                        size.getIndex(49, 5),
-                        size.getIndex(50, 5),
-                        size.getIndex(50, 6),
-                        size.getIndex(50, 7),
-                        size.getIndex(50, 8)
-                    )
-                ) as Body
+                SnakeBody(List(20) { size.getIndex(50, 5) }) as Body
             )
             add(Graphic(UnicodeTile("S", Color.GREEN)))
             buildEntity()
@@ -127,8 +120,6 @@ class MovementDemo : TileApplication(60, 40, 20, 20) {
     override fun onKeyReleased(keyCode: KeyCode) {
         logger.info("onKeyReleased(): keyCode=$keyCode")
 
-        val entityId = 0
-
         if (keyCode == KeyCode.UP) {
             store.dispatch(MoveAction(entityId, NORTH))
         } else if (keyCode == KeyCode.RIGHT) {
@@ -137,6 +128,12 @@ class MovementDemo : TileApplication(60, 40, 20, 20) {
             store.dispatch(MoveAction(entityId, SOUTH))
         } else if (keyCode == KeyCode.LEFT) {
             store.dispatch(MoveAction(entityId, WEST))
+        } else if (keyCode == KeyCode.F1) {
+            entityId = 0
+        } else if (keyCode == KeyCode.F2) {
+            entityId = 1
+        } else if (keyCode == KeyCode.F3) {
+            entityId = 2
         }
     }
 
