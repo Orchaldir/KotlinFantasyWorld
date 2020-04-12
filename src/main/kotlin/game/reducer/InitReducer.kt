@@ -17,7 +17,7 @@ val INIT_REDUCER: Reducer<InitAction, EcsState> = { state, _ ->
     val mapBuilder = map.builder()
 
     for (id in bodyStorage.getIds()) {
-        val body = bodyStorage[id] ?: throw IllegalStateException("No body for entity $id!")
+        val body = bodyStorage.getOrThrow(id)
         addToMap(mapBuilder, id, body)
     }
 

@@ -30,7 +30,7 @@ class EcsStateTest {
             val c0 = mockk<ComponentStorage<Int>>()
             val state = EcsState(storageMap = mapOf(Int::class to c0))
 
-            assertFailsWith<IllegalArgumentException> { state.getStorage<String>() }
+            assertFailsWith<NoSuchElementException> { state.getStorage<String>() }
         }
 
     }

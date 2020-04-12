@@ -20,7 +20,7 @@ class EcsBuilder(
 
     fun <T> registerComponent(type: KClass<*>) {
         logger.info("Register component ${type.simpleName}")
-        storageMap[type] = ComponentMap<T>(mapOf())
+        storageMap[type] = ComponentMap<T>(type.toString(), mapOf())
     }
 
     inline fun <reified T : Any> registerComponent() = registerComponent<T>(T::class)

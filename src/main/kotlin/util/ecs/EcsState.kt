@@ -13,7 +13,7 @@ class EcsState(
         val storage = storageMap[type]
 
         @Suppress("UNCHECKED_CAST")
-        return storage as ComponentStorage<T>? ?: throw IllegalArgumentException("No storage for $type!")
+        return storage as ComponentStorage<T>? ?: throw NoSuchElementException("No storage for $type!")
     }
 
     inline fun <reified T : Any> getStorage(): ComponentStorage<T> = getStorage(T::class)
