@@ -6,9 +6,9 @@ class Checker(
     private val diceSide: Int
 ) {
 
-    fun check(generator: RandomNumberGenerator, rank: Int, difficulty: Int): CheckResult {
-        val positiveDice = generator.rollDice(diceSide)
-        val negativeDice = generator.rollDice(diceSide)
+    fun check(rng: RandomNumberGenerator, rank: Int, difficulty: Int): CheckResult {
+        val positiveDice = rng.rollDice(diceSide)
+        val negativeDice = rng.rollDice(diceSide)
 
         if (positiveDice == diceSide && negativeDice == diceSide) {
             return CriticalSuccess
