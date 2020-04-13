@@ -5,20 +5,20 @@ import kotlin.test.assertEquals
 
 class StoreTest {
     @Test
-    fun testGetInitialState() {
+    fun `Get initial state`() {
         val store = createStore()
         assertEquals(store.getState(), 10)
     }
 
     @Test
-    fun testDispatch() {
+    fun `Dispatch action`() {
         val store = createStore()
         store.dispatch(3)
         assertEquals(store.getState(), 13)
     }
 
     @Test
-    fun testOneSubscriber() {
+    fun `Subscriber gets update after dispatch`() {
         val store = createStore()
         var calls = 0
         val stateList = mutableListOf<Int>()
