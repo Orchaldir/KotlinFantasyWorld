@@ -29,4 +29,6 @@ enum class HealthState {
 data class Health(
     val state: HealthState,
     val penalty: Int
-)
+) {
+    constructor() : this(HealthState.HEALTHY, 0)
+}

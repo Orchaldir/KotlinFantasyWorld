@@ -8,6 +8,7 @@ import game.map.GameMapBuilder
 import game.map.Terrain
 import game.reducer.INIT_REDUCER
 import game.reducer.MOVE_REDUCER
+import game.renderEntities
 import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
@@ -24,7 +25,7 @@ import util.rendering.tile.UnicodeTile
 
 private val logger = KotlinLogging.logger {}
 
-val REDUCER: Reducer<Any, EcsState> = { state, action ->
+val MOVEMENT_DEMO_REDUCER: Reducer<Any, EcsState> = { state, action ->
     when (action) {
         is InitAction -> INIT_REDUCER(state, action)
         is MoveAction -> MOVE_REDUCER(state, action)
@@ -69,7 +70,7 @@ class MovementDemo : TileApplication(60, 40, 20, 20) {
             build()
         }
 
-        store = DefaultStore(ecsState, REDUCER, listOf(::logAction))
+        store = DefaultStore(ecsState, MOVEMENT_DEMO_REDUCER, listOf(::logAction))
         store.subscribe(this::render)
         store.dispatch(InitAction)
     }
@@ -81,40 +82,9 @@ class MovementDemo : TileApplication(60, 40, 20, 20) {
 
         state.getData<GameMap>().render(tileRenderer, 0, 0)
 
-        renderEntities(state)
+        renderEntities(tileRenderer, size, state)
 
         logger.info("render(): finished")
-    }
-
-    private fun renderEntities(state: EcsState) {
-        val bodyStore = state.getStorage<Body>()
-        val graphicStore = state.getStorage<Graphic>()
-
-        for (entityId in state.entityIds) {
-            val body = bodyStore[entityId]
-            val graphic = graphicStore[entityId]
-
-            if (body != null && graphic != null) {
-                renderBody(body, graphic)
-            }
-        }
-    }
-
-    private fun renderBody(body: Body, graphic: Graphic) = when (body) {
-        is SimpleBody -> tileRenderer.renderTile(
-            graphic.get(0),
-            size.getX(body.position),
-            size.getY(body.position)
-        )
-        is BigBody -> tileRenderer.renderTile(
-            graphic.get(0),
-            size.getX(body.position),
-            size.getY(body.position),
-            body.size
-        )
-        is SnakeBody -> for (pos in body.positions) {
-            tileRenderer.renderTile(graphic.get(0), size.getX(pos), size.getY(pos))
-        }
     }
 
     override fun onKeyReleased(keyCode: KeyCode) {
