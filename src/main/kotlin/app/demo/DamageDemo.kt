@@ -9,8 +9,10 @@ import game.map.Terrain
 import game.reducer.INIT_REDUCER
 import game.reducer.createSufferDamageReducer
 import game.renderEntities
+import game.rpg.Damage
 import game.rpg.character.skill.Skill
 import game.rpg.character.skill.SkillManager
+import game.rpg.check.Checker
 import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
@@ -23,12 +25,12 @@ import util.redux.DefaultStore
 import util.redux.Reducer
 import util.redux.middleware.logAction
 import util.rendering.tile.UnicodeTile
+import kotlin.random.Random
 
 private val logger = KotlinLogging.logger {}
 
 class DamageDemo : TileApplication(60, 40, 20, 20) {
     private lateinit var store: DefaultStore<Any, EcsState>
-    private var entityId = 0
 
     override fun start(primaryStage: Stage) {
         init(primaryStage, "Damage Demo")
@@ -45,9 +47,12 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
         val toughness = Skill("Toughness")
         val skillManager = SkillManager(listOf(toughness))
 
+
         val ecsState = with(EcsBuilder()) {
             addData(gameMap)
             addData(skillManager)
+            addData(util.redux.random.init(Random, 100))
+            addData(Checker(6))
             registerComponent<Body>()
             registerComponent<Graphic>()
             registerComponent<Statistics>()
@@ -95,6 +100,13 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
 
     override fun onTileClicked(x: Int, y: Int) {
         logger.info("onTileClicked(): x=$x y=$y")
+
+        val state = store.getState()
+        val entity = state.getData<GameMap>().entities[size.getIndex(x, y)]
+
+        if (entity != null) {
+            store.dispatch(SufferDamageAction(entity, Damage(5)))
+        }
     }
 }
 
