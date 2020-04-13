@@ -11,7 +11,7 @@ import util.ecs.EcsState
 import util.redux.Reducer
 
 val INIT_REDUCER: Reducer<InitAction, EcsState> = { state, _ ->
-    val map = state.getData<GameMap>() ?: throw IllegalStateException("No map!")
+    val map = state.getData<GameMap>()
     val bodyStorage = state.getStorage<Body>()
 
     val mapBuilder = map.builder()

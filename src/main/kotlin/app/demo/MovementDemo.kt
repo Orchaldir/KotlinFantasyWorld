@@ -79,7 +79,7 @@ class MovementDemo : TileApplication(60, 40, 20, 20) {
 
         renderer.clear()
 
-        state.getData<GameMap>()?.render(tileRenderer, 0, 0)
+        state.getData<GameMap>().render(tileRenderer, 0, 0)
 
         renderEntities(state)
 

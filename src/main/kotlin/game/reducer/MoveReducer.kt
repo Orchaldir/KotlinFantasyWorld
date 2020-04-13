@@ -11,7 +11,7 @@ import util.math.Direction
 import util.redux.Reducer
 
 val MOVE_REDUCER: Reducer<MoveAction, EcsState> = { state, action ->
-    val map = state.getData<GameMap>() ?: throw IllegalStateException("No map!")
+    val map = state.getData<GameMap>()
     val bodyStorage = state.getStorage<Body>()
     val body = bodyStorage.getOrThrow(action.entity)
 

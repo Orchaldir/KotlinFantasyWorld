@@ -6,7 +6,6 @@ import assertk.assertions.isSameAs
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFailsWith
-import kotlin.test.assertNull
 
 private const val INT0 = 111
 private const val INT1 = -9
@@ -106,7 +105,7 @@ class EcsBuilderTest {
         fun `Get non-existing data`() {
             val state = EcsBuilder().build()
 
-            assertNull(state.getData<String>())
+            assertFailsWith<NoSuchElementException> { state.getData<String>() }
         }
     }
 

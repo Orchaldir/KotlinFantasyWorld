@@ -18,14 +18,14 @@ class EcsState(
 
     inline fun <reified T : Any> getStorage(): ComponentStorage<T> = getStorage(T::class)
 
-    fun <T> getData(type: KClass<*>): T? {
+    fun <T> getData(type: KClass<*>): T {
         val data = dataMap[type]
 
         @Suppress("UNCHECKED_CAST")
-        return data as T?
+        return data as T? ?: throw NoSuchElementException("No data for $type!")
     }
 
-    inline fun <reified T : Any> getData(): T? = getData(T::class)
+    inline fun <reified T : Any> getData(): T = getData(T::class)
 
     fun copy(
         updatedStorageMap: Map<KClass<*>, ComponentStorage<*>> = emptyMap(),
