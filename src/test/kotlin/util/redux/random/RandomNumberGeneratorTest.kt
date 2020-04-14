@@ -5,6 +5,8 @@ import assertk.assertions.isNotSameAs
 import assertk.assertions.isSameAs
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import kotlin.random.Random
+import kotlin.test.assertTrue
 
 private val NUMBERS = listOf(20, 21, 22)
 
@@ -30,6 +32,31 @@ class RandomNumberGeneratorTest {
 
             assertThat(generator.getInt()).isSameAs(22)
             assertThat(generator.getInt()).isSameAs(20)
+        }
+
+        @Test
+        fun `Test for equal distribution`() {
+            val sides = 6
+            val rollsPerSide = 1000
+            val rolls = sides * rollsPerSide
+            val state = init(Random(0), rolls)
+            val rng = RandomNumberGenerator(state)
+            val map = mutableMapOf<Int, Int>()
+
+            repeat(rolls) {
+                val result = rng.rollDice(sides)
+                var count = map.getOrDefault(result, 0)
+                map[result] = ++count
+            }
+
+            val min = rollsPerSide * 9 / 10
+            val max = rollsPerSide * 11 / 10
+
+            assertThat(map.size).isSameAs(sides)
+
+            for (count in map.values) {
+                assertTrue(count in min..max)
+            }
         }
     }
 
