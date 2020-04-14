@@ -29,7 +29,7 @@ class CheckerTest {
         fun `Get a critical success`() {
             every { rng.rollDice(SIDES) } returnsMany (listOf(SIDES, SIDES))
 
-            assertThat(checker.check(rng, 0, 0)).isSameAs(CriticalSuccess)
+            assertThat(checker.check(rng, 0, 0)).isEqualTo(Success(5))
 
             verify(exactly = 2) { rng.rollDice(SIDES) }
         }
@@ -38,7 +38,7 @@ class CheckerTest {
         fun `Get a critical success, where a success would be impossible`() {
             every { rng.rollDice(SIDES) } returnsMany (listOf(SIDES, SIDES))
 
-            assertThat(checker.check(rng, 0, 100)).isSameAs(CriticalSuccess)
+            assertThat(checker.check(rng, 0, 100)).isEqualTo(Failure(95))
 
             verify(exactly = 2) { rng.rollDice(SIDES) }
         }
@@ -51,7 +51,7 @@ class CheckerTest {
         fun `Get a critical failure`() {
             every { rng.rollDice(SIDES) } returnsMany (listOf(1, 1))
 
-            assertThat(checker.check(rng, 0, 0)).isSameAs(CriticalFailure)
+            assertThat(checker.check(rng, 0, 0)).isEqualTo(Failure(5))
 
             verify(exactly = 2) { rng.rollDice(SIDES) }
         }
@@ -60,7 +60,7 @@ class CheckerTest {
         fun `Get a critical success, where a failure would be impossible`() {
             every { rng.rollDice(SIDES) } returnsMany (listOf(1, 1))
 
-            assertThat(checker.check(rng, 100, 0)).isSameAs(CriticalFailure)
+            assertThat(checker.check(rng, 100, 0)).isEqualTo(Success(95))
 
             verify(exactly = 2) { rng.rollDice(SIDES) }
         }
