@@ -2,6 +2,7 @@ package game.reducer
 
 import game.SufferDamageAction
 import game.component.Health
+import game.component.HealthState
 import game.component.Statistics
 import game.rpg.character.skill.Skill
 import game.rpg.check.*
@@ -14,11 +15,16 @@ import kotlin.reflect.KClass
 
 private val logger = KotlinLogging.logger {}
 
-fun createSufferDamageReducer(toughness: Skill): Reducer<SufferDamageAction, EcsState> = { state, action ->
+fun createSufferDamageReducer(toughness: Skill): Reducer<SufferDamageAction, EcsState> = a@{ state, action ->
     val id = action.entity
 
     val healthStorage = state.getStorage<Health>()
     val health = healthStorage.getOrThrow(id)
+
+    if (health.state == HealthState.DEAD) {
+        logger.info("Entity $id is already dead!")
+        return@a state
+    }
 
     val statisticsStorage = state.getStorage<Statistics>()
     val statistics = statisticsStorage.getOrThrow(id)
