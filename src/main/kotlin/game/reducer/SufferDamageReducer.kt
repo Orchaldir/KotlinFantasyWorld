@@ -55,17 +55,21 @@ fun createSufferDamageReducer(toughness: Skill): Reducer<SufferDamageAction, Ecs
 private fun updateHealth(health: Health, result: CheckResult): Health {
     return when (result) {
         CriticalSuccess -> reduceHealthState(health, 2)
-        is Success -> reduceHealthState(
-            health, if (result.rank >= 5) {
-                2
-            } else {
-                1
-            }
-        )
+        is Success -> reduceHealthState(health, calculateSteps(result))
         Draw -> increaseHealthPenalty(health)
-        is Failure -> increaseHealthPenalty(health)
+        is Failure -> if (result.rank >= 5) {
+            health
+        } else {
+            increaseHealthPenalty(health)
+        }
         CriticalFailure -> health
     }
+}
+
+private fun calculateSteps(result: Success) = if (result.rank >= 5) {
+    2
+} else {
+    1
 }
 
 private fun increaseHealthPenalty(health: Health) = health.copy(penalty = health.penalty + 1)
