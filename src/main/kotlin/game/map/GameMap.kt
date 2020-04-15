@@ -57,7 +57,7 @@ data class GameMap(
                     "#"
                 }
 
-                renderer.renderUnicode(symbol, Color.WHITE, x, y)
+                renderer.renderUnicodeTile(symbol, Color.WHITE, x, y)
             }
         }
     }
