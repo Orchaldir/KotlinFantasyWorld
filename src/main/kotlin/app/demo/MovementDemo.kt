@@ -56,6 +56,7 @@ class MovementDemo : TileApplication(60, 40, 20, 20) {
             addData(gameMap)
             registerComponent<Body>()
             registerComponent<Graphic>()
+            registerComponent<Health>()
             add(SimpleBody(size.getIndex(10, 5)) as Body)
             add(Graphic(UnicodeTile("@", Color.BLUE)))
             buildEntity()

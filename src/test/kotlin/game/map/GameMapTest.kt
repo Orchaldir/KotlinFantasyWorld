@@ -1,10 +1,11 @@
 package game.map
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import game.map.Terrain.FLOOR
 import game.map.Terrain.WALL
+import game.map.Walkability.*
 import org.junit.jupiter.api.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 private const val ENTITY0 = 1
 private const val ENTITY1 = 2
@@ -17,8 +18,8 @@ class GameMapTest {
             .setTerrain(1, 0, WALL)
             .build()
 
-        assertTrue(map.isWalkable(0, ENTITY0))
-        assertFalse(map.isWalkable(1, ENTITY0))
+        assertThat(map.checkWalkability(0, ENTITY0)).isEqualTo(WALKABLE)
+        assertThat(map.checkWalkability(1, ENTITY0)).isEqualTo(BLOCKED_BY_OBSTACLE)
     }
 
     @Test
@@ -27,23 +28,29 @@ class GameMapTest {
             .setTerrain(0, 0, WALL)
             .build()
 
-        assertFalse(map.isWalkable(index = 0, size = 2, entity = ENTITY0))
-        assertTrue(map.isWalkable(index = 1, size = 2, entity = ENTITY0))
-        assertTrue(map.isWalkable(index = 3, size = 2, entity = ENTITY0))
-        assertTrue(map.isWalkable(index = 4, size = 2, entity = ENTITY0))
+        assertThat(map.checkWalkability(index = 0, size = 2, entity = ENTITY0)).isEqualTo(BLOCKED_BY_OBSTACLE)
+        assertThat(map.checkWalkability(index = 1, size = 2, entity = ENTITY0)).isEqualTo(WALKABLE)
+        assertThat(map.checkWalkability(index = 3, size = 2, entity = ENTITY0)).isEqualTo(WALKABLE)
+        assertThat(map.checkWalkability(index = 4, size = 2, entity = ENTITY0)).isEqualTo(WALKABLE)
+    }
+
+    @Test
+    fun `Index is outside`() {
+        val map = GameMapBuilder(3, 3, FLOOR).build()
+
+        assertThat(map.checkWalkability(-1, ENTITY0)).isEqualTo(OUTSIDE_MAP)
+        assertThat(map.checkWalkability(9, ENTITY0)).isEqualTo(OUTSIDE_MAP)
     }
 
     @Test
     fun `Index is outside with size 2`() {
-        val map = GameMapBuilder(3, 3, FLOOR)
-            .setTerrain(0, 0, WALL)
-            .build()
+        val map = GameMapBuilder(3, 3, FLOOR).build()
 
-        assertFalse(map.isWalkable(index = 2, size = 2, entity = ENTITY0))
-        assertFalse(map.isWalkable(index = 5, size = 2, entity = ENTITY0))
-        assertFalse(map.isWalkable(index = 6, size = 2, entity = ENTITY0))
-        assertFalse(map.isWalkable(index = 7, size = 2, entity = ENTITY0))
-        assertFalse(map.isWalkable(index = 8, size = 2, entity = ENTITY0))
+        assertThat(map.checkWalkability(index = 2, size = 2, entity = ENTITY0)).isEqualTo(OUTSIDE_MAP)
+        assertThat(map.checkWalkability(index = 5, size = 2, entity = ENTITY0)).isEqualTo(OUTSIDE_MAP)
+        assertThat(map.checkWalkability(index = 6, size = 2, entity = ENTITY0)).isEqualTo(OUTSIDE_MAP)
+        assertThat(map.checkWalkability(index = 7, size = 2, entity = ENTITY0)).isEqualTo(OUTSIDE_MAP)
+        assertThat(map.checkWalkability(index = 8, size = 2, entity = ENTITY0)).isEqualTo(OUTSIDE_MAP)
     }
 
     @Test
@@ -52,7 +59,7 @@ class GameMapTest {
             .setEntity(0, ENTITY0)
             .build()
 
-        assertTrue(map.isWalkable(0, ENTITY0))
+        assertThat(map.checkWalkability(0, ENTITY0)).isEqualTo(WALKABLE)
     }
 
     @Test
@@ -61,7 +68,7 @@ class GameMapTest {
             .setEntity(0, ENTITY0)
             .build()
 
-        assertFalse(map.isWalkable(0, ENTITY1))
+        assertThat(map.checkWalkability(0, ENTITY1)).isEqualTo(BLOCKED_BY_ENTITY)
     }
 
 }

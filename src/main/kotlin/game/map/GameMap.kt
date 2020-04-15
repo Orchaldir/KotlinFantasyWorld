@@ -1,5 +1,6 @@
 package game.map
 
+import game.map.Walkability.*
 import javafx.scene.paint.Color
 import util.math.Size
 import util.rendering.tile.TileRenderer
@@ -10,32 +11,34 @@ data class GameMap(
     val entities: Map<Int, Int>
 ) {
 
-    fun isWalkable(index: Int, entity: Int): Boolean {
-        if (!terrainList[index].isWalkable()) {
-            return false
+    fun checkWalkability(index: Int, entity: Int): Walkability {
+        if (!size.isInside(index)) {
+            return OUTSIDE_MAP
+        } else if (!terrainList[index].isWalkable()) {
+            return BLOCKED_BY_OBSTACLE
         }
 
         return when (entities[index]) {
-            null -> true
-            entity -> true
-            else -> false
+            null, entity -> WALKABLE
+            else -> BLOCKED_BY_ENTITY
         }
     }
 
-    fun isWalkable(index: Int, size: Int, entity: Int): Boolean {
+    fun checkWalkability(index: Int, size: Int, entity: Int): Walkability {
         val indices = this.size.getIndices(index, size)
 
         if (indices.isEmpty()) {
-            return false
+            return OUTSIDE_MAP
         }
 
         indices.forEach { i ->
-            if (!isWalkable(i, entity)) {
-                return false
+            val result = checkWalkability(i, entity)
+            if (result != WALKABLE) {
+                return result
             }
         }
 
-        return true
+        return WALKABLE
     }
 
     fun render(renderer: TileRenderer, startX: Int, startY: Int) {
