@@ -1,15 +1,14 @@
 package app.demo
 
+import game.GameRenderer
 import game.InitAction
 import game.MoveAction
 import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
-import game.map.GameMapRenderer
 import game.map.Terrain
 import game.reducer.INIT_REDUCER
 import game.reducer.MOVE_REDUCER
-import game.renderEntities
 import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
@@ -37,6 +36,8 @@ val MOVEMENT_DEMO_REDUCER: Reducer<Any, EcsState> = { state, action ->
     }
 }
 
+const val LOG_SIZE = 5
+
 class MovementDemo : TileApplication(60, 45, 20, 20) {
     private lateinit var store: DefaultStore<Any, EcsState>
     private var entityId = 0
@@ -49,7 +50,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
     private fun create() {
         logger.info("create(): tiles={}", size.cells)
 
-        val gameMap = GameMapBuilder(Size(size.x, size.y - 5), Terrain.FLOOR)
+        val gameMap = GameMapBuilder(Size(size.x, size.y - LOG_SIZE), Terrain.FLOOR)
             .addBorder(Terrain.WALL)
             .addRectangle(20, 10, 10, 10, Terrain.WALL)
             .addRectangle(40, 25, 10, 10, Terrain.WALL)
@@ -87,12 +88,11 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         renderer.clear()
 
         val map = state.getData<GameMap>()
-        val mapRender = GameMapRenderer(map.size)
-        mapRender.render(tileRenderer, map)
+        val mapRender = GameRenderer(0, LOG_SIZE, map.size)
+        mapRender.renderMap(tileRenderer, map)
+        mapRender.renderEntities(tileRenderer, state)
 
-        renderEntities(tileRenderer, size, state)
-
-        val messageLogRenderer = MessageLogRenderer(0, size.y - 5)
+        val messageLogRenderer = MessageLogRenderer(0, 0)
         messageLogRenderer.render(tileRenderer, state.getData())
 
         logger.info("render(): finished")

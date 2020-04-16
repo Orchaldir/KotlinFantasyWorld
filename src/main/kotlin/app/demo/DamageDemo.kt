@@ -1,15 +1,14 @@
 package app.demo
 
+import game.GameRenderer
 import game.InitAction
 import game.SufferDamageAction
 import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
-import game.map.GameMapRenderer
 import game.map.Terrain
 import game.reducer.INIT_REDUCER
 import game.reducer.createSufferDamageReducer
-import game.renderEntities
 import game.rpg.Damage
 import game.rpg.character.skill.Skill
 import game.rpg.character.skill.SkillManager
@@ -94,10 +93,9 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
         renderer.clear()
 
         val map = state.getData<GameMap>()
-        val mapRender = GameMapRenderer(map.size)
-        mapRender.render(tileRenderer, map)
-
-        renderEntities(tileRenderer, map.size, state)
+        val mapRender = GameRenderer(map.size)
+        mapRender.renderMap(tileRenderer, map)
+        mapRender.renderEntities(tileRenderer, state)
 
         val messageLogRenderer = MessageLogRenderer(MAP_X + 1, 0)
         messageLogRenderer.render(tileRenderer, state.getData())
