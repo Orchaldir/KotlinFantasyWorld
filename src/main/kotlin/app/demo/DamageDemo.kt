@@ -64,7 +64,7 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
             registerComponent<Statistics>()
             registerComponent<Health>()
             repeat(5) {
-                add(SimpleBody(size.getIndex(5, 5 + 5 * it)) as Body)
+                add(SimpleBody(gameMap.size.getIndex(5, 5 + 5 * it)) as Body)
                 add(Graphic(UnicodeTile("O", Color.DARKGREEN)))
                 add(Statistics(mapOf(toughness to (3 * it))))
                 add(Health())
@@ -97,7 +97,7 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
         val mapRender = GameMapRenderer(map.size)
         mapRender.render(tileRenderer, map)
 
-        renderEntities(tileRenderer, size, state)
+        renderEntities(tileRenderer, map.size, state)
 
         val messageLogRenderer = MessageLogRenderer(MAP_X + 1, 0)
         messageLogRenderer.render(tileRenderer, state.getData())
@@ -113,7 +113,7 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
         logger.info("onTileClicked(): x=$x y=$y")
 
         val state = store.getState()
-        val entity = state.getData<GameMap>().entities[size.getIndex(x, y)]
+        val entity = state.getData<GameMap>().getEntity(x, y)
 
         if (entity != null) {
             store.dispatch(SufferDamageAction(entity, Damage(5)))

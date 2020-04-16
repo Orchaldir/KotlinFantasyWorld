@@ -8,6 +8,8 @@ data class GameMap(
     val entities: Map<Int, Int>
 ) {
 
+    fun getEntity(x: Int, y: Int) = entities[size.getIndex(x, y)]
+
     fun checkWalkability(position: Int, entity: Int): Walkability {
         if (!size.isInside(position)) {
             return OutsideMap

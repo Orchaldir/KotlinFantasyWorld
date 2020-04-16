@@ -3,6 +3,7 @@ package app.demo
 import game.InitAction
 import game.MoveAction
 import game.component.*
+import game.map.GameMap
 import game.map.GameMapBuilder
 import game.map.GameMapRenderer
 import game.map.Terrain
@@ -61,14 +62,14 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
             registerComponent<Body>()
             registerComponent<Graphic>()
             registerComponent<Health>()
-            add(SimpleBody(size.getIndex(10, 5)) as Body)
+            add(SimpleBody(gameMap.size.getIndex(10, 5)) as Body)
             add(Graphic(UnicodeTile("@", Color.BLUE)))
             buildEntity()
-            add(BigBody(size.getIndex(10, 25), 4) as Body)
+            add(BigBody(gameMap.size.getIndex(10, 25), 4) as Body)
             add(Graphic(UnicodeTile("D", Color.RED)))
             buildEntity()
             add(
-                SnakeBody(List(20) { size.getIndex(50, 5) }) as Body
+                SnakeBody(List(20) { gameMap.size.getIndex(50, 5) }) as Body
             )
             add(Graphic(UnicodeTile("S", Color.GREEN)))
             buildEntity()
@@ -85,8 +86,9 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
 
         renderer.clear()
 
-        val mapRender = GameMapRenderer(Size(size.x, size.y - 5))
-        mapRender.render(tileRenderer, state.getData())
+        val map = state.getData<GameMap>()
+        val mapRender = GameMapRenderer(map.size)
+        mapRender.render(tileRenderer, map)
 
         renderEntities(tileRenderer, size, state)
 
