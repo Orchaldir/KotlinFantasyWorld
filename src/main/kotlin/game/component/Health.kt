@@ -24,6 +24,15 @@ enum class HealthState {
 
         return state
     }
+
+    fun toDisplayText() = when (this) {
+        HEALTHY -> "healthy"
+        REELING -> "reeling"
+        NEAR_COLLAPSE -> "near collapse"
+        NEAR_DEATH -> "near death"
+        DEAD -> "dead"
+    }
+
 }
 
 data class Health(

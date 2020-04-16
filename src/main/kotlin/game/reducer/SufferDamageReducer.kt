@@ -47,22 +47,35 @@ fun createSufferDamageReducer(toughness: Skill): Reducer<SufferDamageAction, Ecs
     val newHealth = updateHealth(health, result)
 
     if (health != newHealth) {
-        logger.info("Change: $newHealth")
-        val newHealthStorage = healthStorage.updateAndRemove(mapOf(id to newHealth))
-        updatedStorageMap[Health::class] = newHealthStorage
+        logger.info("Change to $newHealth")
+        updatedStorageMap[Health::class] = healthStorage.updateAndRemove(mapOf(id to newHealth))
 
+        updateMessageLog(state, health, newHealth, id, updatedDataMap)
+    } else {
         val messageLog = state.getData<MessageLog>()
-
-        val message = if (health.state != newHealth.state) {
-            Message("Entity $id is ${newHealth.state}", Color.WHITE)
-        } else {
-            Message("Entity $id looks slightly worse", Color.WHITE)
-        }
-
+        val message = Message("Entity $id suffers no damage", Color.WHITE)
         updatedDataMap[MessageLog::class] = messageLog.add(message)
     }
 
     state.copy(updatedStorageMap, updatedDataMap)
+}
+
+private fun updateMessageLog(
+    state: EcsState,
+    health: Health,
+    newHealth: Health,
+    id: Int,
+    updatedDataMap: MutableMap<KClass<*>, Any>
+) {
+    val messageLog = state.getData<MessageLog>()
+
+    val message = if (health.state != newHealth.state) {
+        Message("Entity $id is ${newHealth.state.toDisplayText()}", Color.WHITE)
+    } else {
+        Message("Entity $id looks slightly worse", Color.WHITE)
+    }
+
+    updatedDataMap[MessageLog::class] = messageLog.add(message)
 }
 
 private fun updateHealth(health: Health, result: CheckResult) = when (result) {
