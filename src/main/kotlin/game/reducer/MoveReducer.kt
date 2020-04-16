@@ -5,10 +5,11 @@ import game.component.BigBody
 import game.component.Body
 import game.component.SimpleBody
 import game.component.SnakeBody
-import game.map.GameMap
-import game.map.Walkable
-import game.map.then
+import game.map.*
+import javafx.scene.paint.Color.WHITE
 import util.ecs.EcsState
+import util.log.Message
+import util.log.MessageLog
 import util.math.Direction
 import util.redux.Reducer
 
@@ -19,14 +20,22 @@ val MOVE_REDUCER: Reducer<MoveAction, EcsState> = { state, action ->
 
     val walkability = getNewPosition(map, action.entity, body, action.direction)
 
-    if (walkability is Walkable) {
-        val newMap = updateMap(map, action.entity, body, walkability.position)
-        val newBody = updateBody(body, walkability.position)
-        val newBodyStorage = bodyStorage.updateAndRemove(mapOf(action.entity to newBody))
-        state.copy(mapOf(Body::class to newBodyStorage), mapOf(GameMap::class to newMap))
-    } else {
-        state
+    when (walkability) {
+        is Walkable -> {
+            val newMap = updateMap(map, action.entity, body, walkability.position)
+            val newBody = updateBody(body, walkability.position)
+            val newBodyStorage = bodyStorage.updateAndRemove(mapOf(action.entity to newBody))
+            state.copy(mapOf(Body::class to newBodyStorage), mapOf(GameMap::class to newMap))
+        }
+        BlockedByObstacle -> addMessage(state, Message("Blocked by obstacle", WHITE))
+        is BlockedByEntity -> addMessage(state, Message("Blocked by entity ${walkability.entity}", WHITE))
+        OutsideMap -> addMessage(state, Message("Blocked by map border", WHITE))
     }
+}
+
+fun addMessage(state: EcsState, message: Message): EcsState {
+    val messageLog = state.getData<MessageLog>().add(message)
+    return state.copy(updatedDataMap = mapOf(MessageLog::class to messageLog))
 }
 
 fun getNewPosition(map: GameMap, entity: Int, body: Body, direction: Direction) = when (body) {

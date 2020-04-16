@@ -7,7 +7,10 @@ import game.component.SimpleBody
 import game.component.SnakeBody
 import game.map.GameMap
 import game.map.GameMapBuilder
+import javafx.scene.paint.Color
 import util.ecs.EcsState
+import util.log.Message
+import util.log.MessageLog
 import util.redux.Reducer
 
 val INIT_REDUCER: Reducer<InitAction, EcsState> = { state, _ ->
@@ -23,7 +26,10 @@ val INIT_REDUCER: Reducer<InitAction, EcsState> = { state, _ ->
 
     val newMap = mapBuilder.build()
 
-    state.copy(updatedDataMap = mapOf(GameMap::class to newMap))
+    val messageLog = state.getData<MessageLog>()
+    val newMessageLog = messageLog.add(Message("Init game", Color.WHITE))
+
+    state.copy(updatedDataMap = mapOf(GameMap::class to newMap, MessageLog::class to newMessageLog))
 }
 
 fun addToMap(builder: GameMapBuilder, entity: Int, body: Body) = when (body) {

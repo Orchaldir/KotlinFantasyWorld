@@ -17,6 +17,8 @@ import mu.KotlinLogging
 import util.app.TileApplication
 import util.ecs.EcsBuilder
 import util.ecs.EcsState
+import util.log.MessageLog
+import util.log.MessageLogRenderer
 import util.math.Direction.*
 import util.math.Size
 import util.redux.DefaultStore
@@ -55,6 +57,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
 
         val ecsState = with(EcsBuilder()) {
             addData(gameMap)
+            addData(MessageLog())
             registerComponent<Body>()
             registerComponent<Graphic>()
             registerComponent<Health>()
@@ -86,6 +89,9 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         mapRender.render(tileRenderer, state.getData())
 
         renderEntities(tileRenderer, size, state)
+
+        val messageLogRenderer = MessageLogRenderer(0, size.y - 5)
+        messageLogRenderer.render(tileRenderer, state.getData())
 
         logger.info("render(): finished")
     }
