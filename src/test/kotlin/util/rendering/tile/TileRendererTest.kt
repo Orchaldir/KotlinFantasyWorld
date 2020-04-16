@@ -1,8 +1,8 @@
 package util.rendering.tile
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
+import io.mockk.confirmVerified
+import io.mockk.mockk
+import io.mockk.verify
 import javafx.scene.paint.Color
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -22,7 +22,7 @@ class TileRendererTest {
 
     @BeforeEach
     fun setup() {
-        renderer = mock()
+        renderer = mockk(relaxed = true)
         tileRenderer = TileRenderer(
             renderer,
             START_X,
@@ -39,32 +39,32 @@ class TileRendererTest {
         fun `Render text`() {
             tileRenderer.renderText("Test!", COLOR, 2, 7, 1)
 
-            verify(renderer).setColor(COLOR)
-            verify(renderer).setFont(TILE_HEIGHT)
+            verify { renderer.setColor(COLOR) }
+            verify { renderer.setFont(TILE_HEIGHT) }
             verifyText("T", 2, 7)
             verifyText("e", 3, 7)
             verifyText("s", 4, 7)
             verifyText("t", 5, 7)
             verifyText("!", 6, 7)
-            verifyNoMoreInteractions(renderer)
+            confirmVerified(renderer)
         }
 
         @Test
         fun `Render text with size 2`() {
             tileRenderer.renderText("AB", COLOR, 3, 4, 2)
 
-            verify(renderer).setColor(COLOR)
-            verify(renderer).setFont(TILE_HEIGHT * 2)
+            verify { renderer.setColor(COLOR) }
+            verify { renderer.setFont(TILE_HEIGHT * 2) }
             verifyText(text = "A", x = 3, y = 4, size = 2)
             verifyText(text = "B", x = 5, y = 4, size = 2)
-            verifyNoMoreInteractions(renderer)
+            confirmVerified(renderer)
         }
 
         private fun verifyText(text: String, x: Int, y: Int, size: Int = 1) {
             val centerX = (START_X + TILE_WIDTH * (x + size / 2.0)).toInt()
             val centerY = (START_Y + TILE_HEIGHT * (y + size / 2.0)).toInt()
 
-            verify(renderer).renderUnicode(text, centerX, centerY)
+            verify { renderer.renderUnicode(text, centerX, centerY) }
         }
     }
 
@@ -79,19 +79,19 @@ class TileRendererTest {
         val x = (START_X + TILE_WIDTH * 3.5).toInt()
         val y = (START_Y + TILE_HEIGHT * 8.5).toInt()
 
-        verify(renderer).setColor(COLOR)
-        verify(renderer).setFont(60)
-        verify(renderer).renderUnicode(text, x, y)
-        verifyNoMoreInteractions(renderer)
+        verify { renderer.setColor(COLOR) }
+        verify { renderer.setFont(60) }
+        verify { renderer.renderUnicode(text, x, y) }
+        confirmVerified(renderer)
     }
 
     @Test
     fun testRenderFullTile() {
         tileRenderer.renderFullTile(COLOR, 3, 7)
 
-        verify(renderer).setColor(COLOR)
-        verify(renderer).renderRectangle(130, 340, 10, 20)
-        verifyNoMoreInteractions(renderer)
+        verify { renderer.setColor(COLOR) }
+        verify { renderer.renderRectangle(130, 340, 10, 20) }
+        confirmVerified(renderer)
     }
 
     // render tile
@@ -100,16 +100,16 @@ class TileRendererTest {
     fun testRenderTileEmpty() {
         tileRenderer.renderTile(EmptyTile, 3, 7, 4)
 
-        verifyNoMoreInteractions(renderer)
+        confirmVerified(renderer)
     }
 
     @Test
     fun testRenderTileFull() {
         tileRenderer.renderTile(FullTile(COLOR), 3, 7, 4)
 
-        verify(renderer).setColor(COLOR)
-        verify(renderer).renderRectangle(130, 340, 40, 80)
-        verifyNoMoreInteractions(renderer)
+        verify { renderer.setColor(COLOR) }
+        verify { renderer.renderRectangle(130, 340, 40, 80) }
+        confirmVerified(renderer)
     }
 
     @Test
