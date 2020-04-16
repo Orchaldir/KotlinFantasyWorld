@@ -3,8 +3,8 @@ package app.demo
 import game.InitAction
 import game.MoveAction
 import game.component.*
-import game.map.GameMap
 import game.map.GameMapBuilder
+import game.map.GameMapRenderer
 import game.map.Terrain
 import game.reducer.INIT_REDUCER
 import game.reducer.MOVE_REDUCER
@@ -18,6 +18,7 @@ import util.app.TileApplication
 import util.ecs.EcsBuilder
 import util.ecs.EcsState
 import util.math.Direction.*
+import util.math.Size
 import util.redux.DefaultStore
 import util.redux.Reducer
 import util.redux.middleware.logAction
@@ -33,7 +34,7 @@ val MOVEMENT_DEMO_REDUCER: Reducer<Any, EcsState> = { state, action ->
     }
 }
 
-class MovementDemo : TileApplication(60, 40, 20, 20) {
+class MovementDemo : TileApplication(60, 45, 20, 20) {
     private lateinit var store: DefaultStore<Any, EcsState>
     private var entityId = 0
 
@@ -45,7 +46,7 @@ class MovementDemo : TileApplication(60, 40, 20, 20) {
     private fun create() {
         logger.info("create(): tiles={}", size.cells)
 
-        val gameMap = GameMapBuilder(size, Terrain.FLOOR)
+        val gameMap = GameMapBuilder(Size(size.x, size.y - 5), Terrain.FLOOR)
             .addBorder(Terrain.WALL)
             .addRectangle(20, 10, 10, 10, Terrain.WALL)
             .addRectangle(40, 25, 10, 10, Terrain.WALL)
@@ -81,7 +82,8 @@ class MovementDemo : TileApplication(60, 40, 20, 20) {
 
         renderer.clear()
 
-        state.getData<GameMap>().render(tileRenderer, 0, 0)
+        val mapRender = GameMapRenderer(Size(size.x, size.y - 5))
+        mapRender.render(tileRenderer, state.getData())
 
         renderEntities(tileRenderer, size, state)
 

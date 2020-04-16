@@ -5,6 +5,7 @@ import game.SufferDamageAction
 import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
+import game.map.GameMapRenderer
 import game.map.Terrain
 import game.reducer.INIT_REDUCER
 import game.reducer.createSufferDamageReducer
@@ -87,7 +88,8 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
 
         renderer.clear()
 
-        state.getData<GameMap>().render(tileRenderer, 0, 0)
+        val mapRender = GameMapRenderer(size)
+        mapRender.render(tileRenderer, state.getData())
 
         renderEntities(tileRenderer, size, state)
 

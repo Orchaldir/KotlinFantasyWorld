@@ -1,9 +1,7 @@
 package game.map
 
 import game.map.Walkability.*
-import javafx.scene.paint.Color
 import util.math.Size
-import util.rendering.tile.TileRenderer
 
 data class GameMap(
     val size: Size,
@@ -39,27 +37,6 @@ data class GameMap(
         }
 
         return WALKABLE
-    }
-
-    fun render(renderer: TileRenderer, startX: Int, startY: Int) {
-        var index = 0
-        for (y in startY until startY + size.y) {
-            for (x in startX until startX + size.x) {
-                if (entities.containsKey(index)) {
-                    index++
-                    continue
-                }
-
-                val terrain = terrainList[index++]
-                val symbol = if (terrain == Terrain.FLOOR) {
-                    "."
-                } else {
-                    "#"
-                }
-
-                renderer.renderUnicodeTile(symbol, Color.WHITE, x, y)
-            }
-        }
     }
 
     fun builder() = GameMapBuilder(size, terrainList.toMutableList(), entities.toMutableMap())
