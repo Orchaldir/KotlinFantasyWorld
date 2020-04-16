@@ -9,7 +9,7 @@ import game.map.*
 import javafx.scene.paint.Color.WHITE
 import util.ecs.EcsState
 import util.log.Message
-import util.log.MessageLog
+import util.log.addMessage
 import util.math.Direction
 import util.redux.Reducer
 
@@ -33,10 +33,6 @@ val MOVE_REDUCER: Reducer<MoveAction, EcsState> = { state, action ->
     }
 }
 
-fun addMessage(state: EcsState, message: Message): EcsState {
-    val messageLog = state.getData<MessageLog>().add(message)
-    return state.copy(updatedDataMap = mapOf(MessageLog::class to messageLog))
-}
 
 fun getNewPosition(map: GameMap, entity: Int, body: Body, direction: Direction) = when (body) {
     is SimpleBody -> map.size.getNeighbor(body.position, direction) then { position ->

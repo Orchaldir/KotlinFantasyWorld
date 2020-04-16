@@ -22,6 +22,9 @@ import mu.KotlinLogging
 import util.app.TileApplication
 import util.ecs.EcsBuilder
 import util.ecs.EcsState
+import util.log.MessageLog
+import util.log.MessageLogRenderer
+import util.math.Size
 import util.redux.DefaultStore
 import util.redux.Reducer
 import util.redux.middleware.logAction
@@ -29,6 +32,7 @@ import util.rendering.tile.UnicodeTile
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger {}
+const val MAP_X = 10
 
 class DamageDemo : TileApplication(60, 40, 20, 20) {
     private lateinit var store: DefaultStore<Any, EcsState>
@@ -41,7 +45,7 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
     private fun create() {
         logger.info("create(): tiles={}", size.cells)
 
-        val gameMap = GameMapBuilder(size, Terrain.FLOOR)
+        val gameMap = GameMapBuilder(Size(MAP_X, size.y), Terrain.FLOOR)
             .addBorder(Terrain.WALL)
             .build()
 
@@ -51,6 +55,7 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
 
         val ecsState = with(EcsBuilder()) {
             addData(gameMap)
+            addData(MessageLog())
             addData(skillManager)
             addData(util.redux.random.init(Random, 100))
             addData(Checker(6))
@@ -59,7 +64,7 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
             registerComponent<Statistics>()
             registerComponent<Health>()
             repeat(5) {
-                add(SimpleBody(size.getIndex(5 + 5 * it, 5)) as Body)
+                add(SimpleBody(size.getIndex(5, 5 + 5 * it)) as Body)
                 add(Graphic(UnicodeTile("O", Color.DARKGREEN)))
                 add(Statistics(mapOf(toughness to (3 * it))))
                 add(Health())
@@ -88,10 +93,14 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
 
         renderer.clear()
 
-        val mapRender = GameMapRenderer(size)
-        mapRender.render(tileRenderer, state.getData())
+        val map = state.getData<GameMap>()
+        val mapRender = GameMapRenderer(map.size)
+        mapRender.render(tileRenderer, map)
 
         renderEntities(tileRenderer, size, state)
+
+        val messageLogRenderer = MessageLogRenderer(MAP_X + 1, 0)
+        messageLogRenderer.render(tileRenderer, state.getData())
 
         logger.info("render(): finished")
     }

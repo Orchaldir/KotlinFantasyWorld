@@ -6,9 +6,13 @@ import game.component.HealthState
 import game.component.Statistics
 import game.rpg.character.skill.Skill
 import game.rpg.check.*
+import javafx.scene.paint.Color
 import mu.KotlinLogging
 import util.ecs.EcsState
 import util.ecs.storage.ComponentStorage
+import util.log.Message
+import util.log.MessageLog
+import util.log.addMessage
 import util.redux.Reducer
 import util.redux.random.RandomNumberState
 import kotlin.reflect.KClass
@@ -22,8 +26,7 @@ fun createSufferDamageReducer(toughness: Skill): Reducer<SufferDamageAction, Ecs
     val health = healthStorage.getOrThrow(id)
 
     if (health.state == HealthState.DEAD) {
-        logger.info("Entity $id is already dead!")
-        return@a state
+        return@a addMessage(state, Message("Entity $id is already dead!", Color.YELLOW))
     }
 
     val statisticsStorage = state.getStorage<Statistics>()
@@ -47,6 +50,16 @@ fun createSufferDamageReducer(toughness: Skill): Reducer<SufferDamageAction, Ecs
         logger.info("Change: $newHealth")
         val newHealthStorage = healthStorage.updateAndRemove(mapOf(id to newHealth))
         updatedStorageMap[Health::class] = newHealthStorage
+
+        val messageLog = state.getData<MessageLog>()
+
+        val message = if (health.state != newHealth.state) {
+            Message("Entity $id is ${newHealth.state}", Color.WHITE)
+        } else {
+            Message("Entity $id looks slightly worse", Color.WHITE)
+        }
+
+        updatedDataMap[MessageLog::class] = messageLog.add(message)
     }
 
     state.copy(updatedStorageMap, updatedDataMap)
