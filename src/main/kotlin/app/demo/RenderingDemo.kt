@@ -8,6 +8,7 @@ import util.app.TileApplication
 import util.log.Message
 import util.log.MessageLog
 import util.log.MessageLogRenderer
+import util.math.Size
 
 private val logger = KotlinLogging.logger {}
 
@@ -20,7 +21,7 @@ class RenderingDemo : TileApplication(50, 20, 22, 32) {
             Message("Warning for the user", Color.YELLOW)
         )
     )
-    private val messageLogRenderer = MessageLogRenderer(20, 0)
+    private val messageLogRenderer = MessageLogRenderer(20, 0, Size(30, 10))
 
     override fun start(primaryStage: Stage) {
         init(primaryStage, "Rendering Demo")

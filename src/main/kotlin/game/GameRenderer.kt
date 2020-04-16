@@ -64,15 +64,15 @@ class GameRenderer(
     }
 
     private fun renderBody(tileRenderer: TileRenderer, body: Body, graphic: Graphic) = when (body) {
-        is SimpleBody -> renderTile(tileRenderer, body.position, 1, graphic.get(0))
-        is BigBody -> renderTile(tileRenderer, body.position, body.size, graphic.get(0))
+        is SimpleBody -> renderTile(tileRenderer, graphic.get(0), body.position)
+        is BigBody -> renderTile(tileRenderer, graphic.get(0), body.position, body.size)
         is SnakeBody -> for (pos in body.positions) {
-            renderTile(tileRenderer, pos, 1, graphic.get(0))
+            renderTile(tileRenderer, graphic.get(0), pos)
         }
     }
 
-    private fun renderTile(tileRenderer: TileRenderer, pos: Int, s: Int, tile: Tile) {
-        tileRenderer.renderTile(tile, startX + size.getX(pos), startY + size.getY(pos), s)
+    private fun renderTile(tileRenderer: TileRenderer, tile: Tile, pos: Int, bodySize: Int = 1) {
+        tileRenderer.renderTile(tile, startX + size.getX(pos), startY + size.getY(pos), bodySize)
     }
 
     private val corpse = Graphic(UnicodeTile("%", Color.WHITE))

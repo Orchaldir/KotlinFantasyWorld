@@ -97,7 +97,7 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
         mapRender.renderMap(tileRenderer, map)
         mapRender.renderEntities(tileRenderer, state)
 
-        val messageLogRenderer = MessageLogRenderer(MAP_X + 1, 0)
+        val messageLogRenderer = MessageLogRenderer(MAP_X + 1, 0, Size(size.x - MAP_X, size.y))
         messageLogRenderer.render(tileRenderer, state.getData())
 
         logger.info("render(): finished")

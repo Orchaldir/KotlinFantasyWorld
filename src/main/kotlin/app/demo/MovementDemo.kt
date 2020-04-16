@@ -92,7 +92,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         mapRender.renderMap(tileRenderer, map)
         mapRender.renderEntities(tileRenderer, state)
 
-        val messageLogRenderer = MessageLogRenderer(0, 0)
+        val messageLogRenderer = MessageLogRenderer(0, 0, Size(size.x, LOG_SIZE))
         messageLogRenderer.render(tileRenderer, state.getData())
 
         logger.info("render(): finished")
