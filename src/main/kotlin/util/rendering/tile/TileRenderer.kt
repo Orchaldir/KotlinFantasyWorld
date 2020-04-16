@@ -34,7 +34,7 @@ class TileRenderer(
 
             for (character in splitByCodePoint) {
                 renderUnicode(character, centerX, centerY)
-                centerX += tileWidth
+                centerX += tileWidth * size
             }
         }
     }

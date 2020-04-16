@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import javafx.scene.paint.Color
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import util.rendering.Renderer
 
@@ -31,25 +32,40 @@ class TileRendererTest {
         )
     }
 
-    @Test
-    fun testRenderText() {
-        tileRenderer.renderText("Test!", COLOR, 2, 7, 1)
+    @Nested
+    inner class RenderText {
 
-        verify(renderer).setColor(COLOR)
-        verify(renderer).setFont(TILE_HEIGHT)
-        verifyText("T", 2, 7)
-        verifyText("e", 3, 7)
-        verifyText("s", 4, 7)
-        verifyText("t", 5, 7)
-        verifyText("!", 6, 7)
-        verifyNoMoreInteractions(renderer)
-    }
+        @Test
+        fun `Render text`() {
+            tileRenderer.renderText("Test!", COLOR, 2, 7, 1)
 
-    private fun verifyText(text: String, x: Int, y: Int) {
-        val centerX = (START_X + TILE_WIDTH * (x + 0.5)).toInt()
-        val centerY = (START_Y + TILE_HEIGHT * (y + 0.5)).toInt()
+            verify(renderer).setColor(COLOR)
+            verify(renderer).setFont(TILE_HEIGHT)
+            verifyText("T", 2, 7)
+            verifyText("e", 3, 7)
+            verifyText("s", 4, 7)
+            verifyText("t", 5, 7)
+            verifyText("!", 6, 7)
+            verifyNoMoreInteractions(renderer)
+        }
 
-        verify(renderer).renderUnicode(text, centerX, centerY)
+        @Test
+        fun `Render text with size 2`() {
+            tileRenderer.renderText("AB", COLOR, 3, 4, 2)
+
+            verify(renderer).setColor(COLOR)
+            verify(renderer).setFont(TILE_HEIGHT * 2)
+            verifyText(text = "A", x = 3, y = 4, size = 2)
+            verifyText(text = "B", x = 5, y = 4, size = 2)
+            verifyNoMoreInteractions(renderer)
+        }
+
+        private fun verifyText(text: String, x: Int, y: Int, size: Int = 1) {
+            val centerX = (START_X + TILE_WIDTH * (x + size / 2.0)).toInt()
+            val centerY = (START_Y + TILE_HEIGHT * (y + size / 2.0)).toInt()
+
+            verify(renderer).renderUnicode(text, centerX, centerY)
+        }
     }
 
     @Test

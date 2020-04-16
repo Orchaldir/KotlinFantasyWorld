@@ -3,6 +3,7 @@ package game.rpg.check
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isSameAs
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -32,6 +33,7 @@ class CheckerTest {
             assertThat(checker.check(rng, 0, 0)).isEqualTo(Success(5))
 
             verify(exactly = 2) { rng.rollDice(SIDES) }
+            confirmVerified(rng)
         }
 
         @Test
@@ -41,6 +43,7 @@ class CheckerTest {
             assertThat(checker.check(rng, 0, 100)).isEqualTo(Failure(95))
 
             verify(exactly = 2) { rng.rollDice(SIDES) }
+            confirmVerified(rng)
         }
     }
 
@@ -54,6 +57,7 @@ class CheckerTest {
             assertThat(checker.check(rng, 0, 0)).isEqualTo(Failure(5))
 
             verify(exactly = 2) { rng.rollDice(SIDES) }
+            confirmVerified(rng)
         }
 
         @Test
@@ -63,6 +67,7 @@ class CheckerTest {
             assertThat(checker.check(rng, 100, 0)).isEqualTo(Success(95))
 
             verify(exactly = 2) { rng.rollDice(SIDES) }
+            confirmVerified(rng)
         }
     }
 
@@ -73,6 +78,7 @@ class CheckerTest {
         assertThat(checker.check(rng, 10, 10)).isSameAs(Draw)
 
         verify(exactly = 2) { rng.rollDice(SIDES) }
+        confirmVerified(rng)
     }
 
     @Test
@@ -82,6 +88,7 @@ class CheckerTest {
         assertThat(checker.check(rng, 4, 3)).isEqualTo(Success(3))
 
         verify(exactly = 2) { rng.rollDice(SIDES) }
+        confirmVerified(rng)
     }
 
     @Test
@@ -91,6 +98,7 @@ class CheckerTest {
         assertThat(checker.check(rng, 4, 3)).isEqualTo(Failure(4))
 
         verify(exactly = 2) { rng.rollDice(SIDES) }
+        confirmVerified(rng)
     }
 
 }
