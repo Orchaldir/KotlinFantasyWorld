@@ -6,7 +6,8 @@ import game.component.Body
 import game.component.SimpleBody
 import game.component.SnakeBody
 import game.map.GameMap
-import game.map.Walkability.WALKABLE
+import game.map.Walkable
+import game.map.then
 import util.ecs.EcsState
 import util.math.Direction
 import util.redux.Reducer
@@ -16,11 +17,11 @@ val MOVE_REDUCER: Reducer<MoveAction, EcsState> = { state, action ->
     val bodyStorage = state.getStorage<Body>()
     val body = bodyStorage.getOrThrow(action.entity)
 
-    val newPosition = getNewPosition(map, action.entity, body, action.direction)
+    val walkability = getNewPosition(map, action.entity, body, action.direction)
 
-    if (newPosition != null) {
-        val newMap = updateMap(map, action.entity, body, newPosition)
-        val newBody = updateBody(body, newPosition)
+    if (walkability is Walkable) {
+        val newMap = updateMap(map, action.entity, body, walkability.position)
+        val newBody = updateBody(body, walkability.position)
         val newBodyStorage = bodyStorage.updateAndRemove(mapOf(action.entity to newBody))
         state.copy(mapOf(Body::class to newBodyStorage), mapOf(GameMap::class to newMap))
     } else {
@@ -29,24 +30,24 @@ val MOVE_REDUCER: Reducer<MoveAction, EcsState> = { state, action ->
 }
 
 fun getNewPosition(map: GameMap, entity: Int, body: Body, direction: Direction) = when (body) {
-    is SimpleBody -> map.size.getNeighbor(body.position, direction)?.takeIf {
+    is SimpleBody -> map.size.getNeighbor(body.position, direction) then { position ->
         map.checkWalkability(
-            index = it,
+            position,
             entity = entity
-        ) == WALKABLE
+        )
     }
-    is BigBody -> map.size.getNeighbor(body.position, direction)?.takeIf {
+    is BigBody -> map.size.getNeighbor(body.position, direction) then { position ->
         map.checkWalkability(
-            index = it,
+            position,
             size = body.size,
             entity = entity
-        ) == WALKABLE
+        )
     }
-    is SnakeBody -> map.size.getNeighbor(body.positions.first(), direction)?.takeIf {
+    is SnakeBody -> map.size.getNeighbor(body.positions.first(), direction) then { position ->
         map.checkWalkability(
-            index = it,
+            position,
             entity = entity
-        ) == WALKABLE
+        )
     }
 }
 

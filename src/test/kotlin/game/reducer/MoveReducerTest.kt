@@ -2,13 +2,13 @@ package game.reducer
 
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEqualTo
 import assertk.assertions.isNotSameAs
 import assertk.assertions.isSameAs
 import game.component.BigBody
 import game.component.SimpleBody
 import game.component.SnakeBody
-import game.map.GameMapBuilder
-import game.map.Terrain
+import game.map.*
 import game.map.Terrain.FLOOR
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -32,21 +32,21 @@ class MoveReducerTest {
         fun `Move a simple body`() {
             val body = SimpleBody(4)
 
-            assertThat(getNewPosition(MAP, ENTITY, body, NORTH)).isSameAs(1)
+            assertThat(getNewPosition(MAP, ENTITY, body, NORTH)).isEqualTo(Walkable(1))
         }
 
         @Test
         fun `Fail to move a simple body outside the map`() {
             val body = SimpleBody(1)
 
-            assertNull(getNewPosition(MAP, ENTITY, body, NORTH))
+            assertThat(getNewPosition(MAP, ENTITY, body, NORTH)).isEqualTo(OutsideMap)
         }
 
         @Test
         fun `Fail to move a simple body into a wall`() {
             val body = SimpleBody(1)
 
-            assertNull(getNewPosition(MAP, ENTITY, body, WEST))
+            assertThat(getNewPosition(MAP, ENTITY, body, WEST)).isEqualTo(BlockedByObstacle)
         }
     }
 
@@ -57,21 +57,21 @@ class MoveReducerTest {
         fun `Move a big body`() {
             val body = BigBody(4, 2)
 
-            assertThat(getNewPosition(MAP, ENTITY, body, NORTH)).isSameAs(1)
+            assertThat(getNewPosition(MAP, ENTITY, body, NORTH)).isEqualTo(Walkable(1))
         }
 
         @Test
         fun `Fail to move a big body outside the map`() {
             val body = BigBody(1, 2)
 
-            assertNull(getNewPosition(MAP, ENTITY, body, NORTH))
+            assertThat(getNewPosition(MAP, ENTITY, body, NORTH)).isEqualTo(OutsideMap)
         }
 
         @Test
         fun `Fail to move a big body into a wall`() {
             val body = BigBody(1, 2)
 
-            assertNull(getNewPosition(MAP, ENTITY, body, WEST))
+            assertThat(getNewPosition(MAP, ENTITY, body, WEST)).isEqualTo(BlockedByObstacle)
         }
     }
 
@@ -82,21 +82,21 @@ class MoveReducerTest {
         fun `Move a big body`() {
             val body = SnakeBody(listOf(4, 3, 6))
 
-            assertThat(getNewPosition(MAP, ENTITY, body, NORTH)).isSameAs(1)
+            assertThat(getNewPosition(MAP, ENTITY, body, NORTH)).isEqualTo(Walkable(1))
         }
 
         @Test
         fun `Fail to move a big body outside the map`() {
             val body = SnakeBody(listOf(1, 4, 3))
 
-            assertNull(getNewPosition(MAP, ENTITY, body, NORTH))
+            assertThat(getNewPosition(MAP, ENTITY, body, NORTH)).isEqualTo(OutsideMap)
         }
 
         @Test
         fun `Fail to move a big body into a wall`() {
             val body = SnakeBody(listOf(1, 4, 3))
 
-            assertNull(getNewPosition(MAP, ENTITY, body, WEST))
+            assertThat(getNewPosition(MAP, ENTITY, body, WEST)).isEqualTo(BlockedByObstacle)
         }
     }
 

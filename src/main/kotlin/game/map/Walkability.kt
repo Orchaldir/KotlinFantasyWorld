@@ -1,8 +1,13 @@
 package game.map
 
-enum class Walkability {
-    WALKABLE,
-    BLOCKED_BY_OBSTACLE,
-    BLOCKED_BY_ENTITY,
-    OUTSIDE_MAP
-}
+sealed class Walkability
+data class Walkable(val position: Int) : Walkability()
+object BlockedByObstacle : Walkability()
+data class BlockedByEntity(val entity: Int) : Walkability()
+object OutsideMap : Walkability()
+
+infix fun Int?.then(f: (Int) -> Walkability) =
+    when (this) {
+        null -> OutsideMap
+        else -> f(this)
+    }
