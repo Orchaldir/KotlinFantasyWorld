@@ -125,7 +125,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
             "Turn=${timeSystem.turn} Entity=${timeSystem.entities.first()} " + if (turnData.isFinished()) {
                 "Press space to finish turn"
             } else {
-                "MovementPoints=${turnData.movementPoints}"
+                "Movement=${turnData.movementPoints}/${turnData.maxMovementPoints}"
             }
 
         tileRenderer.renderText(

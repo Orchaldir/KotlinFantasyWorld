@@ -10,6 +10,7 @@ import game.rpg.time.TurnData
 import javafx.scene.paint.Color.WHITE
 import javafx.scene.paint.Color.YELLOW
 import util.ecs.EcsState
+import util.ecs.storage.ComponentStorage
 import util.log.Message
 import util.log.addMessage
 import util.math.Direction
@@ -29,19 +30,7 @@ val MOVE_REDUCER: Reducer<MoveAction, EcsState> = a@{ state, action ->
     val walkability = getNewPosition(map, action.entity, body, action.direction)
 
     when (walkability) {
-        is Walkable -> {
-            val newMap = updateMap(map, action.entity, body, walkability.position)
-
-            val newBody = updateBody(body, walkability.position)
-            val newBodyStorage = bodyStorage.updateAndRemove(mapOf(action.entity to newBody))
-
-            val newTurnData = turnData.reduceMovementPoints()
-
-            state.copy(
-                mapOf(Body::class to newBodyStorage),
-                mapOf(GameMap::class to newMap, TurnData::class to newTurnData)
-            )
-        }
+        is Walkable -> move(state, map, action.entity, bodyStorage, body, walkability, turnData)
         BlockedByObstacle -> addMessage(state, Message("Blocked by obstacle", WHITE))
         is BlockedByEntity -> addMessage(state, Message("Blocked by entity ${walkability.entity}", WHITE))
         OutsideMap -> addMessage(state, Message("Blocked by map border", WHITE))
@@ -69,6 +58,28 @@ fun getNewPosition(map: GameMap, entity: Int, body: Body, direction: Direction) 
             entity = entity
         )
     }
+}
+
+private fun move(
+    state: EcsState,
+    map: GameMap,
+    entity: Int,
+    bodyStorage: ComponentStorage<Body>,
+    body: Body,
+    walkable: Walkable,
+    turnData: TurnData
+): EcsState {
+    val newMap = updateMap(map, entity, body, walkable.position)
+
+    val newBody = updateBody(body, walkable.position)
+    val newBodyStorage = bodyStorage.updateAndRemove(mapOf(entity to newBody))
+
+    val newTurnData = turnData.reduceMovementPoints()
+
+    return state.copy(
+        mapOf(Body::class to newBodyStorage),
+        mapOf(GameMap::class to newMap, TurnData::class to newTurnData)
+    )
 }
 
 fun updateMap(map: GameMap, entity: Int, body: Body, position: Int) = when (body) {

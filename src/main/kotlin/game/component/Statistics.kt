@@ -4,7 +4,7 @@ import game.rpg.character.skill.Skill
 
 const val DEFAULT_RANK = 0
 
-class Statistics(
+data class Statistics(
     val skillMap: Map<Skill, Int>
 ) {
 
