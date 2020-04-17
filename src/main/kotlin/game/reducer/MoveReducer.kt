@@ -78,7 +78,7 @@ private fun move(
 
     return state.copy(
         mapOf(Body::class to newBodyStorage),
-        mapOf(GameMap::class to newMap, TurnData::class to newTurnData)
+        listOf(newMap, newTurnData)
     )
 }
 

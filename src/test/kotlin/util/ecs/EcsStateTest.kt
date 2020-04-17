@@ -63,7 +63,7 @@ class EcsStateTest {
             }
 
             val newData1 = "New String"
-            val copy = state.copy(updatedDataMap = mapOf(String::class to (newData1 as Any)))
+            val copy = state.copy(updatedData = listOf(newData1))
 
             assertThat(copy.getData<Int>()).isSameAs(data0)
             assertThat(copy.getData<String>()).all {

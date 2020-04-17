@@ -43,7 +43,7 @@ val SUFFER_DAMAGE_REDUCER: Reducer<SufferDamageAction, EcsState> = a@{ state, ac
     logger.info("entity=$id toughness=$toughnessRank $health result=$result")
 
     val updatedStorageMap: MutableMap<KClass<*>, ComponentStorage<*>> = mutableMapOf()
-    val updatedDataMap: MutableMap<KClass<*>, Any> = mutableMapOf(RandomNumberState::class to rng.createState())
+    val updatedData = mutableListOf<Any>(rng.createState())
 
     val newHealth = updateHealth(health, result)
 
@@ -51,14 +51,14 @@ val SUFFER_DAMAGE_REDUCER: Reducer<SufferDamageAction, EcsState> = a@{ state, ac
         logger.info("Change to $newHealth")
         updatedStorageMap[Health::class] = healthStorage.updateAndRemove(mapOf(id to newHealth))
 
-        updateMessageLog(state, health, newHealth, id, updatedDataMap)
+        updateMessageLog(state, health, newHealth, id, updatedData)
     } else {
         val messageLog = state.getData<MessageLog>()
         val message = Message("Entity $id suffers no damage", Color.WHITE)
-        updatedDataMap[MessageLog::class] = messageLog.add(message)
+        updatedData += messageLog.add(message)
     }
 
-    state.copy(updatedStorageMap, updatedDataMap)
+    state.copy(updatedStorageMap, updatedData)
 }
 
 private fun updateMessageLog(
@@ -66,7 +66,7 @@ private fun updateMessageLog(
     health: Health,
     newHealth: Health,
     id: Int,
-    updatedDataMap: MutableMap<KClass<*>, Any>
+    updatedDataMap: MutableList<Any>
 ) {
     val messageLog = state.getData<MessageLog>()
 
@@ -76,7 +76,7 @@ private fun updateMessageLog(
         Message("Entity $id looks slightly worse", Color.WHITE)
     }
 
-    updatedDataMap[MessageLog::class] = messageLog.add(message)
+    updatedDataMap += messageLog.add(message)
 }
 
 private fun updateHealth(health: Health, result: CheckResult) = when (result) {

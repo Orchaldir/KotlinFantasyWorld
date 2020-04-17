@@ -7,27 +7,25 @@ import game.map.GameMapBuilder
 import game.rpg.character.skill.Skill
 import game.rpg.character.skill.SkillUsage
 import game.rpg.time.TimeSystem
-import game.rpg.time.TurnData
 import game.rpg.time.createTurnData
 import javafx.scene.paint.Color
 import util.ecs.EcsState
 import util.log.Message
 import util.log.MessageLog
 import util.redux.Reducer
-import kotlin.reflect.KClass
 
 val INIT_REDUCER: Reducer<InitAction, EcsState> = { state, _ ->
     val skillUsage = state.getData<SkillUsage>()
-    val updatedData = mutableMapOf<KClass<*>, Any>()
+    val updatedData = mutableListOf<Any>()
 
     initBodies(state, updatedData)
     initMessageLog(state, updatedData)
     initTime(state, updatedData, skillUsage.speed)
 
-    state.copy(updatedDataMap = updatedData)
+    state.copy(updatedData = updatedData)
 }
 
-fun initBodies(state: EcsState, updatedData: MutableMap<KClass<*>, Any>) {
+fun initBodies(state: EcsState, updatedData: MutableList<Any>) {
     val map = state.getData<GameMap>()
     val bodyStorage = state.getStorage<Body>()
 
@@ -38,22 +36,22 @@ fun initBodies(state: EcsState, updatedData: MutableMap<KClass<*>, Any>) {
         addToMap(mapBuilder, id, body)
     }
 
-    updatedData[GameMap::class] = mapBuilder.build()
+    updatedData += mapBuilder.build()
 }
 
-fun initMessageLog(state: EcsState, updatedData: MutableMap<KClass<*>, Any>) {
+fun initMessageLog(state: EcsState, updatedData: MutableList<Any>) {
     val messageLog = state.getData<MessageLog>()
-    updatedData[MessageLog::class] = messageLog.add(Message("Init game", Color.WHITE))
+    updatedData += messageLog.add(Message("Init game", Color.WHITE))
 }
 
-fun initTime(state: EcsState, updatedData: MutableMap<KClass<*>, Any>, speed: Skill) {
+fun initTime(state: EcsState, updatedData: MutableList<Any>, speed: Skill) {
     val system = state.getOptionalData<TimeSystem>()
 
     if (system != null) {
         val controllerStorage = state.getStorage<Controller>()
         val newSystem = system.add(controllerStorage.getIds().sorted())
-        updatedData[TimeSystem::class] = newSystem
-        updatedData[TurnData::class] = createTurnData(state, newSystem, speed)
+        updatedData += newSystem
+        updatedData += createTurnData(state, newSystem, speed)
     }
 }
 

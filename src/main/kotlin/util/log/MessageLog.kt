@@ -12,5 +12,5 @@ data class MessageLog(val messages: List<Message>) {
 
 fun addMessage(state: EcsState, message: Message): EcsState {
     val messageLog = state.getData<MessageLog>().add(message)
-    return state.copy(updatedDataMap = mapOf(MessageLog::class to messageLog))
+    return state.copy(updatedData = listOf(messageLog))
 }

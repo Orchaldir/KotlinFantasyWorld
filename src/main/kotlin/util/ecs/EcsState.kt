@@ -38,7 +38,7 @@ class EcsState(
 
     fun copy(
         updatedStorageMap: Map<KClass<*>, ComponentStorage<*>> = emptyMap(),
-        updatedDataMap: Map<KClass<*>, Any> = emptyMap()
+        updatedData: List<Any> = emptyList()
     ): EcsState {
         val newStorageMap = if (updatedStorageMap.isEmpty()) {
             storageMap
@@ -46,10 +46,10 @@ class EcsState(
             storageMap + updatedStorageMap
         }
 
-        val newDataMap = if (updatedDataMap.isEmpty()) {
+        val newDataMap = if (updatedData.isEmpty()) {
             dataMap
         } else {
-            dataMap + updatedDataMap
+            dataMap + updatedData.map { it::class to it }.toMap()
         }
 
         return EcsState(entityIds, newStorageMap, newDataMap)
