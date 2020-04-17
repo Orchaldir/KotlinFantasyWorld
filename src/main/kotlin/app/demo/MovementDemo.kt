@@ -9,6 +9,7 @@ import game.map.GameMapBuilder
 import game.map.Terrain
 import game.reducer.INIT_REDUCER
 import game.reducer.MOVE_REDUCER
+import game.rpg.time.TimeSystem
 import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
@@ -28,7 +29,7 @@ import util.rendering.tile.UnicodeTile
 
 private val logger = KotlinLogging.logger {}
 
-val MOVEMENT_DEMO_REDUCER: Reducer<Any, EcsState> = { state, action ->
+private val MOVEMENT_DEMO_REDUCER: Reducer<Any, EcsState> = { state, action ->
     when (action) {
         is InitAction -> INIT_REDUCER(state, action)
         is MoveAction -> MOVE_REDUCER(state, action)
@@ -60,11 +61,14 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         val ecsState = with(EcsBuilder()) {
             addData(gameMap)
             addData(MessageLog())
+            addData(TimeSystem())
             registerComponent<Body>()
+            registerComponent<Controller>()
             registerComponent<Graphic>()
             registerComponent<Health>()
             add(SimpleBody(gameMap.size.getIndex(10, 5)) as Body)
             add(Graphic(UnicodeTile("@", Color.BLUE)))
+            add(Player as Controller)
             buildEntity()
             add(BigBody(gameMap.size.getIndex(10, 25), 4) as Body)
             add(Graphic(UnicodeTile("D", Color.RED)))
@@ -78,8 +82,16 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         }
 
         store = DefaultStore(ecsState, MOVEMENT_DEMO_REDUCER, listOf(::logAction))
-        store.subscribe(this::render)
+        store.subscribe(this::update)
         store.dispatch(InitAction)
+    }
+
+    private fun update(state: EcsState) {
+        val currentEntity = store.getState().getData<TimeSystem>().entities.first()
+
+        if (currentEntity == entityId) {
+            render(state)
+        }
     }
 
     private fun render(state: EcsState) {

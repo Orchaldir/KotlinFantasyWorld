@@ -1,19 +1,28 @@
 package game.reducer
 
 import game.InitAction
-import game.component.BigBody
-import game.component.Body
-import game.component.SimpleBody
-import game.component.SnakeBody
+import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
+import game.rpg.time.TimeSystem
 import javafx.scene.paint.Color
 import util.ecs.EcsState
 import util.log.Message
 import util.log.MessageLog
 import util.redux.Reducer
+import kotlin.reflect.KClass
 
 val INIT_REDUCER: Reducer<InitAction, EcsState> = { state, _ ->
+    val updatedData = mutableMapOf<KClass<*>, Any>()
+
+    initBodies(state, updatedData)
+    initMessageLog(state, updatedData)
+    initTime(state, updatedData)
+
+    state.copy(updatedDataMap = updatedData)
+}
+
+fun initBodies(state: EcsState, updatedData: MutableMap<KClass<*>, Any>) {
     val map = state.getData<GameMap>()
     val bodyStorage = state.getStorage<Body>()
 
@@ -24,12 +33,21 @@ val INIT_REDUCER: Reducer<InitAction, EcsState> = { state, _ ->
         addToMap(mapBuilder, id, body)
     }
 
-    val newMap = mapBuilder.build()
+    updatedData[GameMap::class] = mapBuilder.build()
+}
 
+fun initMessageLog(state: EcsState, updatedData: MutableMap<KClass<*>, Any>) {
     val messageLog = state.getData<MessageLog>()
-    val newMessageLog = messageLog.add(Message("Init game", Color.WHITE))
+    updatedData[MessageLog::class] = messageLog.add(Message("Init game", Color.WHITE))
+}
 
-    state.copy(updatedDataMap = mapOf(GameMap::class to newMap, MessageLog::class to newMessageLog))
+fun initTime(state: EcsState, updatedData: MutableMap<KClass<*>, Any>) {
+    val system = state.getOptionalData<TimeSystem>()
+
+    if (system != null) {
+        val controllerStorage = state.getStorage<Controller>()
+        updatedData[TimeSystem::class] = system.add(controllerStorage.getIds().sorted())
+    }
 }
 
 fun addToMap(builder: GameMapBuilder, entity: Int, body: Body) = when (body) {

@@ -31,7 +31,7 @@ import util.rendering.tile.UnicodeTile
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger {}
-const val MAP_X = 10
+private const val MAP_X = 10
 
 class DamageDemo : TileApplication(60, 40, 20, 20) {
     private lateinit var store: DefaultStore<Any, EcsState>

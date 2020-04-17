@@ -27,6 +27,15 @@ class EcsState(
 
     inline fun <reified T : Any> getData(): T = getData(T::class)
 
+    fun <T> getOptionalData(type: KClass<*>): T? {
+        val data = dataMap[type]
+
+        @Suppress("UNCHECKED_CAST")
+        return data as T?
+    }
+
+    inline fun <reified T : Any> getOptionalData(): T? = getOptionalData(T::class)
+
     fun copy(
         updatedStorageMap: Map<KClass<*>, ComponentStorage<*>> = emptyMap(),
         updatedDataMap: Map<KClass<*>, Any> = emptyMap()
