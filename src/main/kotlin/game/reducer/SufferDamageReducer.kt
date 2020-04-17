@@ -4,7 +4,7 @@ import game.SufferDamageAction
 import game.component.Health
 import game.component.HealthState
 import game.component.Statistics
-import game.rpg.character.skill.Skill
+import game.rpg.character.skill.SkillUsage
 import game.rpg.check.*
 import javafx.scene.paint.Color
 import mu.KotlinLogging
@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
 
 private val logger = KotlinLogging.logger {}
 
-fun createSufferDamageReducer(toughness: Skill): Reducer<SufferDamageAction, EcsState> = a@{ state, action ->
+val SUFFER_DAMAGE_REDUCER: Reducer<SufferDamageAction, EcsState> = a@{ state, action ->
     val id = action.entity
 
     val healthStorage = state.getStorage<Health>()
@@ -29,9 +29,10 @@ fun createSufferDamageReducer(toughness: Skill): Reducer<SufferDamageAction, Ecs
         return@a addMessage(state, Message("Entity $id is already dead!", Color.YELLOW))
     }
 
+    val skillUsage = state.getData<SkillUsage>()
     val statisticsStorage = state.getStorage<Statistics>()
     val statistics = statisticsStorage.getOrThrow(id)
-    val toughnessRank = statistics.getRank(toughness)
+    val toughnessRank = statistics.getRank(skillUsage.toughness)
     val difficulty = toughnessRank - health.penalty
 
     val rng = state.getData<RandomNumberState>().createGenerator()

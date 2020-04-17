@@ -8,11 +8,12 @@ import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
 import game.map.Terrain
+import game.reducer.FINISH_TURN_REDUCER
+import game.reducer.INIT_REDUCER
 import game.reducer.MOVE_REDUCER
-import game.reducer.createFinishTurnReducer
-import game.reducer.createInitReducer
 import game.rpg.character.skill.Skill
 import game.rpg.character.skill.SkillManager
+import game.rpg.character.skill.SkillUsage
 import game.rpg.time.TimeSystem
 import game.rpg.time.TurnData
 import javafx.application.Application
@@ -50,6 +51,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
 
         val speed = Skill("Speed")
         val skillManager = SkillManager(listOf(speed))
+        val skillUsage = SkillUsage(speed = speed)
 
         val gameMap = GameMapBuilder(Size(size.x, size.y - LOG_SIZE - STATUS_SIZE), Terrain.FLOOR)
             .addBorder(Terrain.WALL)
@@ -62,6 +64,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
             addData(gameMap)
             addData(MessageLog())
             addData(skillManager)
+            addData(skillUsage)
             addData(TimeSystem())
             registerComponent<Body>()
             registerComponent<Controller>()
@@ -88,13 +91,10 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
             build()
         }
 
-        val finishTurnReducer = createFinishTurnReducer(speed)
-        val initReducer = createInitReducer(speed)
-
         val reducer: Reducer<Any, EcsState> = { state, action ->
             when (action) {
-                is FinishTurnAction -> finishTurnReducer(state, action)
-                is InitAction -> initReducer(state, action)
+                is FinishTurnAction -> FINISH_TURN_REDUCER(state, action)
+                is InitAction -> INIT_REDUCER(state, action)
                 is MoveAction -> MOVE_REDUCER(state, action)
                 else -> state
             }

@@ -5,6 +5,7 @@ import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
 import game.rpg.character.skill.Skill
+import game.rpg.character.skill.SkillUsage
 import game.rpg.time.TimeSystem
 import game.rpg.time.TurnData
 import game.rpg.time.createTurnData
@@ -15,12 +16,13 @@ import util.log.MessageLog
 import util.redux.Reducer
 import kotlin.reflect.KClass
 
-fun createInitReducer(speed: Skill? = null): Reducer<InitAction, EcsState> = { state, _ ->
+val INIT_REDUCER: Reducer<InitAction, EcsState> = { state, _ ->
+    val skillUsage = state.getData<SkillUsage>()
     val updatedData = mutableMapOf<KClass<*>, Any>()
 
     initBodies(state, updatedData)
     initMessageLog(state, updatedData)
-    initTime(state, updatedData, speed)
+    initTime(state, updatedData, skillUsage.speed)
 
     state.copy(updatedDataMap = updatedData)
 }
@@ -44,10 +46,10 @@ fun initMessageLog(state: EcsState, updatedData: MutableMap<KClass<*>, Any>) {
     updatedData[MessageLog::class] = messageLog.add(Message("Init game", Color.WHITE))
 }
 
-fun initTime(state: EcsState, updatedData: MutableMap<KClass<*>, Any>, speed: Skill?) {
+fun initTime(state: EcsState, updatedData: MutableMap<KClass<*>, Any>, speed: Skill) {
     val system = state.getOptionalData<TimeSystem>()
 
-    if (system != null && speed != null) {
+    if (system != null) {
         val controllerStorage = state.getStorage<Controller>()
         val newSystem = system.add(controllerStorage.getIds().sorted())
         updatedData[TimeSystem::class] = newSystem

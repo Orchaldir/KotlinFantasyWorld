@@ -7,11 +7,12 @@ import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
 import game.map.Terrain
-import game.reducer.createInitReducer
-import game.reducer.createSufferDamageReducer
+import game.reducer.INIT_REDUCER
+import game.reducer.SUFFER_DAMAGE_REDUCER
 import game.rpg.Damage
 import game.rpg.character.skill.Skill
 import game.rpg.character.skill.SkillManager
+import game.rpg.character.skill.SkillUsage
 import game.rpg.check.Checker
 import javafx.application.Application
 import javafx.scene.input.KeyCode
@@ -50,12 +51,13 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
 
         val toughness = Skill("Toughness")
         val skillManager = SkillManager(listOf(toughness))
-
+        val skillUsage = SkillUsage(toughness = toughness)
 
         val ecsState = with(EcsBuilder()) {
             addData(gameMap)
             addData(MessageLog())
             addData(skillManager)
+            addData(skillUsage)
             addData(util.redux.random.init(Random, 100))
             addData(Checker(6))
             registerComponent<Body>()
@@ -72,13 +74,10 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
             build()
         }
 
-        val initReducer = createInitReducer()
-        val sufferDamageReducer = createSufferDamageReducer(toughness)
-
         val reducer: Reducer<Any, EcsState> = { state, action ->
             when (action) {
-                is InitAction -> initReducer(state, action)
-                is SufferDamageAction -> sufferDamageReducer(state, action)
+                is InitAction -> INIT_REDUCER(state, action)
+                is SufferDamageAction -> SUFFER_DAMAGE_REDUCER(state, action)
                 else -> state
             }
         }
