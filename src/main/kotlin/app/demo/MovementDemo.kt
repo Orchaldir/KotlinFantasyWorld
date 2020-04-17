@@ -121,8 +121,15 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         val timeSystem = state.getData<TimeSystem>()
         val turnData = state.getData<TurnData>()
 
+        val text =
+            "Turn=${timeSystem.turn} Entity=${timeSystem.entities.first()} " + if (turnData.isFinished()) {
+                "Press space to finish turn"
+            } else {
+                "MovementPoints=${turnData.movementPoints}"
+            }
+
         tileRenderer.renderText(
-            "Turn=${timeSystem.turn} Entity=${timeSystem.entities.first()} MovementPoints=${turnData.movementPoints}",
+            text,
             Color.WHITE,
             0,
             size.y - 1
