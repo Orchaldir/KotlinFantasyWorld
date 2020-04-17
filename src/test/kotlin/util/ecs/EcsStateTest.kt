@@ -12,13 +12,14 @@ import kotlin.test.assertFailsWith
 
 class EcsStateTest {
 
+    private val c0 = mockk<ComponentStorage<Int>>()
+    private val c1 = mockk<ComponentStorage<String>>()
+
     @Nested
     inner class GetStorage {
 
         @Test
         fun `Test getStorage() with existing type`() {
-            val c0 = mockk<ComponentStorage<Int>>()
-            val c1 = mockk<ComponentStorage<String>>()
             val state = EcsState(storageMap = mapOf(Int::class to c0, String::class to c1))
 
             assertThat(state.getStorage<Int>()).isSameAs(c0)
@@ -27,7 +28,6 @@ class EcsStateTest {
 
         @Test
         fun `Test getStorage() with non-existing type`() {
-            val c0 = mockk<ComponentStorage<Int>>()
             val state = EcsState(storageMap = mapOf(Int::class to c0))
 
             assertFailsWith<NoSuchElementException> { state.getStorage<String>() }
@@ -40,8 +40,6 @@ class EcsStateTest {
 
         @Test
         fun `Test copy() with component storage update`() {
-            val c0 = mockk<ComponentStorage<Int>>()
-            val c1 = mockk<ComponentStorage<String>>()
             val state = EcsState(storageMap = mapOf(Int::class to c0, String::class to c1))
 
             val newC1 = mockk<ComponentStorage<String>>()

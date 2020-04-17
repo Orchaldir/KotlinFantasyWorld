@@ -1,8 +1,7 @@
 package util.log
 
 import assertk.assertThat
-import assertk.assertions.containsExactly
-import assertk.assertions.isNotSameAs
+import assertk.assertions.isEqualTo
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 
@@ -16,8 +15,7 @@ class MessageLogTest {
 
         val newLog = log.add(message1)
 
-        assertThat(newLog).isNotSameAs(log)
-        assertThat(newLog.messages).containsExactly(message0, message1)
+        assertThat(newLog).isEqualTo(MessageLog(listOf(message0, message1)))
     }
 
 }

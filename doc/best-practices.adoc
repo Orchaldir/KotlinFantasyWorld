@@ -1,0 +1,8 @@
+= Best Practices
+
+== Unit Testing
+
+* Use https://mockk.io[Mockk] for mocking
+* Use assertThat() of https://github.com/willowtreeapps/assertk[assertk]
+* Use nested tests with *@Nested*
+* Compare whole objects instead of individual fields

@@ -3,12 +3,16 @@ package util.math
 import util.math.Direction.*
 import util.requireGreater
 
-class Size(
-    x: Int,
-    y: Int
+data class Size(
+    val x: Int,
+    val y: Int
 ) {
-    val x = requireGreater(x, 0, "x")
-    val y = requireGreater(y, 0, "y")
+
+    init {
+        requireGreater(x, 0, "x")
+        requireGreater(y, 0, "y")
+    }
+
     val cells: Int
         get() = x * y
 

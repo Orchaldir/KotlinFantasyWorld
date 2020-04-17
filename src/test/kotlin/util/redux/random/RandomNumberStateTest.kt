@@ -2,7 +2,6 @@ package util.redux.random
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isNotSameAs
 import assertk.assertions.isSameAs
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -50,9 +49,7 @@ class RandomNumberStateTest {
             val state = RandomNumberState(NUMBERS)
             val newState = state.copy(2)
 
-            assertThat(newState).isNotSameAs(state)
-            assertThat(newState.numbers).isSameAs(NUMBERS)
-            assertThat(newState.index).isSameAs(2)
+            assertThat(newState).isEqualTo(RandomNumberState(NUMBERS, 2))
         }
 
         @Test

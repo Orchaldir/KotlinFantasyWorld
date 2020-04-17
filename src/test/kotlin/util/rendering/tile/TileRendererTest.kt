@@ -4,7 +4,6 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
 import javafx.scene.paint.Color
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import util.rendering.Renderer
@@ -17,20 +16,14 @@ private val COLOR = Color.RED
 
 class TileRendererTest {
 
-    private lateinit var renderer: Renderer
-    private lateinit var tileRenderer: TileRenderer
-
-    @BeforeEach
-    fun setup() {
-        renderer = mockk(relaxed = true)
-        tileRenderer = TileRenderer(
-            renderer,
-            START_X,
-            START_Y,
-            TILE_WIDTH,
-            TILE_HEIGHT
-        )
-    }
+    private val renderer: Renderer = mockk(relaxed = true)
+    private val tileRenderer = TileRenderer(
+        renderer,
+        START_X,
+        START_Y,
+        TILE_WIDTH,
+        TILE_HEIGHT
+    )
 
     @Nested
     inner class RenderText {

@@ -5,22 +5,17 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isSameAs
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
-import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import util.redux.random.RandomNumberGenerator
 
 private const val SIDES = 6
 
-@ExtendWith(MockKExtension::class)
 class CheckerTest {
 
-    @MockK
-    lateinit var rng: RandomNumberGenerator
-
+    val rng = mockk<RandomNumberGenerator>()
     val checker = Checker(SIDES)
 
     @Nested

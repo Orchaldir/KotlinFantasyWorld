@@ -2,11 +2,13 @@ package game.map
 
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEqualTo
 import assertk.assertions.isSameAs
 import game.map.Terrain.FLOOR
 import game.map.Terrain.WALL
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import util.math.Size
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
@@ -20,11 +22,10 @@ class GameMapBuilderTest {
     fun `Test Constructor`() {
         val builder = GameMapBuilder(2, 3, FLOOR)
 
-        assertEquals(2, builder.size.x)
-        assertEquals(3, builder.size.y)
+        assertThat(builder.size).isEqualTo(Size(2, 3))
 
         for (i in 0 until 6) {
-            assertEquals(FLOOR, builder.getTerrain(i))
+            assertThat(builder.getTerrain(i)).isEqualTo(FLOOR)
         }
     }
 
