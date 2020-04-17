@@ -15,7 +15,6 @@ import util.log.MessageLog
 import util.log.addMessage
 import util.redux.Reducer
 import util.redux.random.RandomNumberState
-import kotlin.reflect.KClass
 
 private val logger = KotlinLogging.logger {}
 
@@ -42,14 +41,14 @@ val SUFFER_DAMAGE_REDUCER: Reducer<SufferDamageAction, EcsState> = a@{ state, ac
 
     logger.info("entity=$id toughness=$toughnessRank $health result=$result")
 
-    val updatedStorageMap: MutableMap<KClass<*>, ComponentStorage<*>> = mutableMapOf()
+    val updatedStorage = mutableListOf<ComponentStorage<*>>()
     val updatedData = mutableListOf<Any>(rng.createState())
 
     val newHealth = updateHealth(health, result)
 
     if (health != newHealth) {
         logger.info("Change to $newHealth")
-        updatedStorageMap[Health::class] = healthStorage.updateAndRemove(mapOf(id to newHealth))
+        updatedStorage += healthStorage.updateAndRemove(mapOf(id to newHealth))
 
         updateMessageLog(state, health, newHealth, id, updatedData)
     } else {
@@ -58,7 +57,7 @@ val SUFFER_DAMAGE_REDUCER: Reducer<SufferDamageAction, EcsState> = a@{ state, ac
         updatedData += messageLog.add(message)
     }
 
-    state.copy(updatedStorageMap, updatedData)
+    state.copy(updatedStorage, updatedData)
 }
 
 private fun updateMessageLog(

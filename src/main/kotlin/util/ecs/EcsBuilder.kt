@@ -9,7 +9,7 @@ private val logger = KotlinLogging.logger {}
 
 class EcsBuilder(
     private val entityIds: MutableSet<Int>,
-    private val storageMap: MutableMap<KClass<*>, ComponentStorage<*>>,
+    private val storageMap: MutableMap<String, ComponentStorage<*>>,
     private val dataMap: MutableMap<KClass<*>, Any>
 ) {
     var entityId = getFirstFreeId()
@@ -18,9 +18,10 @@ class EcsBuilder(
 
     constructor() : this(mutableSetOf(), mutableMapOf(), mutableMapOf())
 
-    fun <T> registerComponent(type: KClass<*>) {
-        logger.info("Register component ${type.simpleName}")
-        storageMap[type] = ComponentMap<T>(type.toString(), mapOf())
+    fun <T> registerComponent(kClass: KClass<*>) {
+        val type = kClass.toString()
+        logger.info("Register component $type")
+        storageMap[type] = ComponentMap<T>(type, mapOf())
     }
 
     inline fun <reified T : Any> registerComponent() = registerComponent<T>(T::class)
@@ -34,7 +35,8 @@ class EcsBuilder(
         return lastId
     }
 
-    fun <T> add(type: KClass<*>, component: T) {
+    fun <T> add(kClass: KClass<*>, component: T) {
+        val type = kClass.toString()
         numberOfComponents++
         @Suppress("UNCHECKED_CAST")
         val storage =

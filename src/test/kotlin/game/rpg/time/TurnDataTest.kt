@@ -54,6 +54,7 @@ class TurnDataTest {
     @Nested
     inner class CreateTurnData {
 
+        private val type = Statistics::class.toString()
         private val entity = 3
         private val speed = Skill("Speed")
 
@@ -62,7 +63,7 @@ class TurnDataTest {
             val statistics = Statistics(mapOf(speed to 4))
             val storage = ComponentMap("S", mapOf(entity to statistics))
             val timeSystem = TimeSystem(0, listOf(entity))
-            val state = EcsState(storageMap = mapOf(Statistics::class to storage))
+            val state = EcsState(storageMap = mapOf(type to storage))
 
             val data = createTurnData(state, timeSystem, speed)
 
@@ -74,7 +75,7 @@ class TurnDataTest {
             val statistics = Statistics(emptyMap())
             val storage = ComponentMap("S", mapOf(entity to statistics))
             val timeSystem = TimeSystem(0, listOf(entity))
-            val state = EcsState(storageMap = mapOf(Statistics::class to storage))
+            val state = EcsState(storageMap = mapOf(type to storage))
 
             val data = createTurnData(state, timeSystem, speed)
 
@@ -85,7 +86,7 @@ class TurnDataTest {
         fun `Create turn data without statistics`() {
             val storage = ComponentMap<Statistics>("S", emptyMap())
             val timeSystem = TimeSystem(0, listOf(entity))
-            val state = EcsState(storageMap = mapOf(Statistics::class to storage))
+            val state = EcsState(storageMap = mapOf(type to storage))
 
             val data = createTurnData(state, timeSystem, speed)
 

@@ -5,12 +5,12 @@ import kotlin.reflect.KClass
 
 class EcsState(
     val entityIds: Set<Int> = emptySet(),
-    private val storageMap: Map<KClass<*>, ComponentStorage<*>> = emptyMap(),
+    private val storageMap: Map<String, ComponentStorage<*>> = emptyMap(),
     private val dataMap: Map<KClass<*>, Any> = emptyMap()
 ) {
 
     fun <T> getStorage(type: KClass<*>): ComponentStorage<T> {
-        val storage = storageMap[type]
+        val storage = storageMap[type.toString()]
 
         @Suppress("UNCHECKED_CAST")
         return storage as ComponentStorage<T>? ?: throw NoSuchElementException("No storage for $type!")
@@ -37,13 +37,13 @@ class EcsState(
     inline fun <reified T : Any> getOptionalData(): T? = getOptionalData(T::class)
 
     fun copy(
-        updatedStorageMap: Map<KClass<*>, ComponentStorage<*>> = emptyMap(),
+        updatedStorage: List<ComponentStorage<*>> = emptyList(),
         updatedData: List<Any> = emptyList()
     ): EcsState {
-        val newStorageMap = if (updatedStorageMap.isEmpty()) {
+        val newStorageMap = if (updatedStorage.isEmpty()) {
             storageMap
         } else {
-            storageMap + updatedStorageMap
+            storageMap + updatedStorage.map { it.getType() to it }
         }
 
         val newDataMap = if (updatedData.isEmpty()) {

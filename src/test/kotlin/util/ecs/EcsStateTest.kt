@@ -4,6 +4,7 @@ import assertk.all
 import assertk.assertThat
 import assertk.assertions.isNotSameAs
 import assertk.assertions.isSameAs
+import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -15,12 +16,15 @@ class EcsStateTest {
     private val c0 = mockk<ComponentStorage<Int>>()
     private val c1 = mockk<ComponentStorage<String>>()
 
+    private val type0 = Int::class.toString()
+    private val type1 = String::class.toString()
+
     @Nested
     inner class GetStorage {
 
         @Test
         fun `Test getStorage() with existing type`() {
-            val state = EcsState(storageMap = mapOf(Int::class to c0, String::class to c1))
+            val state = EcsState(storageMap = mapOf(type0 to c0, type1 to c1))
 
             assertThat(state.getStorage<Int>()).isSameAs(c0)
             assertThat(state.getStorage<String>()).isSameAs(c1)
@@ -28,7 +32,7 @@ class EcsStateTest {
 
         @Test
         fun `Test getStorage() with non-existing type`() {
-            val state = EcsState(storageMap = mapOf(Int::class to c0))
+            val state = EcsState(storageMap = mapOf(type0 to c0))
 
             assertFailsWith<NoSuchElementException> { state.getStorage<String>() }
         }
@@ -40,10 +44,13 @@ class EcsStateTest {
 
         @Test
         fun `Test copy() with component storage update`() {
-            val state = EcsState(storageMap = mapOf(Int::class to c0, String::class to c1))
+            val state = EcsState(storageMap = mapOf(type0 to c0, type1 to c1))
 
             val newC1 = mockk<ComponentStorage<String>>()
-            val copy = state.copy(updatedStorageMap = mapOf(String::class to newC1))
+
+            every { newC1.getType() } returns type1
+
+            val copy = state.copy(updatedStorage = listOf(newC1))
 
             assertThat(copy.getStorage<Int>()).isSameAs(c0)
             assertThat(copy.getStorage<String>()).all {

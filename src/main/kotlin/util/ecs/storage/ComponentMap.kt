@@ -1,9 +1,11 @@
 package util.ecs.storage
 
 data class ComponentMap<T>(
-    val type: String,
+    private val type: String,
     val componentMap: Map<Int, T>
 ) : ComponentStorage<T> {
+
+    override fun getType() = type
 
     override fun has(entityId: Int) = componentMap.containsKey(entityId)
 
@@ -19,6 +21,6 @@ data class ComponentMap<T>(
 
     override fun updateAndRemove(updated: Map<Int, T>, removed: Set<Int>): ComponentStorage<T> {
         val newComponentMap = componentMap + updated - removed
-        return ComponentMap(type, newComponentMap)
+        return copy(componentMap = newComponentMap)
     }
 }

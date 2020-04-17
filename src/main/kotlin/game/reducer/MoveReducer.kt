@@ -76,10 +76,7 @@ private fun move(
 
     val newTurnData = turnData.reduceMovementPoints()
 
-    return state.copy(
-        mapOf(Body::class to newBodyStorage),
-        listOf(newMap, newTurnData)
-    )
+    return state.copy(listOf(newBodyStorage), listOf(newMap, newTurnData))
 }
 
 fun updateMap(map: GameMap, entity: Int, body: Body, position: Int) = when (body) {

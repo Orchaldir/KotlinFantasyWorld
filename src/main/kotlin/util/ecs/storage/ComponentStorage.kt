@@ -1,6 +1,7 @@
 package util.ecs.storage
 
 interface ComponentStorage<T> {
+    fun getType(): String
     fun has(entityId: Int): Boolean
     operator fun get(entityId: Int): T?
     fun getOrThrow(entityId: Int): T
