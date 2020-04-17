@@ -1,5 +1,6 @@
 package app.demo
 
+import game.FinishTurnAction
 import game.GameRenderer
 import game.InitAction
 import game.MoveAction
@@ -7,6 +8,7 @@ import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
 import game.map.Terrain
+import game.reducer.FINISH_TURN_REDUCER
 import game.reducer.INIT_REDUCER
 import game.reducer.MOVE_REDUCER
 import game.rpg.time.TimeSystem
@@ -31,17 +33,18 @@ private val logger = KotlinLogging.logger {}
 
 private val MOVEMENT_DEMO_REDUCER: Reducer<Any, EcsState> = { state, action ->
     when (action) {
+        is FinishTurnAction -> FINISH_TURN_REDUCER(state, action)
         is InitAction -> INIT_REDUCER(state, action)
         is MoveAction -> MOVE_REDUCER(state, action)
         else -> state
     }
 }
 
-const val LOG_SIZE = 5
+private const val LOG_SIZE = 5
+private const val STATUS_SIZE = 1
 
 class MovementDemo : TileApplication(60, 45, 20, 20) {
     private lateinit var store: DefaultStore<Any, EcsState>
-    private var entityId = 0
 
     override fun start(primaryStage: Stage) {
         init(primaryStage, "Movement Demo")
@@ -51,7 +54,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
     private fun create() {
         logger.info("create(): tiles={}", size.cells)
 
-        val gameMap = GameMapBuilder(Size(size.x, size.y - LOG_SIZE), Terrain.FLOOR)
+        val gameMap = GameMapBuilder(Size(size.x, size.y - LOG_SIZE - STATUS_SIZE), Terrain.FLOOR)
             .addBorder(Terrain.WALL)
             .addRectangle(20, 10, 10, 10, Terrain.WALL)
             .addRectangle(40, 25, 10, 10, Terrain.WALL)
@@ -72,26 +75,20 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
             buildEntity()
             add(BigBody(gameMap.size.getIndex(10, 25), 4) as Body)
             add(Graphic(UnicodeTile("D", Color.RED)))
+            add(Player as Controller)
             buildEntity()
             add(
                 SnakeBody(List(20) { gameMap.size.getIndex(50, 5) }) as Body
             )
             add(Graphic(UnicodeTile("S", Color.GREEN)))
+            add(Player as Controller)
             buildEntity()
             build()
         }
 
         store = DefaultStore(ecsState, MOVEMENT_DEMO_REDUCER, listOf(::logAction))
-        store.subscribe(this::update)
+        store.subscribe(this::render)
         store.dispatch(InitAction)
-    }
-
-    private fun update(state: EcsState) {
-        val currentEntity = store.getState().getData<TimeSystem>().entities.first()
-
-        if (currentEntity == entityId) {
-            render(state)
-        }
     }
 
     private fun render(state: EcsState) {
@@ -107,11 +104,21 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         val messageLogRenderer = MessageLogRenderer(0, 0, Size(size.x, LOG_SIZE))
         messageLogRenderer.render(tileRenderer, state.getData())
 
+        val timeSystem = state.getData<TimeSystem>()
+        tileRenderer.renderText(
+            "Turn=${timeSystem.turn} Entity=${timeSystem.entities.first()}",
+            Color.WHITE,
+            0,
+            size.y - 1
+        )
+
         logger.info("render(): finished")
     }
 
     override fun onKeyReleased(keyCode: KeyCode) {
         logger.info("onKeyReleased(): keyCode=$keyCode")
+
+        val entityId = store.getState().getData<TimeSystem>().entities.first()
 
         if (keyCode == KeyCode.UP) {
             store.dispatch(MoveAction(entityId, NORTH))
@@ -121,12 +128,8 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
             store.dispatch(MoveAction(entityId, SOUTH))
         } else if (keyCode == KeyCode.LEFT) {
             store.dispatch(MoveAction(entityId, WEST))
-        } else if (keyCode == KeyCode.F1) {
-            entityId = 0
-        } else if (keyCode == KeyCode.F2) {
-            entityId = 1
-        } else if (keyCode == KeyCode.F3) {
-            entityId = 2
+        } else if (keyCode == KeyCode.SPACE) {
+            store.dispatch(FinishTurnAction(entityId))
         }
     }
 
