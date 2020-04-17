@@ -7,7 +7,7 @@ import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
 import game.map.Terrain
-import game.reducer.INIT_REDUCER
+import game.reducer.createInitReducer
 import game.reducer.createSufferDamageReducer
 import game.rpg.Damage
 import game.rpg.character.skill.Skill
@@ -72,11 +72,12 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
             build()
         }
 
+        val initReducer = createInitReducer()
         val sufferDamageReducer = createSufferDamageReducer(toughness)
 
         val reducer: Reducer<Any, EcsState> = { state, action ->
             when (action) {
-                is InitAction -> INIT_REDUCER(state, action)
+                is InitAction -> initReducer(state, action)
                 is SufferDamageAction -> sufferDamageReducer(state, action)
                 else -> state
             }

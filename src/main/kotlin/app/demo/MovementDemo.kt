@@ -8,10 +8,13 @@ import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
 import game.map.Terrain
-import game.reducer.FINISH_TURN_REDUCER
-import game.reducer.INIT_REDUCER
 import game.reducer.MOVE_REDUCER
+import game.reducer.createFinishTurnReducer
+import game.reducer.createInitReducer
+import game.rpg.character.skill.Skill
+import game.rpg.character.skill.SkillManager
 import game.rpg.time.TimeSystem
+import game.rpg.time.TurnData
 import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.paint.Color
@@ -31,15 +34,6 @@ import util.rendering.tile.UnicodeTile
 
 private val logger = KotlinLogging.logger {}
 
-private val MOVEMENT_DEMO_REDUCER: Reducer<Any, EcsState> = { state, action ->
-    when (action) {
-        is FinishTurnAction -> FINISH_TURN_REDUCER(state, action)
-        is InitAction -> INIT_REDUCER(state, action)
-        is MoveAction -> MOVE_REDUCER(state, action)
-        else -> state
-    }
-}
-
 private const val LOG_SIZE = 5
 private const val STATUS_SIZE = 1
 
@@ -54,6 +48,9 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
     private fun create() {
         logger.info("create(): tiles={}", size.cells)
 
+        val speed = Skill("Speed")
+        val skillManager = SkillManager(listOf(speed))
+
         val gameMap = GameMapBuilder(Size(size.x, size.y - LOG_SIZE - STATUS_SIZE), Terrain.FLOOR)
             .addBorder(Terrain.WALL)
             .addRectangle(20, 10, 10, 10, Terrain.WALL)
@@ -64,29 +61,46 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         val ecsState = with(EcsBuilder()) {
             addData(gameMap)
             addData(MessageLog())
+            addData(skillManager)
             addData(TimeSystem())
             registerComponent<Body>()
             registerComponent<Controller>()
             registerComponent<Graphic>()
             registerComponent<Health>()
+            registerComponent<Statistics>()
             add(SimpleBody(gameMap.size.getIndex(10, 5)) as Body)
             add(Graphic(UnicodeTile("@", Color.BLUE)))
             add(Player as Controller)
+            add(Statistics(mapOf(speed to 6)))
             buildEntity()
             add(BigBody(gameMap.size.getIndex(10, 25), 4) as Body)
             add(Graphic(UnicodeTile("D", Color.RED)))
             add(Player as Controller)
+            add(Statistics(mapOf(speed to 4)))
             buildEntity()
             add(
                 SnakeBody(List(20) { gameMap.size.getIndex(50, 5) }) as Body
             )
             add(Graphic(UnicodeTile("S", Color.GREEN)))
             add(Player as Controller)
+            add(Statistics(mapOf(speed to 2)))
             buildEntity()
             build()
         }
 
-        store = DefaultStore(ecsState, MOVEMENT_DEMO_REDUCER, listOf(::logAction))
+        val finishTurnReducer = createFinishTurnReducer(speed)
+        val initReducer = createInitReducer(speed)
+
+        val reducer: Reducer<Any, EcsState> = { state, action ->
+            when (action) {
+                is FinishTurnAction -> finishTurnReducer(state, action)
+                is InitAction -> initReducer(state, action)
+                is MoveAction -> MOVE_REDUCER(state, action)
+                else -> state
+            }
+        }
+
+        store = DefaultStore(ecsState, reducer, listOf(::logAction))
         store.subscribe(this::render)
         store.dispatch(InitAction)
     }
@@ -105,8 +119,10 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         messageLogRenderer.render(tileRenderer, state.getData())
 
         val timeSystem = state.getData<TimeSystem>()
+        val turnData = state.getData<TurnData>()
+
         tileRenderer.renderText(
-            "Turn=${timeSystem.turn} Entity=${timeSystem.entities.first()}",
+            "Turn=${timeSystem.turn} Entity=${timeSystem.entities.first()} MovementPoints=${turnData.movementPoints}",
             Color.WHITE,
             0,
             size.y - 1

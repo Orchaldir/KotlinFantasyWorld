@@ -6,14 +6,22 @@ import game.component.Body
 import game.component.SimpleBody
 import game.component.SnakeBody
 import game.map.*
+import game.rpg.time.TurnData
 import javafx.scene.paint.Color.WHITE
+import javafx.scene.paint.Color.YELLOW
 import util.ecs.EcsState
 import util.log.Message
 import util.log.addMessage
 import util.math.Direction
 import util.redux.Reducer
 
-val MOVE_REDUCER: Reducer<MoveAction, EcsState> = { state, action ->
+val MOVE_REDUCER: Reducer<MoveAction, EcsState> = a@{ state, action ->
+    val turnData = state.getData<TurnData>()
+
+    if (turnData.movementPoints <= 0) {
+        return@a addMessage(state, Message("No movement points", YELLOW))
+    }
+
     val map = state.getData<GameMap>()
     val bodyStorage = state.getStorage<Body>()
     val body = bodyStorage.getOrThrow(action.entity)
@@ -23,9 +31,16 @@ val MOVE_REDUCER: Reducer<MoveAction, EcsState> = { state, action ->
     when (walkability) {
         is Walkable -> {
             val newMap = updateMap(map, action.entity, body, walkability.position)
+
             val newBody = updateBody(body, walkability.position)
             val newBodyStorage = bodyStorage.updateAndRemove(mapOf(action.entity to newBody))
-            state.copy(mapOf(Body::class to newBodyStorage), mapOf(GameMap::class to newMap))
+
+            val newTurnData = turnData.reduceMovementPoints()
+
+            state.copy(
+                mapOf(Body::class to newBodyStorage),
+                mapOf(GameMap::class to newMap, TurnData::class to newTurnData)
+            )
         }
         BlockedByObstacle -> addMessage(state, Message("Blocked by obstacle", WHITE))
         is BlockedByEntity -> addMessage(state, Message("Blocked by entity ${walkability.entity}", WHITE))
