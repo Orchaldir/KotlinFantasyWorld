@@ -118,13 +118,7 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
         val entity = timeSystem.entities.first()
         val health = state.getStorage<Health>().getOrThrow(entity)
 
-        val text =
-            "Turn=${timeSystem.turn} Entity=$entity Health=${health.state.toDisplayText()}/${health.penalty} " +
-                    if (turnData.isFinished()) {
-                        "Press space to finish turn"
-                    } else {
-                        "Movement=${turnData.movementPoints}/${turnData.maxMovementPoints}"
-                    }
+        val text = getStatusText(timeSystem, health, turnData)
 
         tileRenderer.renderText(
             text,
@@ -134,6 +128,17 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
         )
 
         logger.info("render(): finished")
+    }
+
+    private fun getStatusText(
+        timeSystem: TimeSystem,
+        health: Health,
+        turnData: TurnData
+    ): String {
+        return "Turn=${timeSystem.turn} " +
+                "Health=${health.state.toDisplayText()} " +
+                "Movement=${turnData.movementPoints} " +
+                "Actions=${turnData.actionsPerTurn}"
     }
 
     override fun onKeyReleased(keyCode: KeyCode) {

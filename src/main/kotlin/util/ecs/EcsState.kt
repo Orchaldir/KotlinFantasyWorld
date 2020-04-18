@@ -19,6 +19,16 @@ class EcsState(
 
     inline fun <reified T : Any> getStorage(): ComponentStorage<T> = getStorage(T::class)
 
+    fun <T> getOptionalStorage(kClass: KClass<*>): ComponentStorage<T>? {
+        val type = getType(kClass)
+        val storage = storageMap[type]
+
+        @Suppress("UNCHECKED_CAST")
+        return storage as ComponentStorage<T>?
+    }
+
+    inline fun <reified T : Any> getOptionalStorage(): ComponentStorage<T>? = getOptionalStorage(T::class)
+
     fun <T> getData(type: KClass<*>): T {
         val data = dataMap[type]
 

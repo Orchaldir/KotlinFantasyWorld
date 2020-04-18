@@ -122,12 +122,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         val timeSystem = state.getData<TimeSystem>()
         val turnData = state.getData<TurnData>()
 
-        val text =
-            "Turn=${timeSystem.turn} Entity=${timeSystem.entities.first()} " + if (turnData.isFinished()) {
-                "Press space to finish turn"
-            } else {
-                "Movement=${turnData.movementPoints}/${turnData.maxMovementPoints}"
-            }
+        val text = getStatusText(timeSystem, turnData)
 
         tileRenderer.renderText(
             text,
@@ -137,6 +132,15 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         )
 
         logger.info("render(): finished")
+    }
+
+    private fun getStatusText(timeSystem: TimeSystem, turnData: TurnData): String {
+        val entity = timeSystem.entities.first()
+        return "Turn=${timeSystem.turn} Entity=$entity " + if (turnData.isFinished()) {
+            "Press space to finish turn"
+        } else {
+            "Movement=${turnData.movementPoints}/${turnData.maxMovementPoints}"
+        }
     }
 
     override fun onKeyReleased(keyCode: KeyCode) {
