@@ -1,6 +1,6 @@
 package game.reducer
 
-import game.MoveAction
+import game.action.Move
 import game.component.BigBody
 import game.component.Body
 import game.component.SimpleBody
@@ -16,7 +16,7 @@ import util.log.addMessage
 import util.math.Direction
 import util.redux.Reducer
 
-val MOVE_REDUCER: Reducer<MoveAction, EcsState> = a@{ state, action ->
+val MOVE_REDUCER: Reducer<Move, EcsState> = a@{ state, action ->
     val turnData = state.getData<TurnData>()
 
     if (turnData.movementPoints <= 0) {

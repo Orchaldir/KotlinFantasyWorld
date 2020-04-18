@@ -1,6 +1,6 @@
 package game.reducer
 
-import game.InitAction
+import game.action.Init
 import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
@@ -14,7 +14,7 @@ import util.log.Message
 import util.log.MessageLog
 import util.redux.Reducer
 
-val INIT_REDUCER: Reducer<InitAction, EcsState> = { state, _ ->
+val INIT_REDUCER: Reducer<Init, EcsState> = { state, _ ->
     val skillUsage = state.getData<SkillUsage>()
     val updatedData = mutableListOf<Any>()
 

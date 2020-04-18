@@ -1,9 +1,10 @@
 package app.demo
 
-import game.FinishTurnAction
 import game.GameRenderer
-import game.InitAction
-import game.MoveAction
+import game.action.Action
+import game.action.FinishTurn
+import game.action.Init
+import game.action.Move
 import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
@@ -39,7 +40,7 @@ private const val LOG_SIZE = 5
 private const val STATUS_SIZE = 1
 
 class MovementDemo : TileApplication(60, 45, 20, 20) {
-    private lateinit var store: DefaultStore<Any, EcsState>
+    private lateinit var store: DefaultStore<Action, EcsState>
 
     override fun start(primaryStage: Stage) {
         init(primaryStage, "Movement Demo")
@@ -91,18 +92,18 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
             build()
         }
 
-        val reducer: Reducer<Any, EcsState> = { state, action ->
+        val reducer: Reducer<Action, EcsState> = { state, action ->
             when (action) {
-                is FinishTurnAction -> FINISH_TURN_REDUCER(state, action)
-                is InitAction -> INIT_REDUCER(state, action)
-                is MoveAction -> MOVE_REDUCER(state, action)
+                is FinishTurn -> FINISH_TURN_REDUCER(state, action)
+                is Init -> INIT_REDUCER(state, action)
+                is Move -> MOVE_REDUCER(state, action)
                 else -> state
             }
         }
 
         store = DefaultStore(ecsState, reducer, listOf(::logAction))
         store.subscribe(this::render)
-        store.dispatch(InitAction)
+        store.dispatch(Init)
     }
 
     private fun render(state: EcsState) {
@@ -139,20 +140,15 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
     }
 
     override fun onKeyReleased(keyCode: KeyCode) {
-        logger.info("onKeyReleased(): keyCode=$keyCode")
-
         val entityId = store.getState().getData<TimeSystem>().entities.first()
 
-        if (keyCode == KeyCode.UP) {
-            store.dispatch(MoveAction(entityId, NORTH))
-        } else if (keyCode == KeyCode.RIGHT) {
-            store.dispatch(MoveAction(entityId, EAST))
-        } else if (keyCode == KeyCode.DOWN) {
-            store.dispatch(MoveAction(entityId, SOUTH))
-        } else if (keyCode == KeyCode.LEFT) {
-            store.dispatch(MoveAction(entityId, WEST))
-        } else if (keyCode == KeyCode.SPACE) {
-            store.dispatch(FinishTurnAction(entityId))
+        when (keyCode) {
+            KeyCode.UP -> store.dispatch(Move(entityId, NORTH))
+            KeyCode.RIGHT -> store.dispatch(Move(entityId, EAST))
+            KeyCode.DOWN -> store.dispatch(Move(entityId, SOUTH))
+            KeyCode.LEFT -> store.dispatch(Move(entityId, WEST))
+            KeyCode.SPACE -> store.dispatch(FinishTurn(entityId))
+            else -> logger.info("onKeyReleased(): keyCode=$keyCode")
         }
     }
 

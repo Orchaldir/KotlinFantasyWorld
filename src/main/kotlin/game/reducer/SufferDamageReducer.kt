@@ -1,6 +1,6 @@
 package game.reducer
 
-import game.SufferDamageAction
+import game.action.SufferDamage
 import game.component.Health
 import game.component.HealthState
 import game.component.Statistics
@@ -18,7 +18,7 @@ import util.redux.random.RandomNumberState
 
 private val logger = KotlinLogging.logger {}
 
-val SUFFER_DAMAGE_REDUCER: Reducer<SufferDamageAction, EcsState> = a@{ state, action ->
+val SUFFER_DAMAGE_REDUCER: Reducer<SufferDamage, EcsState> = a@{ state, action ->
     val id = action.entity
 
     val healthStorage = state.getStorage<Health>()

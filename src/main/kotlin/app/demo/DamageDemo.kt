@@ -1,8 +1,9 @@
 package app.demo
 
 import game.GameRenderer
-import game.InitAction
-import game.SufferDamageAction
+import game.action.Action
+import game.action.Init
+import game.action.SufferDamage
 import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
@@ -35,7 +36,7 @@ private val logger = KotlinLogging.logger {}
 private const val MAP_X = 10
 
 class DamageDemo : TileApplication(60, 40, 20, 20) {
-    private lateinit var store: DefaultStore<Any, EcsState>
+    private lateinit var store: DefaultStore<Action, EcsState>
 
     override fun start(primaryStage: Stage) {
         init(primaryStage, "Damage Demo")
@@ -74,17 +75,17 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
             build()
         }
 
-        val reducer: Reducer<Any, EcsState> = { state, action ->
+        val reducer: Reducer<Action, EcsState> = { state, action ->
             when (action) {
-                is InitAction -> INIT_REDUCER(state, action)
-                is SufferDamageAction -> SUFFER_DAMAGE_REDUCER(state, action)
+                is Init -> INIT_REDUCER(state, action)
+                is SufferDamage -> SUFFER_DAMAGE_REDUCER(state, action)
                 else -> state
             }
         }
 
         store = DefaultStore(ecsState, reducer, listOf(::logAction))
         store.subscribe(this::render)
-        store.dispatch(InitAction)
+        store.dispatch(Init)
     }
 
     private fun render(state: EcsState) {
@@ -114,7 +115,7 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
         val entity = state.getData<GameMap>().getEntity(x, y)
 
         if (entity != null) {
-            store.dispatch(SufferDamageAction(entity, Damage(5)))
+            store.dispatch(SufferDamage(entity, Damage(5)))
         }
     }
 }
