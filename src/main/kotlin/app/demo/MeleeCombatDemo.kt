@@ -115,7 +115,7 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
 
         val timeSystem = state.getData<TimeSystem>()
         val turnData = state.getData<TurnData>()
-        val entity = timeSystem.entities.first()
+        val entity = timeSystem.getCurrent()
         val health = state.getStorage<Health>().getOrThrow(entity)
 
         val text = getStatusText(timeSystem, health, turnData)
@@ -142,7 +142,7 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
     }
 
     override fun onKeyReleased(keyCode: KeyCode) {
-        val entityId = store.getState().getData<TimeSystem>().entities.first()
+        val entityId = store.getState().getData<TimeSystem>().getCurrent()
 
         when (keyCode) {
             KeyCode.UP -> store.dispatch(Move(entityId, NORTH))

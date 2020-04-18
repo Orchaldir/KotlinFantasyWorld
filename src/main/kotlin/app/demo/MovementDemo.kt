@@ -135,7 +135,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
     }
 
     private fun getStatusText(timeSystem: TimeSystem, turnData: TurnData): String {
-        val entity = timeSystem.entities.first()
+        val entity = timeSystem.getCurrent()
         return "Turn=${timeSystem.turn} Entity=$entity " + if (turnData.isFinished()) {
             "Press space to finish turn"
         } else {
@@ -144,7 +144,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
     }
 
     override fun onKeyReleased(keyCode: KeyCode) {
-        val entityId = store.getState().getData<TimeSystem>().entities.first()
+        val entityId = store.getState().getData<TimeSystem>().getCurrent()
 
         when (keyCode) {
             KeyCode.UP -> store.dispatch(Move(entityId, NORTH))

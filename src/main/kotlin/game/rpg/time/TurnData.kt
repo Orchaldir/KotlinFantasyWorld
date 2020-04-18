@@ -29,7 +29,7 @@ data class TurnData(
 }
 
 fun createTurnData(state: EcsState, timeSystem: TimeSystem, speed: Skill): TurnData {
-    val entity = timeSystem.entities.first()
+    val entity = timeSystem.getCurrent()
 
     val statisticsStorage = state.getOptionalStorage<Statistics>()
     val movementPoints = statisticsStorage?.get(entity)?.getRank(speed) ?: 0

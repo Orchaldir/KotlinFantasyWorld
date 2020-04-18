@@ -53,6 +53,13 @@ class TimeSystemTest {
         }
     }
 
+    @Test
+    fun `Get current entity`() {
+        val system = TimeSystem(1, listOf(ENTITY0, ENTITY1), listOf(ENTITY2))
+
+        assertThat(system.getCurrent()).isEqualTo(ENTITY0)
+    }
+
     @Nested
     inner class FinishTurn {
 
