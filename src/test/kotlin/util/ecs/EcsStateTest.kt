@@ -16,8 +16,8 @@ class EcsStateTest {
     private val c0 = mockk<ComponentStorage<Int>>()
     private val c1 = mockk<ComponentStorage<String>>()
 
-    private val type0 = Int::class.toString()
-    private val type1 = String::class.toString()
+    private val type0 = getType(Int::class)
+    private val type1 = getType(String::class)
 
     @Nested
     inner class GetStorage {

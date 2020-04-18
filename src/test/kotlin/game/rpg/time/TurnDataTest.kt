@@ -7,6 +7,7 @@ import game.rpg.character.skill.Skill
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import util.ecs.EcsState
+import util.ecs.getType
 import util.ecs.storage.ComponentMap
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -54,7 +55,7 @@ class TurnDataTest {
     @Nested
     inner class CreateTurnData {
 
-        private val type = Statistics::class.toString()
+        private val type = getType(Statistics::class)
         private val entity = 3
         private val speed = Skill("Speed")
 

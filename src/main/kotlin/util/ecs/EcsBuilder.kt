@@ -19,7 +19,7 @@ class EcsBuilder(
     constructor() : this(mutableSetOf(), mutableMapOf(), mutableMapOf())
 
     fun <T> registerComponent(kClass: KClass<*>) {
-        val type = kClass.toString()
+        val type = getType(kClass)
         logger.info("Register component $type")
         storageMap[type] = ComponentMap<T>(type, mapOf())
     }
@@ -36,7 +36,7 @@ class EcsBuilder(
     }
 
     fun <T> add(kClass: KClass<*>, component: T) {
-        val type = kClass.toString()
+        val type = getType(kClass)
         numberOfComponents++
         @Suppress("UNCHECKED_CAST")
         val storage =

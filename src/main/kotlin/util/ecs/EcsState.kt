@@ -9,8 +9,9 @@ class EcsState(
     private val dataMap: Map<KClass<*>, Any> = emptyMap()
 ) {
 
-    fun <T> getStorage(type: KClass<*>): ComponentStorage<T> {
-        val storage = storageMap[type.toString()]
+    fun <T> getStorage(kClass: KClass<*>): ComponentStorage<T> {
+        val type = getType(kClass)
+        val storage = storageMap[type]
 
         @Suppress("UNCHECKED_CAST")
         return storage as ComponentStorage<T>? ?: throw NoSuchElementException("No storage for $type!")
