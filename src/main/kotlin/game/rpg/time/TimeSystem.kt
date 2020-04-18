@@ -14,8 +14,16 @@ data class TimeSystem(
 
     fun getCurrent() = entities.first()
 
+    fun validateCurrent(entity: Int) {
+        val current = entities.firstOrNull()
+
+        if (entity != current) {
+            throw NotCurrentEntityException(entity, current ?: -1)
+        }
+    }
+
     fun finishTurn(entity: Int): TimeSystem {
-        require(entities.firstOrNull() == entity) { "Entity $entity is not the current one!" }
+        validateCurrent(entity)
         val newEntities = entities - entity
 
         return if (newEntities.isEmpty()) {

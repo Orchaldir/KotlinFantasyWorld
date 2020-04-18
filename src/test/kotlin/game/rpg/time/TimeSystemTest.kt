@@ -61,41 +61,65 @@ class TimeSystemTest {
     }
 
     @Nested
+    inner class ValidateCurrentEntity {
+
+        private val system = TimeSystem(1, listOf(ENTITY1, ENTITY2), listOf(ENTITY0))
+
+        @Test
+        fun `Validate current entity`() {
+            system.validateCurrent(ENTITY1)
+        }
+
+        @Test
+        fun `Finish turn of non-existing entity`() {
+            assertFailsWith<NotCurrentEntityException> { system.validateCurrent(ENTITY3) }
+        }
+
+        @Test
+        fun `Finish turn of finished entity`() {
+            assertFailsWith<NotCurrentEntityException> { system.validateCurrent(ENTITY0) }
+        }
+
+        @Test
+        fun `Finish turn of other entity`() {
+            assertFailsWith<NotCurrentEntityException> { system.validateCurrent(ENTITY2) }
+        }
+    }
+
+    @Nested
     inner class FinishTurn {
+
+        private val system = TimeSystem(1, listOf(ENTITY1, ENTITY2), listOf(ENTITY0))
 
         @Test
         fun `Finish turn`() {
-            val system = TimeSystem(1, listOf(ENTITY1, ENTITY2), listOf(ENTITY0))
-
             assertThat(system.finishTurn(ENTITY1)).isEqualTo(TimeSystem(1, listOf(ENTITY2), listOf(ENTITY0, ENTITY1)))
         }
 
         @Test
         fun `Finish turn of last entity`() {
-            val system = TimeSystem(1, listOf(ENTITY1), listOf(ENTITY0))
-
-            assertThat(system.finishTurn(ENTITY1)).isEqualTo(TimeSystem(2, listOf(ENTITY0, ENTITY1), emptyList()))
+            assertThat(system.finishTurn(ENTITY1).finishTurn(ENTITY2)).isEqualTo(
+                TimeSystem(
+                    2,
+                    listOf(ENTITY0, ENTITY1, ENTITY2),
+                    emptyList()
+                )
+            )
         }
 
         @Test
         fun `Finish turn of non-existing entity`() {
-            val system = TimeSystem(1, listOf(ENTITY1, ENTITY2), listOf(ENTITY0))
-
-            assertFailsWith<IllegalArgumentException> { system.finishTurn(ENTITY3) }
+            assertFailsWith<NotCurrentEntityException> { system.finishTurn(ENTITY3) }
         }
 
         @Test
         fun `Finish turn of finished entity`() {
-            val system = TimeSystem(1, listOf(ENTITY1, ENTITY2), listOf(ENTITY0))
-
-            assertFailsWith<IllegalArgumentException> { system.finishTurn(ENTITY0) }
+            assertFailsWith<NotCurrentEntityException> { system.finishTurn(ENTITY0) }
         }
 
         @Test
         fun `Finish turn of other entity`() {
-            val system = TimeSystem(1, listOf(ENTITY1, ENTITY2), listOf(ENTITY0))
-
-            assertFailsWith<IllegalArgumentException> { system.finishTurn(ENTITY2) }
+            assertFailsWith<NotCurrentEntityException> { system.finishTurn(ENTITY2) }
         }
     }
 }
