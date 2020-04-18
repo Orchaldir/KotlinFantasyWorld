@@ -7,6 +7,7 @@
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.3.70"
+    id("org.openjfx.javafxplugin") version "0.0.8"
 
     // Apply the application plugin to add support for building a CLI application.
     application
@@ -47,4 +48,10 @@ tasks.test {
 application {
     // Define the main class for the application.
     mainClassName = "app.demo.ReduxDemo"
+}
+
+val javafxModules = arrayOf("controls", "fxml", "graphics")
+
+javafx {
+    modules = javafxModules.map { "javafx.$it" }
 }
