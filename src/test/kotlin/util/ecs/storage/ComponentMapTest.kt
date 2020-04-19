@@ -1,6 +1,7 @@
 package util.ecs.storage
 
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.containsOnly
 import assertk.assertions.isSameAs
 import org.junit.jupiter.api.Nested
@@ -78,6 +79,21 @@ class ComponentMapTest {
         @Test
         fun `Test getOrThrow() with unknown id`() {
             assertFailsWith<NoSuchElementException> { storage.getOrThrow(NO_ID) }
+        }
+
+    }
+
+    @Nested
+    inner class GetList {
+
+        @Test
+        fun `Test list of known entities`() {
+            assertThat(storage.getList(ID0, ID1, ID2)).containsExactly(A, B, C)
+        }
+
+        @Test
+        fun `Test list with unknown entity`() {
+            assertFailsWith<NoSuchElementException> { storage.getList(NO_ID) }
         }
 
     }
