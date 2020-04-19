@@ -2,6 +2,7 @@ package util.math
 
 import util.math.Direction.*
 import util.requireGreater
+import kotlin.math.absoluteValue
 
 data class Size(
     val x: Int,
@@ -22,9 +23,7 @@ data class Size(
     }
 
     fun getIndices(index: Int, size: Int): List<Int> {
-        if (!isAreaInside(index, size)) {
-            return emptyList()
-        }
+        if (!isAreaInside(index, size)) return emptyList()
 
         val indices = mutableListOf<Int>()
 
@@ -64,6 +63,15 @@ data class Size(
         } else {
             null
         }
+    }
+
+    // distance
+
+    fun getManhattanDistance(from: Int, to: Int): Int {
+        val (fromX, fromY) = getPos(from)
+        val (toX, toY) = getPos(to)
+
+        return (toX - fromX).absoluteValue + (toY - fromY).absoluteValue
     }
 
     // inside check

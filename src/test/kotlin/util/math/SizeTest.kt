@@ -115,6 +115,37 @@ class SizeTest {
         }
     }
 
+    // distance
+
+    @Nested
+    inner class GetManhattanDistance {
+
+        private val size = Size(3, 3)
+
+        @Test
+        fun `Test distance 0`() {
+            repeat(9) { assertThat(size.getManhattanDistance(it, it)).isSameAs(0) }
+        }
+
+        @Test
+        fun `Test distance 1`() {
+            assertThat(size.getManhattanDistance(4, 1)).isSameAs(1)
+            assertThat(size.getManhattanDistance(4, 5)).isSameAs(1)
+            assertThat(size.getManhattanDistance(4, 7)).isSameAs(1)
+            assertThat(size.getManhattanDistance(4, 3)).isSameAs(1)
+        }
+
+        @Test
+        fun `Test distance 2`() {
+            assertThat(size.getManhattanDistance(4, 0)).isSameAs(2)
+            assertThat(size.getManhattanDistance(4, 2)).isSameAs(2)
+            assertThat(size.getManhattanDistance(4, 6)).isSameAs(2)
+            assertThat(size.getManhattanDistance(4, 8)).isSameAs(2)
+        }
+    }
+
+    // inside check
+
     @Nested
     inner class IsInsideForX {
 
