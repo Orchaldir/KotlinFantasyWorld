@@ -1,4 +1,4 @@
-package game.reducer
+package game.reducer.action
 
 import assertk.assertThat
 import assertk.assertions.containsExactly

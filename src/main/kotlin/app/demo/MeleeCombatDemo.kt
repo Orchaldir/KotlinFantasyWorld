@@ -9,9 +9,9 @@ import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
 import game.map.Terrain
-import game.reducer.FINISH_TURN_REDUCER
-import game.reducer.INIT_REDUCER
-import game.reducer.MOVE_REDUCER
+import game.reducer.action.FINISH_TURN_REDUCER
+import game.reducer.action.INIT_REDUCER
+import game.reducer.action.MOVE_REDUCER
 import game.rpg.character.skill.Skill
 import game.rpg.character.skill.SkillManager
 import game.rpg.character.skill.SkillUsage

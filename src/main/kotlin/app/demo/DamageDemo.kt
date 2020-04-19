@@ -3,13 +3,13 @@ package app.demo
 import game.GameRenderer
 import game.action.Action
 import game.action.Init
-import game.action.SufferDamage
+import game.action.OnDamage
 import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
 import game.map.Terrain
-import game.reducer.INIT_REDUCER
-import game.reducer.SUFFER_DAMAGE_REDUCER
+import game.reducer.action.INIT_REDUCER
+import game.reducer.event.ON_DAMAGE_REDUCER
 import game.rpg.Damage
 import game.rpg.character.skill.Skill
 import game.rpg.character.skill.SkillManager
@@ -79,7 +79,7 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
         val reducer: Reducer<Action, EcsState> = { state, action ->
             when (action) {
                 is Init -> INIT_REDUCER(state, action)
-                is SufferDamage -> SUFFER_DAMAGE_REDUCER(state, action)
+                is OnDamage -> ON_DAMAGE_REDUCER(state, action)
                 else -> noFollowUps(state)
             }
         }
@@ -116,7 +116,7 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
         val entity = state.getData<GameMap>().getEntity(x, y)
 
         if (entity != null) {
-            store.dispatch(SufferDamage(entity, Damage(5)))
+            store.dispatch(OnDamage(entity, Damage(5)))
         }
     }
 }

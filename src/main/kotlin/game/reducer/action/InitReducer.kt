@@ -1,4 +1,4 @@
-package game.reducer
+package game.reducer.action
 
 import game.action.Init
 import game.component.*

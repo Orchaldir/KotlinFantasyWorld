@@ -7,4 +7,6 @@ sealed class Action
 data class FinishTurn(val entity: Int) : Action()
 object Init : Action()
 data class Move(val entity: Int, val direction: Direction) : Action()
-data class SufferDamage(val entity: Int, val damage: Damage) : Action()
+
+// events
+data class OnDamage(val entity: Int, val damage: Damage) : Action()

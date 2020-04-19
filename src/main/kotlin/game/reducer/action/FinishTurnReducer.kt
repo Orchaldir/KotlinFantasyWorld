@@ -1,4 +1,4 @@
-package game.reducer
+package game.reducer.action
 
 import game.action.FinishTurn
 import game.rpg.character.skill.SkillUsage
