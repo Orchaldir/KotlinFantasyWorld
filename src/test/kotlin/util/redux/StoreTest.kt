@@ -18,6 +18,17 @@ class StoreTest {
     }
 
     @Test
+    fun `Dispatch action with follow ups`() {
+        val store = DefaultStore<Int, Int>(10, { state, action ->
+            Pair(state + action, if (action > 1) listOf(action - 1) else emptyList())
+        }, listOf())
+
+        store.dispatch(3)
+
+        assertEquals(store.getState(), 16)
+    }
+
+    @Test
     fun `Subscriber gets update after dispatch`() {
         val store = createStore()
         var calls = 0
@@ -35,5 +46,5 @@ class StoreTest {
         assertEquals(listOf(15, 14), stateList)
     }
 
-    private fun createStore() = DefaultStore<Int, Int>(10, { state, action -> state + action }, listOf())
+    private fun createStore() = DefaultStore<Int, Int>(10, { state, action -> noFollowUps(state + action) }, listOf())
 }

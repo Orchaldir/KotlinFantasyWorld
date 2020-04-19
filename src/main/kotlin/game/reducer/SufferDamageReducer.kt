@@ -14,6 +14,7 @@ import util.log.Message
 import util.log.MessageLog
 import util.log.addMessage
 import util.redux.Reducer
+import util.redux.noFollowUps
 import util.redux.random.RandomNumberState
 
 private val logger = KotlinLogging.logger {}
@@ -25,7 +26,7 @@ val SUFFER_DAMAGE_REDUCER: Reducer<SufferDamage, EcsState> = a@{ state, action -
     val health = healthStorage.getOrThrow(id)
 
     if (health.state == HealthState.DEAD) {
-        return@a addMessage(state, Message("Entity $id is already dead!", Color.YELLOW))
+        return@a noFollowUps(addMessage(state, Message("Entity $id is already dead!", Color.YELLOW)))
     }
 
     val skillUsage = state.getData<SkillUsage>()
@@ -57,7 +58,7 @@ val SUFFER_DAMAGE_REDUCER: Reducer<SufferDamage, EcsState> = a@{ state, action -
         updatedData += messageLog.add(message)
     }
 
-    state.copy(updatedStorage, updatedData)
+    noFollowUps(state.copy(updatedStorage, updatedData))
 }
 
 private fun updateMessageLog(

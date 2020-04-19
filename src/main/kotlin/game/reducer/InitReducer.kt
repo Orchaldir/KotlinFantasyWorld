@@ -13,6 +13,7 @@ import util.ecs.EcsState
 import util.log.Message
 import util.log.MessageLog
 import util.redux.Reducer
+import util.redux.noFollowUps
 
 val INIT_REDUCER: Reducer<Init, EcsState> = { state, _ ->
     val skillUsage = state.getData<SkillUsage>()
@@ -22,7 +23,7 @@ val INIT_REDUCER: Reducer<Init, EcsState> = { state, _ ->
     initMessageLog(state, updatedData)
     initTime(state, updatedData, skillUsage.speed)
 
-    state.copy(updatedData = updatedData)
+    noFollowUps(state.copy(updatedData = updatedData))
 }
 
 fun initBodies(state: EcsState, updatedData: MutableList<Any>) {

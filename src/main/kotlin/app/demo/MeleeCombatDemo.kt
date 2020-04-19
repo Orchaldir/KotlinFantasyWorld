@@ -32,6 +32,7 @@ import util.math.Size
 import util.redux.DefaultStore
 import util.redux.Reducer
 import util.redux.middleware.logAction
+import util.redux.noFollowUps
 import util.rendering.tile.UnicodeTile
 
 private val logger = KotlinLogging.logger {}
@@ -91,7 +92,7 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
                 is FinishTurn -> FINISH_TURN_REDUCER(state, action)
                 is Init -> INIT_REDUCER(state, action)
                 is Move -> MOVE_REDUCER(state, action)
-                else -> state
+                else -> noFollowUps(state)
             }
         }
 

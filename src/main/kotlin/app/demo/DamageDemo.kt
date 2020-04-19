@@ -29,6 +29,7 @@ import util.math.Size
 import util.redux.DefaultStore
 import util.redux.Reducer
 import util.redux.middleware.logAction
+import util.redux.noFollowUps
 import util.rendering.tile.UnicodeTile
 import kotlin.random.Random
 
@@ -79,7 +80,7 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
             when (action) {
                 is Init -> INIT_REDUCER(state, action)
                 is SufferDamage -> SUFFER_DAMAGE_REDUCER(state, action)
-                else -> state
+                else -> noFollowUps(state)
             }
         }
 

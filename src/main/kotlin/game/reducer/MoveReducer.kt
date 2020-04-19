@@ -15,12 +15,13 @@ import util.log.Message
 import util.log.addMessage
 import util.math.Direction
 import util.redux.Reducer
+import util.redux.noFollowUps
 
 val MOVE_REDUCER: Reducer<Move, EcsState> = a@{ state, action ->
     val turnData = state.getData<TurnData>()
 
     if (turnData.movementPoints <= 0) {
-        return@a addMessage(state, Message("No movement points", YELLOW))
+        return@a noFollowUps(addMessage(state, Message("No movement points", YELLOW)))
     }
 
     val map = state.getData<GameMap>()
@@ -29,12 +30,14 @@ val MOVE_REDUCER: Reducer<Move, EcsState> = a@{ state, action ->
 
     val walkability = getNewPosition(map, action.entity, body, action.direction)
 
-    when (walkability) {
+    val newState = when (walkability) {
         is Walkable -> move(state, map, action.entity, bodyStorage, body, walkability, turnData)
         BlockedByObstacle -> addMessage(state, Message("Blocked by obstacle", WHITE))
         is BlockedByEntity -> addMessage(state, Message("Blocked by entity ${walkability.entity}", WHITE))
         OutsideMap -> addMessage(state, Message("Blocked by map border", WHITE))
     }
+
+    noFollowUps(newState)
 }
 
 
