@@ -1,10 +1,7 @@
 package app.demo
 
 import game.GameRenderer
-import game.action.Action
-import game.action.FinishTurn
-import game.action.Init
-import game.action.Move
+import game.action.*
 import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
@@ -12,9 +9,16 @@ import game.map.Terrain
 import game.reducer.action.FINISH_TURN_REDUCER
 import game.reducer.action.INIT_REDUCER
 import game.reducer.action.MOVE_REDUCER
+import game.reducer.action.USE_ABILITY_REDUCER
+import game.reducer.event.ON_DAMAGE_REDUCER
+import game.rpg.Damage
+import game.rpg.character.Defense
+import game.rpg.character.ability.DamageEffect
+import game.rpg.character.ability.MeleeAttack
 import game.rpg.character.skill.Skill
 import game.rpg.character.skill.SkillManager
 import game.rpg.character.skill.SkillUsage
+import game.rpg.check.Checker
 import game.rpg.time.TimeSystem
 import game.rpg.time.TurnData
 import javafx.application.Application
@@ -32,8 +36,8 @@ import util.math.Size
 import util.redux.DefaultStore
 import util.redux.Reducer
 import util.redux.middleware.logAction
-import util.redux.noFollowUps
 import util.rendering.tile.UnicodeTile
+import kotlin.random.Random
 
 private val logger = KotlinLogging.logger {}
 
@@ -57,6 +61,9 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
         val skillManager = SkillManager(listOf(fighting, speed, toughness))
         val skillUsage = SkillUsage(speed = speed, toughness = toughness)
 
+        val meleeAttack = MeleeAttack(fighting, 1, DamageEffect(Damage(5)))
+        val defense = Defense(fighting, 0)
+
         val gameMap = GameMapBuilder(Size(size.x, size.y - LOG_SIZE - STATUS_SIZE), Terrain.FLOOR)
             .addBorder(Terrain.WALL)
             .build()
@@ -67,19 +74,24 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
             addData(skillManager)
             addData(skillUsage)
             addData(TimeSystem())
+            addData(util.redux.random.init(Random, 100))
+            addData(Checker(6))
             registerComponent<Body>()
+            registerComponent<Combat>()
             registerComponent<Controller>()
             registerComponent<Graphic>()
             registerComponent<Health>()
             registerComponent<Statistics>()
             add(SimpleBody(gameMap.size.getIndex(10, 5)) as Body)
+            add(Combat(listOf(meleeAttack), defense))
             add(Player as Controller)
             add(Graphic(UnicodeTile("@", Color.BLUE)))
             add(Health())
             add(Statistics(mapOf(fighting to 8, speed to 6, toughness to 6)))
             buildEntity()
             add(SimpleBody(gameMap.size.getIndex(15, 10)) as Body)
-            add(AI as Controller)
+            add(Combat(listOf(meleeAttack), defense))
+            add(Player as Controller)
             add(Graphic(UnicodeTile("O", Color.GREEN)))
             add(Health())
             add(Statistics(mapOf(fighting to 6, speed to 6, toughness to 8)))
@@ -92,7 +104,8 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
                 is FinishTurn -> FINISH_TURN_REDUCER(state, action)
                 is Init -> INIT_REDUCER(state, action)
                 is Move -> MOVE_REDUCER(state, action)
-                else -> noFollowUps(state)
+                is OnDamage -> ON_DAMAGE_REDUCER(state, action)
+                is UseAbility -> USE_ABILITY_REDUCER(state, action)
             }
         }
 
@@ -157,6 +170,14 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
 
     override fun onTileClicked(x: Int, y: Int) {
         logger.info("onTileClicked(): x=$x y=$y")
+
+        val state = store.getState()
+        val target = state.getData<GameMap>().getEntity(x, y)
+
+        if (target != null) {
+            val entity = store.getState().getData<TimeSystem>().getCurrent()
+            store.dispatch(UseAbility(entity, 0, target))
+        }
     }
 }
 
