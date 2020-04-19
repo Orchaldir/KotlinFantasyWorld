@@ -8,6 +8,8 @@ data class MessageLog(val messages: List<Message>) {
 
     fun add(message: Message) = MessageLog(messages + message)
 
+    fun add(newMessages: List<Message>) = MessageLog(messages + newMessages)
+
 }
 
 fun addMessage(state: EcsState, message: Message): EcsState {

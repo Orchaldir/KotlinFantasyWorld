@@ -1,6 +1,7 @@
 package app.demo
 
 import game.GameRenderer
+import game.OutOfRangeException
 import game.action.*
 import game.component.*
 import game.map.GameMap
@@ -46,6 +47,7 @@ private const val STATUS_SIZE = 1
 
 class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
     private lateinit var store: DefaultStore<Action, EcsState>
+    private lateinit var mapRender: GameRenderer
 
     override fun start(primaryStage: Stage) {
         init(primaryStage, "Melee Combat Demo")
@@ -67,6 +69,8 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
         val gameMap = GameMapBuilder(Size(size.x, size.y - LOG_SIZE - STATUS_SIZE), Terrain.FLOOR)
             .addBorder(Terrain.WALL)
             .build()
+
+        mapRender = GameRenderer(0, LOG_SIZE, gameMap.size)
 
         val ecsState = with(EcsBuilder()) {
             addData(gameMap)
@@ -120,7 +124,6 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
         renderer.clear()
 
         val map = state.getData<GameMap>()
-        val mapRender = GameRenderer(0, LOG_SIZE, map.size)
         mapRender.renderMap(tileRenderer, map)
         mapRender.renderEntities(tileRenderer, state)
 
@@ -171,12 +174,19 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
     override fun onTileClicked(x: Int, y: Int) {
         logger.info("onTileClicked(): x=$x y=$y")
 
-        val state = store.getState()
-        val target = state.getData<GameMap>().getEntity(x, y)
+        if (mapRender.area.isInside(x, y)) {
+            val state = store.getState()
+            val position = mapRender.area.convert(x, y)
+            val target = state.getData<GameMap>().entities[position]
 
-        if (target != null) {
-            val entity = store.getState().getData<TimeSystem>().getCurrent()
-            store.dispatch(UseAbility(entity, 0, target))
+            if (target != null) {
+                val entity = store.getState().getData<TimeSystem>().getCurrent()
+                try {
+                    store.dispatch(UseAbility(entity, 0, position))
+                } catch (e: OutOfRangeException) {
+
+                }
+            }
         }
     }
 }

@@ -1,6 +1,9 @@
 package game.rpg.check
 
+import mu.KotlinLogging
 import util.redux.random.RandomNumberGenerator
+
+private val logger = KotlinLogging.logger {}
 
 class Checker(
     private val diceSide: Int
@@ -13,6 +16,8 @@ class Checker(
         val criticalModifier = calculateCriticalModifier(positiveDice, negativeDice)
 
         val diff = rank - difficulty + positiveDice - negativeDice + criticalModifier
+
+        logger.info("$rank + $positiveDice - $negativeDice VS $difficulty = $diff")
 
         return when {
             diff > 0 -> Success(diff)

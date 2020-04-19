@@ -19,6 +19,7 @@ import javafx.scene.paint.Color
 import mu.KotlinLogging
 import util.ecs.EcsState
 import util.log.Message
+import util.log.MessageLog
 import util.redux.Reducer
 import util.redux.random.RandomNumberState
 
@@ -61,13 +62,13 @@ val USE_ABILITY_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
             val defenseRank = targetStatistics.getRank(defense.skill)
 
             when (checker.check(rng, attackRank, defenseRank)) {
-                is Failure -> messages += Message("Entity ${action.entity} missed!", Color.WHITE)
+                is Failure -> messages += Message("Entity ${action.entity} missed entity $target", Color.WHITE)
                 else -> {
-                    messages += Message("Entity ${action.entity} hits entity $target!", Color.WHITE)
+                    messages += Message("Entity ${action.entity} hits entity $target", Color.WHITE)
 
                     when (val effect = ability.effect) {
                         is DamageEffect -> {
-                            events + OnDamage(target, effect.damage)
+                            events += OnDamage(target, effect.damage)
                         }
                     }
                 }
@@ -75,5 +76,7 @@ val USE_ABILITY_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
         }
     }
 
-    Pair(state.copy(updatedData = listOf(messages, rng, newTurnData)), events)
+    val messageLog = state.getData<MessageLog>().add(messages)
+
+    Pair(state.copy(updatedData = listOf(messageLog, rng.createState(), newTurnData)), events)
 }
