@@ -46,7 +46,7 @@ class EcsBuilderTest {
                 build()
             }
 
-            assertThat(state.entityIds).containsOnly(0)
+            assertThat(state.entities).containsOnly(0)
             assertEntity(state, 0, INT0, STRING0)
         }
 
@@ -63,7 +63,7 @@ class EcsBuilderTest {
                 build()
             }
 
-            assertThat(state.entityIds).containsOnly(0, 1)
+            assertThat(state.entities).containsOnly(0, 1)
             assertEntity(state, 0, INT0, STRING0)
             assertEntity(state, 1, INT1, STRING1)
         }
@@ -81,7 +81,7 @@ class EcsBuilderTest {
                 build()
             }
 
-            assertThat(state.entityIds).containsOnly(0, 1, 2, 3)
+            assertThat(state.entities).containsOnly(0, 1, 2, 3)
             assertEntity(state, 1, INT0, STRING0)
             assertEntity(state, 3, INT1, STRING1)
         }

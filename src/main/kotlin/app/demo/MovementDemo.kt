@@ -144,14 +144,14 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
     }
 
     override fun onKeyReleased(keyCode: KeyCode) {
-        val entityId = store.getState().getData<TimeSystem>().getCurrent()
+        val entity = store.getState().getData<TimeSystem>().getCurrent()
 
         when (keyCode) {
-            KeyCode.UP -> store.dispatch(Move(entityId, NORTH))
-            KeyCode.RIGHT -> store.dispatch(Move(entityId, EAST))
-            KeyCode.DOWN -> store.dispatch(Move(entityId, SOUTH))
-            KeyCode.LEFT -> store.dispatch(Move(entityId, WEST))
-            KeyCode.SPACE -> store.dispatch(FinishTurn(entityId))
+            KeyCode.UP -> store.dispatch(Move(entity, NORTH))
+            KeyCode.RIGHT -> store.dispatch(Move(entity, EAST))
+            KeyCode.DOWN -> store.dispatch(Move(entity, SOUTH))
+            KeyCode.LEFT -> store.dispatch(Move(entity, WEST))
+            KeyCode.SPACE -> store.dispatch(FinishTurn(entity))
             else -> logger.info("onKeyReleased(): keyCode=$keyCode")
         }
     }

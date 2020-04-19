@@ -50,10 +50,10 @@ class GameRenderer(
         val graphicStore = state.getStorage<Graphic>()
         val healthStore = state.getStorage<Health>()
 
-        for (entityId in state.entityIds) {
-            val body = bodyStore[entityId]
-            val graphic = graphicStore[entityId]
-            val health = healthStore[entityId]
+        for (entity in state.entities) {
+            val body = bodyStore[entity]
+            val graphic = graphicStore[entity]
+            val health = healthStore[entity]
 
             if (health != null && health.state == HealthState.DEAD && body != null) {
                 renderCopse(tileRenderer, body)

@@ -8,11 +8,11 @@ import kotlin.reflect.KClass
 private val logger = KotlinLogging.logger {}
 
 class EcsBuilder(
-    private val entityIds: MutableSet<Int>,
+    private val entities: MutableSet<Int>,
     private val storageMap: MutableMap<String, ComponentStorage<*>>,
     private val dataMap: MutableMap<KClass<*>, Any>
 ) {
-    var entityId = getFirstFreeId()
+    var entity = getFirstFreeId()
         private set
     private var numberOfComponents = 0
 
@@ -27,10 +27,10 @@ class EcsBuilder(
     inline fun <reified T : Any> registerComponent() = registerComponent<T>(T::class)
 
     fun buildEntity(): Int {
-        logger.info("Add entity $entityId with $numberOfComponents components")
-        val lastId = entityId
-        entityIds.add(entityId)
-        entityId = getFirstFreeId()
+        logger.info("Add entity $entity with $numberOfComponents components")
+        val lastId = entity
+        entities.add(entity)
+        entity = getFirstFreeId()
         numberOfComponents = 0
         return lastId
     }
@@ -41,16 +41,16 @@ class EcsBuilder(
         @Suppress("UNCHECKED_CAST")
         val storage =
             storageMap[type] as ComponentStorage<T>? ?: throw IllegalArgumentException("Type '$type' is unregistered!")
-        storageMap[type] = storage.updateAndRemove(mapOf(entityId to component))
+        storageMap[type] = storage.updateAndRemove(mapOf(entity to component))
     }
 
     inline fun <reified T : Any> add(component: T) = add(T::class, component)
 
     private fun getFirstFreeId(): Int {
-        val maxId = entityIds.max() ?: 0
+        val maxId = entities.max() ?: 0
 
         for (i in 0..maxId) {
-            if (!entityIds.contains(i)) {
+            if (!entities.contains(i)) {
                 return i
             }
         }
@@ -69,10 +69,10 @@ class EcsBuilder(
 
     fun build(): EcsState {
         if (numberOfComponents > 0) {
-            logger.warn("Did not call buildEntity() for entity $entityId!")
-            entityIds.add(entityId)
+            logger.warn("Did not call buildEntity() for entity $entity!")
+            entities.add(entity)
         }
-        return EcsState(entityIds, storageMap, dataMap)
+        return EcsState(entities, storageMap, dataMap)
     }
 
 }

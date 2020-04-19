@@ -7,12 +7,12 @@ data class ComponentMap<T>(
 
     override fun getType() = type
 
-    override fun has(entityId: Int) = componentMap.containsKey(entityId)
+    override fun has(entity: Int) = componentMap.containsKey(entity)
 
-    override fun get(entityId: Int) = componentMap[entityId]
+    override fun get(entity: Int) = componentMap[entity]
 
-    override fun getOrThrow(entityId: Int): T {
-        return componentMap[entityId] ?: throw NoSuchElementException("Entity $entityId has no $type!")
+    override fun getOrThrow(entity: Int): T {
+        return componentMap[entity] ?: throw NoSuchElementException("Entity $entity has no $type!")
     }
 
     override fun getAll(): Collection<T> = componentMap.values

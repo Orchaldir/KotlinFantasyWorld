@@ -4,7 +4,7 @@ import util.ecs.storage.ComponentStorage
 import kotlin.reflect.KClass
 
 class EcsState(
-    val entityIds: Set<Int> = emptySet(),
+    val entities: Set<Int> = emptySet(),
     private val storageMap: Map<String, ComponentStorage<*>> = emptyMap(),
     private val dataMap: Map<KClass<*>, Any> = emptyMap()
 ) {
@@ -63,7 +63,7 @@ class EcsState(
             dataMap + updatedData.map { it::class to it }.toMap()
         }
 
-        return EcsState(entityIds, newStorageMap, newDataMap)
+        return EcsState(entities, newStorageMap, newDataMap)
     }
 
 }
