@@ -8,22 +8,22 @@ import util.ecs.EcsState
 data class TurnData(
     val movementPoints: Int,
     val maxMovementPoints: Int,
-    val actionsPerTurn: Int,
-    val maxActionsPerTurn: Int
+    val actionPoints: Int,
+    val maxActionsPoints: Int
 ) {
 
     constructor(movementPoints: Int, actions: Int) : this(movementPoints, movementPoints, actions, actions)
 
-    fun isFinished() = movementPoints <= 0 && actionsPerTurn <= 0
+    fun isFinished() = movementPoints <= 0 && actionPoints <= 0
 
     fun reduceMovementPoints(): TurnData {
         require(movementPoints > 0) { "Can not reduce movement points below 0!" }
         return copy(movementPoints = movementPoints - 1)
     }
 
-    fun reduceActions(): TurnData {
-        require(actionsPerTurn > 0) { "Can not reduce actions below 0!" }
-        return copy(actionsPerTurn = actionsPerTurn - 1)
+    fun reduceActionPoints(entity: Int): TurnData {
+        if (actionPoints <= 0) throw NoActionPointsException(entity)
+        return copy(actionPoints = actionPoints - 1)
     }
 
 }

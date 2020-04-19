@@ -138,7 +138,7 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
         return "Turn=${timeSystem.turn} " +
                 "Health=${health.state.toDisplayText()} " +
                 "Movement=${turnData.movementPoints} " +
-                "Actions=${turnData.actionsPerTurn}"
+                "Actions=${turnData.actionPoints}"
     }
 
     override fun onKeyReleased(keyCode: KeyCode) {

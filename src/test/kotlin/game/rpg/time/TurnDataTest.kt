@@ -64,17 +64,23 @@ class TurnDataTest {
     }
 
     @Nested
-    inner class ReduceActions {
+    inner class ReduceActionPoints {
+
+        val entity = 99
 
         @Test
-        fun `Reduce actions`() {
-            val data = TurnData(6, 2).reduceActions()
+        fun `Reduce action points`() {
+            val data = TurnData(6, 2).reduceActionPoints(entity)
             assertThat(data).isEqualTo(TurnData(6, 6, 1, 2))
         }
 
         @Test
-        fun `Reduce 0 movement points`() {
-            assertFailsWith<IllegalArgumentException> { TurnData(1, 0).reduceActions() }
+        fun `Reduce 0 action points`() {
+            val exception = assertFailsWith<NoActionPointsException> {
+                TurnData(1, 0).reduceActionPoints(entity)
+            }
+
+            assertThat(exception).isEqualTo(NoActionPointsException(entity))
         }
 
     }
