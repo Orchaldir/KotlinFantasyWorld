@@ -5,29 +5,31 @@ import game.map.GameMap
 import game.map.Terrain
 import javafx.scene.paint.Color
 import util.ecs.EcsState
+import util.math.Area
 import util.math.Size
 import util.rendering.tile.Tile
 import util.rendering.tile.TileRenderer
 import util.rendering.tile.UnicodeTile
 
 class GameRenderer(
-    private val startX: Int,
-    private val startY: Int,
-    private val size: Size,
+    startX: Int,
+    startY: Int,
+    size: Size,
     private val offsetX: Int = 0,
     private val offsetY: Int = 0
 ) {
+    val area = Area(startX, startY, size)
 
     constructor(size: Size) : this(0, 0, size, 0, 0)
 
     fun renderMap(renderer: TileRenderer, map: GameMap) {
-        for (y in 0 until size.y) {
-            for (x in 0 until size.x) {
-                if (!size.isInside(x + offsetX, y + offsetY)) {
+        for (y in 0 until area.size.y) {
+            for (x in 0 until area.size.x) {
+                if (!area.size.isInside(x + offsetX, y + offsetY)) {
                     continue
                 }
 
-                val mapIndex = size.getIndex(x + offsetX, y + offsetY)
+                val mapIndex = area.size.getIndex(x + offsetX, y + offsetY)
 
                 if (map.entities.containsKey(mapIndex)) {
                     continue
@@ -40,7 +42,7 @@ class GameRenderer(
                     "#"
                 }
 
-                renderer.renderUnicodeTile(symbol, Color.WHITE, startX + x, startY + y)
+                renderer.renderUnicodeTile(symbol, Color.WHITE, area.x + x, area.y + y)
             }
         }
     }
@@ -72,7 +74,7 @@ class GameRenderer(
     }
 
     private fun renderTile(tileRenderer: TileRenderer, tile: Tile, pos: Int, bodySize: Int = 1) {
-        tileRenderer.renderTile(tile, startX + size.getX(pos), startY + size.getY(pos), bodySize)
+        tileRenderer.renderTile(tile, area.getX(pos), area.getY(pos), bodySize)
     }
 
     private val corpse = Graphic(UnicodeTile("%", Color.WHITE))
