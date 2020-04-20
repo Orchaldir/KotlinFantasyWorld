@@ -7,10 +7,7 @@ import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
 import game.map.Terrain
-import game.reducer.action.FINISH_TURN_REDUCER
-import game.reducer.action.INIT_REDUCER
-import game.reducer.action.MOVE_REDUCER
-import game.reducer.action.USE_ABILITY_REDUCER
+import game.reducer.action.*
 import game.reducer.event.ON_DAMAGE_REDUCER
 import game.rpg.Damage
 import game.rpg.character.Defense
@@ -20,6 +17,7 @@ import game.rpg.character.skill.Skill
 import game.rpg.character.skill.SkillManager
 import game.rpg.character.skill.SkillUsage
 import game.rpg.check.Checker
+import game.rpg.time.NoActionPointsException
 import game.rpg.time.TimeSystem
 import game.rpg.time.TurnData
 import javafx.application.Application
@@ -30,6 +28,7 @@ import mu.KotlinLogging
 import util.app.TileApplication
 import util.ecs.EcsBuilder
 import util.ecs.EcsState
+import util.log.Message
 import util.log.MessageLog
 import util.log.MessageLogRenderer
 import util.math.Direction.*
@@ -105,6 +104,7 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
 
         val reducer: Reducer<Action, EcsState> = { state, action ->
             when (action) {
+                is AddMessage -> ADD_MESSAGE_REDUCER(state, action)
                 is FinishTurn -> FINISH_TURN_REDUCER(state, action)
                 is Init -> INIT_REDUCER(state, action)
                 is Move -> MOVE_REDUCER(state, action)
@@ -184,7 +184,9 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
                 try {
                     store.dispatch(UseAbility(entity, 0, position))
                 } catch (e: OutOfRangeException) {
-
+                    store.dispatch(AddMessage(Message("Entity $target is out of range!", Color.YELLOW)))
+                } catch (e: NoActionPointsException) {
+                    store.dispatch(AddMessage(Message("No Action points!", Color.YELLOW)))
                 }
             }
         }

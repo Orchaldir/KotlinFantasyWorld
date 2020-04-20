@@ -1,9 +1,11 @@
 package game.action
 
 import game.rpg.Damage
+import util.log.Message
 import util.math.Direction
 
 sealed class Action
+data class AddMessage(val message: Message) : Action()
 data class FinishTurn(val entity: Int) : Action()
 object Init : Action()
 data class Move(val entity: Int, val direction: Direction) : Action()
