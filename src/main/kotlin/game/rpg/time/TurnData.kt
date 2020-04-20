@@ -1,5 +1,7 @@
 package game.rpg.time
 
+import game.NoActionPointsException
+import game.NoMovementPointsException
 import game.component.Combat
 import game.component.Statistics
 import game.rpg.character.skill.Skill
@@ -16,8 +18,8 @@ data class TurnData(
 
     fun isFinished() = movementPoints <= 0 && actionPoints <= 0
 
-    fun reduceMovementPoints(): TurnData {
-        require(movementPoints > 0) { "Can not reduce movement points below 0!" }
+    fun reduceMovementPoints(entity: Int): TurnData {
+        if (movementPoints <= 0) throw NoMovementPointsException(entity)
         return copy(movementPoints = movementPoints - 1)
     }
 

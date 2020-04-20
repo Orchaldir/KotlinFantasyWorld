@@ -2,6 +2,8 @@ package game.rpg.time
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import game.NoActionPointsException
+import game.NoMovementPointsException
 import game.component.Combat
 import game.component.Statistics
 import game.rpg.character.skill.Skill
@@ -15,6 +17,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class TurnDataTest {
+
+    private val entity = 99
 
     @Test
     fun `Test constructor`() {
@@ -52,21 +56,23 @@ class TurnDataTest {
 
         @Test
         fun `Reduce movement points`() {
-            val data = TurnData(6, 1).reduceMovementPoints()
+            val data = TurnData(6, 1).reduceMovementPoints(entity)
             assertThat(data).isEqualTo(TurnData(5, 6, 1, 1))
         }
 
         @Test
         fun `Reduce 0 movement points`() {
-            assertFailsWith<IllegalArgumentException> { TurnData(0, 1).reduceMovementPoints() }
+            val exception = assertFailsWith<NoMovementPointsException> {
+                TurnData(0, 1).reduceMovementPoints(entity)
+            }
+
+            assertThat(exception).isEqualTo(NoMovementPointsException(entity))
         }
 
     }
 
     @Nested
     inner class ReduceActionPoints {
-
-        val entity = 99
 
         @Test
         fun `Reduce action points`() {

@@ -77,7 +77,7 @@ private fun move(
     val newBody = updateBody(body, walkable.position)
     val newBodyStorage = bodyStorage.updateAndRemove(mapOf(entity to newBody))
 
-    val newTurnData = turnData.reduceMovementPoints()
+    val newTurnData = turnData.reduceMovementPoints(entity)
 
     return state.copy(listOf(newBodyStorage), listOf(newMap, newTurnData))
 }

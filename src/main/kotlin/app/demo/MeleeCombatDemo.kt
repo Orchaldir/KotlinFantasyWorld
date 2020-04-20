@@ -2,6 +2,7 @@ package app.demo
 
 import game.CannotTargetSelf
 import game.GameRenderer
+import game.NoActionPointsException
 import game.OutOfRangeException
 import game.action.*
 import game.component.*
@@ -18,7 +19,6 @@ import game.rpg.character.skill.Skill
 import game.rpg.character.skill.SkillManager
 import game.rpg.character.skill.SkillUsage
 import game.rpg.check.Checker
-import game.rpg.time.NoActionPointsException
 import game.rpg.time.TimeSystem
 import game.rpg.time.TurnData
 import javafx.application.Application

@@ -38,7 +38,7 @@ val USE_ABILITY_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
     val target =
         map.entities[action.position] ?: throw  IllegalStateException("No target at position ${action.position}")
 
-    if (action.entity == target) throw CannotTargetSelf()
+    if (action.entity == target) throw CannotTargetSelf(target)
 
     val (entityStatistics, targetStatistics) = state.getStorage<Statistics>().getList(action.entity, target)
 
@@ -59,7 +59,7 @@ val USE_ABILITY_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
         is MeleeAttack -> {
             val distance = calculateDistanceToPosition(map.size, body, action.position)
 
-            if (distance > ability.reach) throw OutOfRangeException()
+            if (distance > ability.reach) throw OutOfRangeException(distance)
 
             val attackRank = entityStatistics.getRank(ability.skill)
             val defenseRank = targetStatistics.getRank(defense.skill)
