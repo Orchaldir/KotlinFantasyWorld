@@ -1,5 +1,6 @@
 package app.demo
 
+import game.CannotTargetSelf
 import game.GameRenderer
 import game.OutOfRangeException
 import game.action.*
@@ -184,9 +185,11 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
                 try {
                     store.dispatch(UseAbility(entity, 0, position))
                 } catch (e: OutOfRangeException) {
-                    store.dispatch(AddMessage(Message("Entity $target is out of range!", Color.YELLOW)))
+                    store.dispatch(AddMessage(Message("Target is out of range!", Color.YELLOW)))
                 } catch (e: NoActionPointsException) {
                     store.dispatch(AddMessage(Message("No Action points!", Color.YELLOW)))
+                } catch (e: CannotTargetSelf) {
+                    store.dispatch(AddMessage(Message("Cannot target self!", Color.YELLOW)))
                 }
             }
         }
