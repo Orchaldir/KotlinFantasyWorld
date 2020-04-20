@@ -118,6 +118,41 @@ class SizeTest {
     // distance
 
     @Nested
+    inner class GetChebyshevDistance {
+
+        private val size = Size(5, 5)
+
+        @Test
+        fun `Test distance 0`() {
+            repeat(25) { assertThat(size.getChebyshevDistance(it, it)).isSameAs(0) }
+        }
+
+        @Test
+        fun `Test distance 1`() {
+            assertThat(size.getChebyshevDistance(12, 6)).isSameAs(1)
+            assertThat(size.getChebyshevDistance(12, 7)).isSameAs(1)
+            assertThat(size.getChebyshevDistance(12, 8)).isSameAs(1)
+            assertThat(size.getChebyshevDistance(12, 11)).isSameAs(1)
+            assertThat(size.getChebyshevDistance(12, 13)).isSameAs(1)
+            assertThat(size.getChebyshevDistance(12, 16)).isSameAs(1)
+            assertThat(size.getChebyshevDistance(12, 17)).isSameAs(1)
+            assertThat(size.getChebyshevDistance(12, 18)).isSameAs(1)
+        }
+
+        @Test
+        fun `Test distance 2`() {
+            assertThat(size.getChebyshevDistance(12, 0)).isSameAs(2)
+            assertThat(size.getChebyshevDistance(12, 2)).isSameAs(2)
+            assertThat(size.getChebyshevDistance(12, 4)).isSameAs(2)
+            assertThat(size.getChebyshevDistance(12, 10)).isSameAs(2)
+            assertThat(size.getChebyshevDistance(12, 14)).isSameAs(2)
+            assertThat(size.getChebyshevDistance(12, 20)).isSameAs(2)
+            assertThat(size.getChebyshevDistance(12, 20)).isSameAs(2)
+            assertThat(size.getChebyshevDistance(12, 24)).isSameAs(2)
+        }
+    }
+
+    @Nested
     inner class GetManhattanDistance {
 
         private val size = Size(3, 3)

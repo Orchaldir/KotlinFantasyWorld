@@ -2,6 +2,7 @@ package util.math
 
 import util.math.Direction.*
 import util.requireGreater
+import java.lang.Integer.max
 import kotlin.math.absoluteValue
 
 data class Size(
@@ -66,6 +67,13 @@ data class Size(
     }
 
     // distance
+
+    fun getChebyshevDistance(from: Int, to: Int): Int {
+        val (fromX, fromY) = getPos(from)
+        val (toX, toY) = getPos(to)
+
+        return max((toX - fromX).absoluteValue, (toY - fromY).absoluteValue)
+    }
 
     fun getManhattanDistance(from: Int, to: Int): Int {
         val (fromX, fromY) = getPos(from)

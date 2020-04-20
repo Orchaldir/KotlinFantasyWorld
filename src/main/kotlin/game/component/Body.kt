@@ -12,7 +12,7 @@ fun calculateDistanceToPosition(size: Size, body: Body, position: Int): Int {
 
     if (origins.isEmpty()) throw IllegalStateException("No valid origins!")
 
-    return origins.map { size.getManhattanDistance(it, position) }.min()!!
+    return origins.map { size.getChebyshevDistance(it, position) }.min()!!
 }
 
 private fun getOrigins(size: Size, body: Body): List<Int> = when (body) {
