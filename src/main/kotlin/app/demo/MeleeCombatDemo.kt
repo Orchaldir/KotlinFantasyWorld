@@ -11,6 +11,7 @@ import game.map.GameMapBuilder
 import game.map.Terrain
 import game.reducer.action.*
 import game.reducer.event.ON_DAMAGE_REDUCER
+import game.reducer.event.ON_DEATH_REDUCER
 import game.rpg.Damage
 import game.rpg.character.Defense
 import game.rpg.character.ability.DamageEffect
@@ -95,7 +96,7 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
             buildEntity()
             add(SimpleBody(gameMap.size.getIndex(15, 10)) as Body)
             add(Combat(listOf(meleeAttack), defense))
-            add(Player as Controller)
+            add(AI as Controller)
             add(Graphic(UnicodeTile("O", Color.GREEN)))
             add(Health())
             add(Statistics(mapOf(fighting to 6, speed to 6, toughness to 8)))
@@ -110,6 +111,7 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
                 is Init -> INIT_REDUCER(state, action)
                 is Move -> MOVE_REDUCER(state, action)
                 is OnDamage -> ON_DAMAGE_REDUCER(state, action)
+                is OnDeath -> ON_DEATH_REDUCER(state, action)
                 is UseAbility -> USE_ABILITY_REDUCER(state, action)
             }
         }

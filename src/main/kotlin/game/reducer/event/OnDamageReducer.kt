@@ -1,8 +1,10 @@
 package game.reducer.event
 
+import game.action.Action
 import game.action.OnDamage
+import game.action.OnDeath
 import game.component.Health
-import game.component.HealthState
+import game.component.HealthState.DEAD
 import game.component.Statistics
 import game.rpg.character.skill.SkillUsage
 import game.rpg.check.*
@@ -19,13 +21,14 @@ import util.redux.random.RandomNumberState
 
 private val logger = KotlinLogging.logger {}
 
-val ON_DAMAGE_REDUCER: Reducer<OnDamage, EcsState> = a@{ state, action ->
+val ON_DAMAGE_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
+    if (action !is OnDamage) throw IllegalArgumentException("Action must be OnDamage!")
     val id = action.entity
 
     val healthStorage = state.getStorage<Health>()
     val health = healthStorage.getOrThrow(id)
 
-    if (health.state == HealthState.DEAD) {
+    if (health.state == DEAD) {
         return@a noFollowUps(addMessage(state, Message("Entity $id is already dead!", Color.YELLOW)))
     }
 
@@ -44,12 +47,17 @@ val ON_DAMAGE_REDUCER: Reducer<OnDamage, EcsState> = a@{ state, action ->
 
     val updatedStorage = mutableListOf<ComponentStorage<*>>()
     val updatedData = mutableListOf<Any>(rng.createState())
+    val events = mutableListOf<Action>()
 
     val newHealth = updateHealth(health, result)
 
     if (health != newHealth) {
         logger.info("Change to $newHealth")
         updatedStorage += healthStorage.updateAndRemove(mapOf(id to newHealth))
+
+        if (newHealth.state == DEAD) {
+            events.add(OnDeath(id))
+        }
 
         updateMessageLog(state, health, newHealth, id, updatedData)
     } else {
@@ -58,7 +66,7 @@ val ON_DAMAGE_REDUCER: Reducer<OnDamage, EcsState> = a@{ state, action ->
         updatedData += messageLog.add(message)
     }
 
-    noFollowUps(state.copy(updatedStorage, updatedData))
+    Pair(state.copy(updatedStorage, updatedData), events)
 }
 
 private fun updateMessageLog(

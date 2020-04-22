@@ -13,3 +13,4 @@ data class UseAbility(val entity: Int, val ability: Int, val position: Int) : Ac
 
 // events
 data class OnDamage(val entity: Int, val damage: Damage) : Action()
+data class OnDeath(val entity: Int) : Action()
