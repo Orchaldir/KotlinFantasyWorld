@@ -31,6 +31,10 @@ private val storage = ComponentMap(TYPE, components)
 
 class ComponentMapTest {
 
+    @Test
+    fun `Get correct type`() {
+        assertThat(storage.getType()).isSameAs(TYPE)
+    }
 
     @Nested
     inner class Has {

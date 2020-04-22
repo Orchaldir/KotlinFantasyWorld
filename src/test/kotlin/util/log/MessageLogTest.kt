@@ -9,6 +9,10 @@ import util.ecs.EcsState
 
 class MessageLogTest {
 
+    private val message0 = mockk<Message>()
+    private val message1 = mockk<Message>()
+    private val message2 = mockk<Message>()
+
     @Test
     fun `Test empty constructor`() {
         assertThat(MessageLog()).isEqualTo(MessageLog(emptyList()))
@@ -16,8 +20,6 @@ class MessageLogTest {
 
     @Test
     fun `Add a message to the message log`() {
-        val message0 = mockk<Message>()
-        val message1 = mockk<Message>()
         val log = MessageLog(listOf(message0))
 
         val newLog = log.add(message1)
@@ -26,9 +28,16 @@ class MessageLogTest {
     }
 
     @Test
+    fun `Add messages to the message log`() {
+        val log = MessageLog(listOf(message0))
+
+        val newLog = log.add(listOf(message1, message2))
+
+        assertThat(newLog).isEqualTo(MessageLog(listOf(message0, message1, message2)))
+    }
+
+    @Test
     fun `Add a message to the state`() {
-        val message0 = mockk<Message>()
-        val message1 = mockk<Message>()
         val log = MessageLog(listOf(message0))
         val state = EcsState(dataMap = mapOf(MessageLog::class to log))
 
