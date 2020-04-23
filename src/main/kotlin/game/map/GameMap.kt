@@ -19,6 +19,14 @@ data class GameMap(
         return OccupancyMap(list, size)
     }
 
+    fun createOccupancyMap(entitySize: Int, entity: Int): OccupancyMap {
+        val list = (0 until size.cells)
+            .map { checkWalkability(it, entitySize, entity) is Walkable }
+            .toList()
+
+        return OccupancyMap(list, size)
+    }
+
     fun checkWalkability(position: Int, entity: Int): Walkability {
         if (!size.isInside(position)) {
             return OutsideMap
