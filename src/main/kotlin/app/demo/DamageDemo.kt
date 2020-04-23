@@ -33,6 +33,7 @@ import util.redux.middleware.logAction
 import util.redux.noFollowUps
 import util.rendering.tile.UnicodeTile
 import kotlin.random.Random
+import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger {}
 private const val MAP_X = 10
@@ -107,7 +108,10 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
     }
 
     override fun onKeyReleased(keyCode: KeyCode) {
-        logger.info("onKeyReleased(): keyCode=$keyCode")
+        when (keyCode) {
+            KeyCode.ESCAPE -> exitProcess(0)
+            else -> logger.info("onKeyReleased(): keyCode=$keyCode")
+        }
     }
 
     override fun onTileClicked(x: Int, y: Int, button: MouseButton) {

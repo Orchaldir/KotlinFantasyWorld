@@ -15,6 +15,7 @@ import javafx.stage.Stage
 import mu.KotlinLogging
 import util.app.TileApplication
 import kotlin.random.Random
+import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger {}
 
@@ -31,7 +32,7 @@ class PathfindingDemo : TileApplication(60, 45, 20, 20) {
     private var renderOccupancyMap = false
 
     private var start: Int? = null
-    private var end: Int? = null
+    private var goal: Int? = null
     private var pathSize = 1
 
     override fun start(primaryStage: Stage) {
@@ -50,8 +51,8 @@ class PathfindingDemo : TileApplication(60, 45, 20, 20) {
             mapRender.renderMap(tileRenderer, map)
         }
 
-        if (start != null && end != null) {
-            val path = pathfinding.find(occupancyMap, start!!, end!!)
+        if (start != null && goal != null) {
+            val path = pathfinding.find(occupancyMap, start!!, goal!!)
 
             if (path is Path) {
                 path.indices.forEach { renderNode(it, "P", Color.BLUE) }
@@ -59,7 +60,7 @@ class PathfindingDemo : TileApplication(60, 45, 20, 20) {
         }
 
         renderNode(start, "S", Color.GREEN, pathSize)
-        renderNode(end, "E", Color.RED, pathSize)
+        renderNode(goal, "G", Color.RED, pathSize)
 
         logger.info("render(): finished")
     }
@@ -81,6 +82,7 @@ class PathfindingDemo : TileApplication(60, 45, 20, 20) {
             KeyCode.DIGIT3 -> pathSize = 3
             KeyCode.F1 -> renderOccupancyMap = false
             KeyCode.F2 -> renderOccupancyMap = true
+            KeyCode.ESCAPE -> exitProcess(0)
             else -> return
         }
 
@@ -97,7 +99,7 @@ class PathfindingDemo : TileApplication(60, 45, 20, 20) {
 
             when (button) {
                 PRIMARY -> start = position
-                SECONDARY -> end = position
+                SECONDARY -> goal = position
                 else -> return
             }
 

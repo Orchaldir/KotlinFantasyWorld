@@ -41,6 +41,7 @@ import util.redux.Reducer
 import util.redux.middleware.logAction
 import util.rendering.tile.UnicodeTile
 import kotlin.random.Random
+import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger {}
 
@@ -171,6 +172,7 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
             KeyCode.DOWN -> store.dispatch(Move(entity, SOUTH))
             KeyCode.LEFT -> store.dispatch(Move(entity, WEST))
             KeyCode.SPACE -> store.dispatch(FinishTurn(entity))
+            KeyCode.ESCAPE -> exitProcess(0)
             else -> logger.info("onKeyReleased(): keyCode=$keyCode")
         }
     }
