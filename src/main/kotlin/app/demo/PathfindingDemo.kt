@@ -28,6 +28,7 @@ class PathfindingDemo : TileApplication(60, 45, 20, 20) {
     private val mapRender = GameRenderer(0, 0, size)
     private var occupancyMap = map.createOccupancyMap(0)
     private val pathfinding = AStar<Boolean>()
+    private var renderOccupancyMap = false
 
     private var start: Int? = null
     private var end: Int? = null
@@ -43,7 +44,11 @@ class PathfindingDemo : TileApplication(60, 45, 20, 20) {
 
         renderer.clear()
 
-        mapRender.renderMap(tileRenderer, map)
+        if (renderOccupancyMap) {
+            mapRender.renderOccupancyMap(tileRenderer, occupancyMap)
+        } else {
+            mapRender.renderMap(tileRenderer, map)
+        }
 
         if (start != null && end != null) {
             val path = pathfinding.find(occupancyMap, start!!, end!!)
@@ -74,6 +79,8 @@ class PathfindingDemo : TileApplication(60, 45, 20, 20) {
             KeyCode.DIGIT1 -> pathSize = 1
             KeyCode.DIGIT2 -> pathSize = 2
             KeyCode.DIGIT3 -> pathSize = 3
+            KeyCode.F1 -> renderOccupancyMap = false
+            KeyCode.F2 -> renderOccupancyMap = true
             else -> return
         }
 

@@ -1,5 +1,6 @@
 package game
 
+import ai.pathfinding.graph.OccupancyMap
 import game.component.*
 import game.map.GameMap
 import game.map.Terrain
@@ -43,6 +44,21 @@ class GameRenderer(
                 }
 
                 renderer.renderUnicodeTile(symbol, Color.WHITE, area.x + x, area.y + y)
+            }
+        }
+    }
+
+    fun renderOccupancyMap(renderer: TileRenderer, map: OccupancyMap) {
+        for (y in 0 until area.size.y) {
+            for (x in 0 until area.size.x) {
+                if (!area.size.isInside(x + offsetX, y + offsetY)) {
+                    continue
+                }
+
+                val mapIndex = area.size.getIndex(x + offsetX, y + offsetY)
+                val color = if (map[mapIndex]) Color.GREEN else Color.RED
+
+                renderer.renderFullTile(color, area.x + x, area.y + y)
             }
         }
     }
