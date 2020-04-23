@@ -8,21 +8,24 @@ private val logger = KotlinLogging.logger {}
 
 class AStar<T> {
 
-    fun find(graph: Graph<T>, start: Int, end: Int): PathfindingResult {
-        logger.info("Find path from $start to $end.")
+    fun find(graph: Graph<T>, start: Int, goal: Int): PathfindingResult {
+        logger.info("Find path from $start to $goal.")
 
-        if (!graph.isValid(end)) {
-            logger.info("End is an obstacle")
+        if (start == goal) {
+            logger.info("Goal is already reached")
+            return GoalAlreadyReached
+        } else if (!graph.isValid(goal)) {
+            logger.info("Goal is an obstacle")
             return NoPath
         }
 
         val openNodes = PriorityQueue<AStarNode>()
         val list = arrayOfNulls<AStarNode>(graph.getSize())
-        val endNode = AStarNode(end)
-        endNode.costSoFar = 0
+        val goalNode = AStarNode(goal)
+        goalNode.costSoFar = 0
 
-        openNodes.add(endNode)
-        list[end] = endNode
+        openNodes.add(goalNode)
+        list[goal] = goalNode
 
         while (!openNodes.isEmpty()) {
             val currentNode = openNodes.poll()
@@ -57,7 +60,7 @@ class AStar<T> {
 
     private fun backtrack(startNode: AStarNode): Path {
         val indices = mutableListOf<Int>()
-        var currentNode: AStarNode? = startNode
+        var currentNode: AStarNode? = startNode.previous
 
         while (currentNode != null) {
             indices.add(currentNode.index)
