@@ -33,6 +33,9 @@ abstract class TileApplication(
         get() = canvasRenderer as Renderer
     lateinit var tileRenderer: TileRenderer
 
+    private var lastX = -1
+    private var lastY = -1
+
     protected fun init(
         primaryStage: Stage,
         windowTitle: String
@@ -70,6 +73,17 @@ abstract class TileApplication(
             )
         }
 
+        windowScene.onMouseMoved = EventHandler { event ->
+            val x = tileRenderer.getX(event.x.toInt())
+            val y = tileRenderer.getY(event.y.toInt())
+
+            if (x != lastX || y != lastY) {
+                onMouseMoved(x, y)
+                lastX = x
+                lastY = y
+            }
+        }
+
         return windowScene
     }
 
@@ -78,6 +92,10 @@ abstract class TileApplication(
     }
 
     open fun onTileClicked(x: Int, y: Int, button: MouseButton) {
+
+    }
+
+    open fun onMouseMoved(x: Int, y: Int) {
 
     }
 }

@@ -89,7 +89,6 @@ class PathfindingDemo : TileApplication(60, 45, 20, 20) {
         render()
     }
 
-
     override fun onTileClicked(x: Int, y: Int, button: MouseButton) {
         logger.info("onTileClicked(): x=$x y=$y button=$button")
 

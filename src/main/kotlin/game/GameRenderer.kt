@@ -1,5 +1,6 @@
 package game
 
+import ai.pathfinding.Path
 import ai.pathfinding.graph.OccupancyMap
 import game.component.*
 import game.map.GameMap
@@ -8,6 +9,7 @@ import javafx.scene.paint.Color
 import util.ecs.EcsState
 import util.math.Area
 import util.math.Size
+import util.rendering.tile.FullTile
 import util.rendering.tile.Tile
 import util.rendering.tile.TileRenderer
 import util.rendering.tile.UnicodeTile
@@ -61,6 +63,11 @@ class GameRenderer(
                 renderer.renderFullTile(color, area.x + x, area.y + y)
             }
         }
+    }
+
+    fun renderPath(renderer: TileRenderer, path: Path) {
+        val tile = FullTile(Color.GRAY)
+        path.indices.forEach { renderTile(renderer, tile, it) }
     }
 
     fun renderEntities(tileRenderer: TileRenderer, state: EcsState) {

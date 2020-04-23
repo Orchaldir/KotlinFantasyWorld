@@ -1,5 +1,9 @@
 package app.demo
 
+import ai.pathfinding.AStar
+import ai.pathfinding.NoPath
+import ai.pathfinding.Path
+import ai.pathfinding.PathfindingResult
 import game.GameRenderer
 import game.action.Action
 import game.action.FinishTurn
@@ -44,6 +48,11 @@ private const val STATUS_SIZE = 1
 class MovementDemo : TileApplication(60, 45, 20, 20) {
     private lateinit var store: DefaultStore<Action, EcsState>
 
+    private val mapRender = GameRenderer(0, LOG_SIZE, Size(size.x, size.y - LOG_SIZE - STATUS_SIZE))
+
+    private val pathfinding = AStar<Boolean>()
+    private var pathfindingResult: PathfindingResult = NoPath
+
     override fun start(primaryStage: Stage) {
         init(primaryStage, "Movement Demo")
         create()
@@ -56,7 +65,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         val skillManager = SkillManager(listOf(speed))
         val skillUsage = SkillUsage(speed = speed)
 
-        val gameMap = GameMapBuilder(Size(size.x, size.y - LOG_SIZE - STATUS_SIZE), Terrain.FLOOR)
+        val gameMap = GameMapBuilder(mapRender.area.size, Terrain.FLOOR)
             .addBorder(Terrain.WALL)
             .addRectangle(20, 10, 10, 10, Terrain.WALL)
             .addRectangle(40, 25, 10, 10, Terrain.WALL)
@@ -115,6 +124,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
 
         val map = state.getData<GameMap>()
         val mapRender = GameRenderer(0, LOG_SIZE, map.size)
+        renderPath(mapRender, pathfindingResult)
         mapRender.renderMap(tileRenderer, map)
         mapRender.renderEntities(tileRenderer, state)
 
@@ -134,6 +144,12 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         )
 
         logger.info("render(): finished")
+    }
+
+    private fun renderPath(mapRender: GameRenderer, result: PathfindingResult) {
+        if (result is Path) {
+            mapRender.renderPath(tileRenderer, result)
+        }
     }
 
     private fun getStatusText(timeSystem: TimeSystem, turnData: TurnData): String {
@@ -156,10 +172,34 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
             KeyCode.SPACE -> store.dispatch(FinishTurn(entity))
             else -> logger.info("onKeyReleased(): keyCode=$keyCode")
         }
+
+        pathfindingResult = NoPath
     }
 
     override fun onTileClicked(x: Int, y: Int, button: MouseButton) {
         logger.info("onTileClicked(): x=$x y=$y")
+        updatePath(x, y)
+        render(store.getState())
+    }
+
+    override fun onMouseMoved(x: Int, y: Int) {
+        logger.info("onMouseMoved(): x=$x y=$y")
+        updatePath(x, y)
+        render(store.getState())
+    }
+
+    private fun updatePath(x: Int, y: Int) {
+        if (mapRender.area.isInside(x, y)) {
+            val goal = mapRender.area.convert(x, y)
+            val state = store.getState()
+            val entity = state.getData<TimeSystem>().getCurrent()
+            val body = state.getStorage<Body>()[entity]!!
+            val start = getPosition(body)
+            val entitySize = getSize(body)
+            val occupancyMap = state.getData<GameMap>().createOccupancyMap(entitySize, entity)
+
+            pathfindingResult = pathfinding.find(occupancyMap, start, goal)
+        } else NoPath
     }
 }
 

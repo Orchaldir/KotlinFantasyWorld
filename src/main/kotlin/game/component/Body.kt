@@ -20,3 +20,14 @@ private fun getOrigins(size: Size, body: Body): List<Int> = when (body) {
     is BigBody -> size.getIndices(body.position, body.size)
     is SnakeBody -> listOf(body.positions.first())
 }
+
+fun getPosition(body: Body) = when (body) {
+    is SimpleBody -> body.position
+    is BigBody -> body.position
+    is SnakeBody -> body.positions.first()
+}
+
+fun getSize(body: Body) = when (body) {
+    is BigBody -> body.size
+    else -> 1
+}
