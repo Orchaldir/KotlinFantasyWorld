@@ -7,6 +7,7 @@ import javafx.scene.Scene
 import javafx.scene.canvas.Canvas
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
+import javafx.scene.input.MouseButton
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import mu.KotlinLogging
@@ -64,7 +65,8 @@ abstract class TileApplication(
         windowScene.onMouseClicked = EventHandler { event ->
             onTileClicked(
                 tileRenderer.getX(event.x.toInt()),
-                tileRenderer.getY(event.y.toInt())
+                tileRenderer.getY(event.y.toInt()),
+                event.button
             )
         }
 
@@ -75,7 +77,7 @@ abstract class TileApplication(
 
     }
 
-    open fun onTileClicked(x: Int, y: Int) {
+    open fun onTileClicked(x: Int, y: Int, button: MouseButton) {
 
     }
 }

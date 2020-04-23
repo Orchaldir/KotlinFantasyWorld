@@ -1,5 +1,6 @@
 package game.map
 
+import ai.pathfinding.graph.OccupancyMap
 import util.math.Size
 
 data class GameMap(
@@ -9,6 +10,14 @@ data class GameMap(
 ) {
 
     fun getEntity(x: Int, y: Int) = entities[size.getIndex(x, y)]
+
+    fun createOccupancyMap(entity: Int): OccupancyMap {
+        val list = (0 until size.cells)
+            .map { checkWalkability(it, entity) is Walkable }
+            .toList()
+
+        return OccupancyMap(list, size)
+    }
 
     fun checkWalkability(position: Int, entity: Int): Walkability {
         if (!size.isInside(position)) {

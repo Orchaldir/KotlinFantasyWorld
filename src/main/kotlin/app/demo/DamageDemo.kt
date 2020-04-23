@@ -17,6 +17,7 @@ import game.rpg.character.skill.SkillUsage
 import game.rpg.check.Checker
 import javafx.application.Application
 import javafx.scene.input.KeyCode
+import javafx.scene.input.MouseButton
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import mu.KotlinLogging
@@ -109,7 +110,7 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
         logger.info("onKeyReleased(): keyCode=$keyCode")
     }
 
-    override fun onTileClicked(x: Int, y: Int) {
+    override fun onTileClicked(x: Int, y: Int, button: MouseButton) {
         logger.info("onTileClicked(): x=$x y=$y")
 
         val state = store.getState()

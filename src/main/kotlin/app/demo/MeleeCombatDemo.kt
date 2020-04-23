@@ -24,6 +24,7 @@ import game.rpg.time.TimeSystem
 import game.rpg.time.TurnData
 import javafx.application.Application
 import javafx.scene.input.KeyCode
+import javafx.scene.input.MouseButton
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import mu.KotlinLogging
@@ -174,7 +175,7 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
         }
     }
 
-    override fun onTileClicked(x: Int, y: Int) {
+    override fun onTileClicked(x: Int, y: Int, button: MouseButton) {
         logger.info("onTileClicked(): x=$x y=$y")
 
         if (mapRender.area.isInside(x, y)) {

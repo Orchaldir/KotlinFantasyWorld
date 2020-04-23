@@ -6,6 +6,7 @@ import game.map.Terrain.FLOOR
 import game.map.Terrain.WALL
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import util.math.Size
 import kotlin.test.assertNull
 
 private const val ENTITY0 = 1
@@ -33,6 +34,29 @@ class GameMapTest {
             assertThat(map.getEntity(0, 0)).isEqualTo(42)
             assertNull(map.getEntity(1, 0))
         }
+    }
+
+    @Nested
+    inner class CreateOccupancyMap {
+
+        @Test
+        fun `Create occupancy map from terrain`() {
+            val map = GameMapBuilder(2, 3, FLOOR)
+                .setTerrain(1, 0, WALL)
+                .build()
+
+            val occupancyMap = map.createOccupancyMap(0)
+
+            assertThat(occupancyMap.list).isEqualTo(
+                listOf(
+                    true, false,
+                    true, true,
+                    true, true
+                )
+            )
+            assertThat(occupancyMap.size).isEqualTo(Size(2, 3))
+        }
+
     }
 
     @Nested

@@ -49,6 +49,11 @@ class GameMapBuilder(
         return this
     }
 
+    fun setTerrain(index: Int, terrain: Terrain): GameMapBuilder {
+        terrainList[index] = terrain
+        return this
+    }
+
     // entities
 
     fun setEntity(index: Int, entity: Int): GameMapBuilder {
