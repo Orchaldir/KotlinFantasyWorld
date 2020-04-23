@@ -23,6 +23,12 @@ data class Size(
         return y * this.x + x
     }
 
+    fun getIndexIfInside(x: Int, y: Int) = if (isInside(x, y)) {
+        y * this.x + x
+    } else {
+        null
+    }
+
     fun getIndices(index: Int, size: Int): List<Int> {
         if (!isAreaInside(index, size)) return emptyList()
 
@@ -105,7 +111,7 @@ data class Size(
         require(isInsideForY(y)) { "y=$y must be inside!" }
     }
 
-    private fun requireInside(index: Int) {
+    fun requireInside(index: Int) {
         require(isInside(index)) { "index=$index must be inside!" }
     }
 }
