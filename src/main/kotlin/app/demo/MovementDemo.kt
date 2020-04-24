@@ -5,15 +5,13 @@ import ai.pathfinding.NoPath
 import ai.pathfinding.Path
 import ai.pathfinding.PathfindingResult
 import game.GameRenderer
-import game.action.Action
-import game.action.FinishTurn
-import game.action.Init
-import game.action.Move
+import game.action.*
 import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
 import game.map.Terrain
 import game.reducer.action.FINISH_TURN_REDUCER
+import game.reducer.action.FOLLOW_PATH_REDUCER
 import game.reducer.action.INIT_REDUCER
 import game.reducer.action.MOVE_REDUCER
 import game.rpg.character.skill.Skill
@@ -107,6 +105,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         val reducer: Reducer<Action, EcsState> = { state, action ->
             when (action) {
                 is FinishTurn -> FINISH_TURN_REDUCER(state, action)
+                is FollowPath -> FOLLOW_PATH_REDUCER(state, action)
                 is Init -> INIT_REDUCER(state, action)
                 is Move -> MOVE_REDUCER(state, action)
                 else -> noFollowUps(state)
@@ -181,6 +180,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
     override fun onTileClicked(x: Int, y: Int, button: MouseButton) {
         logger.info("onTileClicked(): x=$x y=$y")
         updatePath(x, y)
+        usePath(pathfindingResult)
         render(store.getState())
     }
 
@@ -202,6 +202,12 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
 
             pathfindingResult = pathfinding.find(occupancyMap, start, goal)
         } else NoPath
+    }
+
+    private fun usePath(result: PathfindingResult) {
+        if (result is Path) {
+            store.dispatch(FollowPath(store.getState().getData<TimeSystem>().getCurrent(), result))
+        }
     }
 }
 

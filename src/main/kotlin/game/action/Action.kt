@@ -1,5 +1,6 @@
 package game.action
 
+import ai.pathfinding.Path
 import game.rpg.Damage
 import util.log.Message
 import util.math.Direction
@@ -7,6 +8,7 @@ import util.math.Direction
 sealed class Action
 data class AddMessage(val message: Message) : Action()
 data class FinishTurn(val entity: Int) : Action()
+data class FollowPath(val entity: Int, val path: Path) : Action()
 object Init : Action()
 data class Move(val entity: Int, val direction: Direction) : Action()
 data class UseAbility(val entity: Int, val ability: Int, val position: Int) : Action()

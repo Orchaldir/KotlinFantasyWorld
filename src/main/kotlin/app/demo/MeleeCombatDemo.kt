@@ -39,6 +39,7 @@ import util.math.Size
 import util.redux.DefaultStore
 import util.redux.Reducer
 import util.redux.middleware.logAction
+import util.redux.noFollowUps
 import util.rendering.tile.UnicodeTile
 import kotlin.random.Random
 import kotlin.system.exitProcess
@@ -115,6 +116,7 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
                 is OnDamage -> ON_DAMAGE_REDUCER(state, action)
                 is OnDeath -> ON_DEATH_REDUCER(state, action)
                 is UseAbility -> USE_ABILITY_REDUCER(state, action)
+                else -> noFollowUps(state)
             }
         }
 

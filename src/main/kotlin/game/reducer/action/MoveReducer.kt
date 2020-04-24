@@ -32,9 +32,7 @@ val MOVE_REDUCER: Reducer<Move, EcsState> = a@{ state, action ->
 
     val newState = when (walkability) {
         is Walkable -> move(state, map, action.entity, bodyStorage, body, walkability, turnData)
-        BlockedByObstacle -> addMessage(state, Message("Blocked by obstacle", WHITE))
-        is BlockedByEntity -> addMessage(state, Message("Blocked by entity ${walkability.entity}", WHITE))
-        OutsideMap -> addMessage(state, Message("Blocked by map border", WHITE))
+        else -> handleError(state, walkability)
     }
 
     noFollowUps(newState)
@@ -80,6 +78,13 @@ private fun move(
     val newTurnData = turnData.reduceMovementPoints(entity)
 
     return state.copy(listOf(newBodyStorage), listOf(newMap, newTurnData))
+}
+
+fun handleError(state: EcsState, walkability: Walkability) = when (walkability) {
+    BlockedByObstacle -> addMessage(state, Message("Blocked by obstacle", WHITE))
+    is BlockedByEntity -> addMessage(state, Message("Blocked by entity ${walkability.entity}", WHITE))
+    OutsideMap -> addMessage(state, Message("Blocked by map border", WHITE))
+    else -> throw IllegalArgumentException("Not an error!")
 }
 
 fun updateMap(map: GameMap, entity: Int, body: Body, position: Int) = when (body) {
