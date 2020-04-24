@@ -2,6 +2,7 @@ package game.component
 
 import game.rpg.character.Defense
 import game.rpg.character.ability.Ability
+import util.ecs.EcsState
 
 data class Combat(private val abilities: List<Ability>, val defense: Defense) {
 
@@ -11,3 +12,9 @@ data class Combat(private val abilities: List<Ability>, val defense: Defense) {
     }
 
 }
+
+fun getAbility(state: EcsState, entity: Int, index: Int) =
+    state.getStorage<Combat>().getOrThrow(entity).getAbility(entity, index)
+
+fun getDefense(state: EcsState, entity: Int) =
+    state.getStorage<Combat>().getOrThrow(entity).defense

@@ -5,7 +5,7 @@ import game.action.OnDamage
 import game.action.OnDeath
 import game.component.Health
 import game.component.HealthState.DEAD
-import game.component.Statistics
+import game.component.getRank
 import game.rpg.character.skill.SkillUsage
 import game.rpg.check.*
 import mu.KotlinLogging
@@ -33,9 +33,7 @@ val ON_DAMAGE_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
     }
 
     val skillUsage = state.getData<SkillUsage>()
-    val statisticsStorage = state.getStorage<Statistics>()
-    val statistics = statisticsStorage.getOrThrow(id)
-    val toughnessRank = statistics.getRank(skillUsage.toughness)
+    val toughnessRank = getRank(state, id, skillUsage.toughness)
     val difficulty = toughnessRank - health.penalty
 
     val rng = state.getData<RandomNumberState>().createGenerator()
