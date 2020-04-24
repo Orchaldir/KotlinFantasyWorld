@@ -63,6 +63,15 @@ class TileRenderer(
         renderer.renderRectangle(getStartPixelX(x), getStartPixelY(y), tileWidth * size, tileHeight * size)
     }
 
+    fun renderImageTile(
+        id: Int,
+        x: Int,
+        y: Int,
+        size: Int = 1
+    ) {
+        renderer.renderImage(id, getStartPixelX(x), getStartPixelY(y), tileWidth * size, tileHeight * size)
+    }
+
     fun renderTile(
         tile: Tile,
         x: Int,
@@ -72,6 +81,7 @@ class TileRenderer(
         when (tile) {
             is FullTile -> renderFullTile(tile.color, x, y, size)
             is UnicodeTile -> renderUnicodeTile(tile.symbol, tile.color, x, y, size)
+            is ImageTile -> renderImageTile(tile.id, x, y, size)
             is EmptyTile -> return
         }
     }

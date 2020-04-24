@@ -30,7 +30,9 @@ class CanvasRenderer(
     }
 
     override fun renderImage(id: Int, x: Int, y: Int, width: Int, height: Int) {
-        images[id]?.let { graphicsContext.drawImage(it, 400.0, 300.0, 100.0, 100.0) }
+        images[id]?.let {
+            graphicsContext.drawImage(it, x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
+        }
     }
 
     override fun renderUnicode(text: String, centerX: Int, centerY: Int) =

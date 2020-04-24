@@ -40,7 +40,7 @@ import util.redux.DefaultStore
 import util.redux.Reducer
 import util.redux.middleware.logAction
 import util.redux.noFollowUps
-import util.rendering.tile.UnicodeTile
+import util.rendering.tile.ImageTile
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
@@ -60,6 +60,9 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
 
     private fun create() {
         logger.info("create(): tiles={}", size.cells)
+
+        val paladinImage = renderer.loadImage("tiles\\paladin.png")
+        val skeletonImage = renderer.loadImage("tiles\\skeleton.png")
 
         val fighting = Skill("Fighting")
         val speed = Skill("Speed")
@@ -91,21 +94,21 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
             registerComponent<Health>()
             registerComponent<Statistics>()
             registerComponent<Text>()
-            add(SimpleBody(gameMap.size.getIndex(10, 5)) as Body)
+            add(BigBody(gameMap.size.getIndex(10, 5), 2) as Body)
             add(Combat(listOf(meleeAttack), defense))
             add(Player as Controller)
-            add(Graphic(UnicodeTile("@", Color.BLUE)))
+            add(Graphic(ImageTile(paladinImage)))
             add(Health())
             add(Statistics(mapOf(fighting to 8, speed to 6, toughness to 6)))
-            add(Name("Aragorn") as Text)
+            add(Description("Paladin") as Text)
             buildEntity()
-            add(SimpleBody(gameMap.size.getIndex(15, 10)) as Body)
+            add(BigBody(gameMap.size.getIndex(15, 10), 2) as Body)
             add(Combat(listOf(meleeAttack), defense))
             add(AI as Controller)
-            add(Graphic(UnicodeTile("O", Color.GREEN)))
+            add(Graphic(ImageTile(skeletonImage)))
             add(Health())
             add(Statistics(mapOf(fighting to 6, speed to 6, toughness to 8)))
-            add(Description("Orc") as Text)
+            add(Description("Skeleton") as Text)
             buildEntity()
             build()
         }
