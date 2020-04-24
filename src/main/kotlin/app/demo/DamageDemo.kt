@@ -68,11 +68,13 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
             registerComponent<Graphic>()
             registerComponent<Statistics>()
             registerComponent<Health>()
-            repeat(5) {
-                add(SimpleBody(gameMap.size.getIndex(5, 5 + 5 * it)) as Body)
+            registerComponent<Text>()
+            listOf("very weak", "weak", "average", "strong", "very strong").forEachIndexed { i, s ->
+                add(SimpleBody(gameMap.size.getIndex(5, 5 + 5 * i)) as Body)
                 add(Graphic(UnicodeTile("O", Color.DARKGREEN)))
-                add(Statistics(mapOf(toughness to (3 * it))))
+                add(Statistics(mapOf(toughness to (3 * i))))
                 add(Health())
+                add(Description("$s orc") as Text)
                 buildEntity()
             }
             build()

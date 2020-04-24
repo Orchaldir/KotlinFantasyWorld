@@ -16,11 +16,11 @@ import game.rpg.check.Checker
 import game.rpg.check.Failure
 import game.rpg.time.TimeSystem
 import game.rpg.time.TurnData
-import javafx.scene.paint.Color
 import mu.KotlinLogging
 import util.ecs.EcsState
 import util.log.Message
 import util.log.MessageLog
+import util.log.inform
 import util.redux.Reducer
 import util.redux.random.RandomNumberState
 
@@ -65,9 +65,9 @@ val USE_ABILITY_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
             val defenseRank = targetStatistics.getRank(defense.skill)
 
             when (checker.check(rng, attackRank, defenseRank)) {
-                is Failure -> messages += Message("Entity ${action.entity} missed entity $target", Color.WHITE)
+                is Failure -> messages += inform(state, "%s missed %s", action.entity, target)
                 else -> {
-                    messages += Message("Entity ${action.entity} hits entity $target", Color.WHITE)
+                    messages += inform(state, "%s hits %s", action.entity, target)
 
                     when (val effect = ability.effect) {
                         is DamageEffect -> {

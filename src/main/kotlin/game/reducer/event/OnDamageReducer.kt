@@ -8,13 +8,13 @@ import game.component.HealthState.DEAD
 import game.component.Statistics
 import game.rpg.character.skill.SkillUsage
 import game.rpg.check.*
-import javafx.scene.paint.Color
 import mu.KotlinLogging
 import util.ecs.EcsState
 import util.ecs.storage.ComponentStorage
-import util.log.Message
 import util.log.MessageLog
 import util.log.addMessage
+import util.log.inform
+import util.log.warn
 import util.redux.Reducer
 import util.redux.noFollowUps
 import util.redux.random.RandomNumberState
@@ -29,7 +29,7 @@ val ON_DAMAGE_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
     val health = healthStorage.getOrThrow(id)
 
     if (health.state == DEAD) {
-        return@a noFollowUps(addMessage(state, Message("Entity $id is already dead!", Color.YELLOW)))
+        return@a noFollowUps(addMessage(state, warn(state, "%s is already dead!", id)))
     }
 
     val skillUsage = state.getData<SkillUsage>()
@@ -62,7 +62,7 @@ val ON_DAMAGE_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
         updateMessageLog(state, health, newHealth, id, updatedData)
     } else {
         val messageLog = state.getData<MessageLog>()
-        val message = Message("Entity $id suffers no damage", Color.WHITE)
+        val message = inform(state, "%s suffers no damage", id)
         updatedData += messageLog.add(message)
     }
 
@@ -79,9 +79,9 @@ private fun updateMessageLog(
     val messageLog = state.getData<MessageLog>()
 
     val message = if (health.state != newHealth.state) {
-        Message("Entity $id is ${newHealth.state.toDisplayText()}", Color.WHITE)
+        inform(state, "%s is ${newHealth.state.toDisplayText()}", id)
     } else {
-        Message("Entity $id looks slightly worse", Color.WHITE)
+        inform(state, "%s looks slightly worse", id)
     }
 
     updatedDataMap += messageLog.add(message)

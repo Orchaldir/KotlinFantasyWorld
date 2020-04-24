@@ -6,10 +6,9 @@ import game.component.Body
 import game.map.GameMap
 import game.map.Walkable
 import game.rpg.time.TurnData
-import javafx.scene.paint.Color.YELLOW
 import util.ecs.EcsState
-import util.log.Message
 import util.log.addMessage
+import util.log.warn
 import util.redux.Reducer
 import util.redux.noFollowUps
 
@@ -17,7 +16,7 @@ val FOLLOW_PATH_REDUCER: Reducer<FollowPath, EcsState> = a@{ state, action ->
     var turnData = state.getData<TurnData>()
 
     if (turnData.movementPoints <= 0) {
-        return@a noFollowUps(addMessage(state, Message("No movement points", YELLOW)))
+        return@a noFollowUps(addMessage(state, warn("No movement points")))
     }
 
     val entity = action.entity

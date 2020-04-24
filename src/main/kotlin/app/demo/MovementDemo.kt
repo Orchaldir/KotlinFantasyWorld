@@ -207,6 +207,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
     private fun usePath(result: PathfindingResult) {
         if (result is Path) {
             store.dispatch(FollowPath(store.getState().getData<TimeSystem>().getCurrent(), result))
+            pathfindingResult = NoPath
         }
     }
 }

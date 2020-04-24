@@ -8,10 +8,9 @@ import game.rpg.character.skill.Skill
 import game.rpg.character.skill.SkillUsage
 import game.rpg.time.TimeSystem
 import game.rpg.time.createTurnData
-import javafx.scene.paint.Color
 import util.ecs.EcsState
-import util.log.Message
 import util.log.MessageLog
+import util.log.inform
 import util.redux.Reducer
 import util.redux.noFollowUps
 
@@ -42,7 +41,7 @@ fun initBodies(state: EcsState, updatedData: MutableList<Any>) {
 
 fun initMessageLog(state: EcsState, updatedData: MutableList<Any>) {
     val messageLog = state.getData<MessageLog>()
-    updatedData += messageLog.add(Message("Init game", Color.WHITE))
+    updatedData += messageLog.add(inform("Init game"))
 }
 
 fun initTime(state: EcsState, updatedData: MutableList<Any>, speed: Skill) {

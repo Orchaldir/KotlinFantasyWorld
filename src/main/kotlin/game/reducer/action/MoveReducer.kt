@@ -7,12 +7,12 @@ import game.component.SimpleBody
 import game.component.SnakeBody
 import game.map.*
 import game.rpg.time.TurnData
-import javafx.scene.paint.Color.WHITE
 import javafx.scene.paint.Color.YELLOW
 import util.ecs.EcsState
 import util.ecs.storage.ComponentStorage
 import util.log.Message
 import util.log.addMessage
+import util.log.inform
 import util.math.Direction
 import util.redux.Reducer
 import util.redux.noFollowUps
@@ -81,9 +81,9 @@ private fun move(
 }
 
 fun handleError(state: EcsState, walkability: Walkability) = when (walkability) {
-    BlockedByObstacle -> addMessage(state, Message("Blocked by obstacle", WHITE))
-    is BlockedByEntity -> addMessage(state, Message("Blocked by entity ${walkability.entity}", WHITE))
-    OutsideMap -> addMessage(state, Message("Blocked by map border", WHITE))
+    BlockedByObstacle -> addMessage(state, inform("Blocked by obstacle"))
+    is BlockedByEntity -> addMessage(state, inform("Blocked by entity ${walkability.entity}"))
+    OutsideMap -> addMessage(state, inform("Blocked by map border"))
     else -> throw IllegalArgumentException("Not an error!")
 }
 
