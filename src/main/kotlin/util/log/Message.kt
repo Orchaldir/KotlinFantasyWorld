@@ -18,3 +18,6 @@ fun inform(state: EcsState, text: String, e0: Int, e1: Int) =
 fun warn(text: String) = Message(text.capitalize(), YELLOW)
 
 fun warn(state: EcsState, text: String, entity: Int) = warn(text.format(getText(state, entity)))
+
+fun warn(state: EcsState, text: String, e0: Int, e1: Int) =
+    warn(text.format(getText(state, e0), getText(state, e1)))

@@ -14,6 +14,8 @@ private val logger = KotlinLogging.logger {}
 
 class RenderingDemo : TileApplication(50, 20, 22, 32) {
 
+    private var imageId = -1
+
     private val messageLog = MessageLog(
         listOf(
             Message("Oldest message in the log.", Color.WHITE),
@@ -30,6 +32,7 @@ class RenderingDemo : TileApplication(50, 20, 22, 32) {
 
     private fun create() {
         logger.info("create(): tiles={}", size.cells)
+        imageId = renderer.loadImage("tiles\\paladin.png")
         render()
     }
 
@@ -56,6 +59,8 @@ class RenderingDemo : TileApplication(50, 20, 22, 32) {
         }
 
         messageLogRenderer.render(tileRenderer, messageLog)
+
+        renderer.renderImage(imageId, 400, 300, 100, 100)
 
         logger.info("render(): finished")
     }
