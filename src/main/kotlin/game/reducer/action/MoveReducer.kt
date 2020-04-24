@@ -82,7 +82,7 @@ private fun move(
 
 fun handleError(state: EcsState, walkability: Walkability) = when (walkability) {
     BlockedByObstacle -> addMessage(state, inform("Blocked by obstacle"))
-    is BlockedByEntity -> addMessage(state, inform("Blocked by entity ${walkability.entity}"))
+    is BlockedByEntity -> addMessage(state, inform(state, "Blocked by %s", walkability.entity))
     OutsideMap -> addMessage(state, inform("Blocked by map border"))
     else -> throw IllegalArgumentException("Not an error!")
 }
