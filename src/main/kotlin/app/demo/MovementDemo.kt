@@ -20,6 +20,7 @@ import game.rpg.character.skill.SkillUsage
 import game.rpg.time.TimeSystem
 import game.rpg.time.TurnData
 import game.rpg.time.getCurrentEntity
+import game.rpg.time.getCurrentMovementPoints
 import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.input.MouseButton
@@ -125,7 +126,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
 
         val map = state.getData<GameMap>()
         val mapRender = GameRenderer(0, LOG_SIZE, map.size)
-        mapRender.renderPathfindingResult(tileRenderer, pathfindingResult)
+        mapRender.renderPathfindingResult(tileRenderer, pathfindingResult, getCurrentMovementPoints(state))
         mapRender.renderMap(tileRenderer, map)
         mapRender.renderEntities(tileRenderer, state)
 

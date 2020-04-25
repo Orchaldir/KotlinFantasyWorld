@@ -45,3 +45,5 @@ fun createTurnData(state: EcsState, timeSystem: TimeSystem, speed: Skill): TurnD
 
     return TurnData(movementPoints, actions)
 }
+
+fun getCurrentMovementPoints(state: EcsState) = state.getData<TurnData>().movementPoints

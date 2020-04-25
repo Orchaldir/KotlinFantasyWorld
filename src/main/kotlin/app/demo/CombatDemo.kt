@@ -26,6 +26,7 @@ import game.rpg.check.Checker
 import game.rpg.time.TimeSystem
 import game.rpg.time.TurnData
 import game.rpg.time.getCurrentEntity
+import game.rpg.time.getCurrentMovementPoints
 import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.input.MouseButton
@@ -51,7 +52,7 @@ import kotlin.system.exitProcess
 private val logger = KotlinLogging.logger {}
 
 private const val LOG_SIZE = 5
-private const val STATUS_SIZE = 2
+private const val STATUS_SIZE = 1
 
 class CombatDemo : TileApplication(60, 45, 20, 20) {
     private lateinit var store: DefaultStore<Action, EcsState>
@@ -149,7 +150,7 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
         renderer.clear()
 
         val map = state.getData<GameMap>()
-        renderAction(selectedAbility)
+        renderAction(state, selectedAbility)
         mapRender.renderMap(tileRenderer, map)
         mapRender.renderEntities(tileRenderer, state)
 
@@ -161,10 +162,8 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
         val entity = timeSystem.getCurrent()
         val health = state.getStorage<Health>().getOrThrow(entity)
 
-        val text = getStatusText(timeSystem, health, turnData)
-
         tileRenderer.renderText(
-            text,
+            getStatusText(timeSystem, health, turnData),
             Color.WHITE,
             0,
             size.y - 1
@@ -173,9 +172,10 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
         logger.info("render(): finished")
     }
 
-    private fun renderAction(selectedAbility: Ability?) {
+    private fun renderAction(state: EcsState, selectedAbility: Ability?) {
         if (selectedAbility == null) {
-            mapRender.renderPathfindingResult(tileRenderer, pathfindingResult)
+            val movementPoints = getCurrentMovementPoints(state)
+            mapRender.renderPathfindingResult(tileRenderer, pathfindingResult, movementPoints)
         } else renderAbility(abilityCheckResult)
     }
 

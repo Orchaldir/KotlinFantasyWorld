@@ -24,8 +24,11 @@ class GameRenderer(
     private val offsetY: Int = 0
 ) {
     val area = Area(startX, startY, size)
-    val successTile = FullTile(Color.DARKGREEN)
-    val errorTile = FullTile(Color.DARKRED)
+
+    private val successTile = FullTile(Color.DARKGREEN)
+    private val errorTile = FullTile(Color.DARKRED)
+    private val pathWithMovementPointsTile = FullTile(Color.GRAY)
+    private val pathWithoutMovementPointsTile = FullTile(Color.GRAY.darker().darker())
 
     constructor(size: Size) : this(0, 0, size, 0, 0)
 
@@ -69,14 +72,19 @@ class GameRenderer(
         }
     }
 
-    fun renderPath(renderer: TileRenderer, path: Path) {
-        val tile = FullTile(Color.GRAY)
-        path.indices.forEach { renderTile(renderer, tile, it) }
+    fun renderPath(renderer: TileRenderer, path: Path, movementPoints: Int) {
+        path.indices.forEachIndexed { i, position ->
+            renderTile(
+                renderer,
+                if (i < movementPoints) pathWithMovementPointsTile else pathWithoutMovementPointsTile,
+                position
+            )
+        }
     }
 
-    fun renderPathfindingResult(renderer: TileRenderer, result: PathfindingResult) {
+    fun renderPathfindingResult(renderer: TileRenderer, result: PathfindingResult, movementPoints: Int) {
         if (result is Path) {
-            renderPath(renderer, result)
+            renderPath(renderer, result, movementPoints)
             renderSuccess(renderer, result.indices.last(), result.size)
         } else if (result is NoPathFound) {
             renderError(renderer, result.goal, result.size)
