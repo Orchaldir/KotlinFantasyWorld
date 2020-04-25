@@ -1,5 +1,7 @@
 package game.rpg.time
 
+import util.ecs.EcsState
+
 data class TimeSystem(
     val turn: Int = 0,
     private val entities: List<Int> = emptyList(),
@@ -34,3 +36,5 @@ data class TimeSystem(
     }
 
 }
+
+fun getCurrentEntity(state: EcsState) = state.getData<TimeSystem>().getCurrent()

@@ -19,6 +19,7 @@ import game.rpg.character.skill.SkillManager
 import game.rpg.character.skill.SkillUsage
 import game.rpg.time.TimeSystem
 import game.rpg.time.TurnData
+import game.rpg.time.getCurrentEntity
 import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.input.MouseButton
@@ -156,7 +157,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
     }
 
     override fun onKeyReleased(keyCode: KeyCode) {
-        val entity = store.getState().getData<TimeSystem>().getCurrent()
+        val entity = getCurrentEntity(store.getState())
 
         when (keyCode) {
             KeyCode.UP -> store.dispatch(Move(entity, NORTH))
@@ -186,7 +187,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
 
     private fun updatePath(x: Int, y: Int): PathfindingResult {
         val state = store.getState()
-        val entity = state.getData<TimeSystem>().getCurrent()
+        val entity = getCurrentEntity(state)
         val body = state.getStorage<Body>()[entity]!!
         val entitySize = getSize(body)
 
@@ -201,7 +202,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
 
     private fun usePath(result: PathfindingResult) {
         if (result is Path) {
-            store.dispatch(FollowPath(store.getState().getData<TimeSystem>().getCurrent(), result))
+            store.dispatch(FollowPath(getCurrentEntity(store.getState()), result))
             pathfindingResult = NotSearched
         }
     }
