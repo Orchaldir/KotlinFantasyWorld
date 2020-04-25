@@ -57,4 +57,59 @@ class BodyTest {
             confirmVerified(size)
         }
     }
+
+    @Nested
+    inner class CalculateDistance {
+
+        private val size = mockk<Size>()
+
+        @Test
+        fun `From simple body to simple body`() {
+            val body = SimpleBody(4)
+            val target = SimpleBody(6)
+
+            every { size.getChebyshevDistance(4, 6) } returns 2
+
+            assertThat(calculateDistance(size, body, target)).isEqualTo(2)
+
+            verify(exactly = 1) { size.getChebyshevDistance(4, 6) }
+            confirmVerified(size)
+        }
+
+        @Test
+        fun `From big body to big body`() {
+            val body = BigBody(10, 2)
+            val target = BigBody(20, 3)
+
+            every { size.getIndices(10, 2) } returns listOf(1, 2)
+            every { size.getIndices(20, 3) } returns listOf(4, 5)
+            every { size.getChebyshevDistance(1, 4) } returns 100
+            every { size.getChebyshevDistance(1, 5) } returns 101
+            every { size.getChebyshevDistance(2, 4) } returns 102
+            every { size.getChebyshevDistance(2, 5) } returns 103
+
+            assertThat(calculateDistance(size, body, target)).isEqualTo(100)
+
+            verify(exactly = 1) { size.getIndices(10, 2) }
+            verify(exactly = 1) { size.getIndices(20, 3) }
+            verify(exactly = 1) { size.getChebyshevDistance(1, 4) }
+            verify(exactly = 1) { size.getChebyshevDistance(1, 5) }
+            verify(exactly = 1) { size.getChebyshevDistance(2, 4) }
+            verify(exactly = 1) { size.getChebyshevDistance(2, 5) }
+            confirmVerified(size)
+        }
+
+        @Test
+        fun `From simple body to snake body`() {
+            val body = SimpleBody(4)
+            val target = SnakeBody(listOf(1, 2))
+
+            every { size.getChebyshevDistance(4, 1) } returns 10
+
+            assertThat(calculateDistance(size, body, target)).isEqualTo(10)
+
+            verify(exactly = 1) { size.getChebyshevDistance(4, 1) }
+            confirmVerified(size)
+        }
+    }
 }
