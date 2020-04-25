@@ -1,5 +1,9 @@
 package app.demo
 
+import ai.pathfinding.AStar
+import ai.pathfinding.NotSearched
+import ai.pathfinding.Path
+import ai.pathfinding.PathfindingResult
 import game.CannotTargetSelf
 import game.GameRenderer
 import game.NoActionPointsException
@@ -41,7 +45,6 @@ import util.math.Size
 import util.redux.DefaultStore
 import util.redux.Reducer
 import util.redux.middleware.logAction
-import util.redux.noFollowUps
 import util.rendering.tile.ImageTile
 import kotlin.random.Random
 import kotlin.system.exitProcess
@@ -54,6 +57,9 @@ private const val STATUS_SIZE = 1
 class CombatDemo : TileApplication(60, 45, 20, 20) {
     private lateinit var store: DefaultStore<Action, EcsState>
     private lateinit var mapRender: GameRenderer
+
+    private val pathfinding = AStar<Boolean>()
+    private var pathfindingResult: PathfindingResult = NotSearched
 
     override fun start(primaryStage: Stage) {
         init(primaryStage, "Combat Demo")
@@ -121,12 +127,12 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
             when (action) {
                 is AddMessage -> ADD_MESSAGE_REDUCER(state, action)
                 is FinishTurn -> FINISH_TURN_REDUCER(state, action)
+                is FollowPath -> FOLLOW_PATH_REDUCER(state, action)
                 is Init -> INIT_REDUCER(state, action)
                 is Move -> MOVE_REDUCER(state, action)
                 is OnDamage -> ON_DAMAGE_REDUCER(state, action)
                 is OnDeath -> ON_DEATH_REDUCER(state, action)
                 is UseAbility -> USE_ABILITY_REDUCER(state, action)
-                else -> noFollowUps(state)
             }
         }
 
@@ -141,6 +147,7 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
         renderer.clear()
 
         val map = state.getData<GameMap>()
+        mapRender.renderPathfindingResult(tileRenderer, pathfindingResult)
         mapRender.renderMap(tileRenderer, map)
         mapRender.renderEntities(tileRenderer, state)
 
@@ -209,7 +216,35 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
                 } catch (e: CannotTargetSelf) {
                     store.dispatch(AddMessage(Message("Cannot target self!", Color.YELLOW)))
                 }
+            } else {
+                pathfindingResult = updatePath(x, y)
+                usePath(pathfindingResult)
             }
+        } else pathfindingResult = NotSearched
+    }
+
+    override fun onMouseMoved(x: Int, y: Int) {
+        logger.info("onMouseMoved(): x=$x y=$y")
+        pathfindingResult = updatePath(x, y)
+        render(store.getState())
+    }
+
+    private fun updatePath(x: Int, y: Int) = if (mapRender.area.isInside(x, y)) {
+        val goal = mapRender.area.convert(x, y)
+        val state = store.getState()
+        val entity = state.getData<TimeSystem>().getCurrent()
+        val body = state.getStorage<Body>()[entity]!!
+        val start = getPosition(body)
+        val entitySize = getSize(body)
+        val occupancyMap = state.getData<GameMap>().createOccupancyMap(entitySize, entity)
+
+        pathfinding.find(occupancyMap, start, goal, entitySize)
+    } else NotSearched
+
+    private fun usePath(result: PathfindingResult) {
+        if (result is Path) {
+            pathfindingResult = NotSearched
+            store.dispatch(FollowPath(store.getState().getData<TimeSystem>().getCurrent(), result))
         }
     }
 }

@@ -185,7 +185,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
     }
 
     private fun updatePath(x: Int, y: Int) {
-        if (mapRender.area.isInside(x, y)) {
+        pathfindingResult = if (mapRender.area.isInside(x, y)) {
             val goal = mapRender.area.convert(x, y)
             val state = store.getState()
             val entity = state.getData<TimeSystem>().getCurrent()
@@ -194,8 +194,8 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
             val entitySize = getSize(body)
             val occupancyMap = state.getData<GameMap>().createOccupancyMap(entitySize, entity)
 
-            pathfindingResult = pathfinding.find(occupancyMap, start, goal, entitySize)
-        } else pathfindingResult = NotSearched
+            pathfinding.find(occupancyMap, start, goal, entitySize)
+        } else NotSearched
     }
 
     private fun usePath(result: PathfindingResult) {
