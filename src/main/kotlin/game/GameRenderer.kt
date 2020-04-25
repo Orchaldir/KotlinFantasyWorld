@@ -1,6 +1,8 @@
 package game
 
+import ai.pathfinding.NoPathFound
 import ai.pathfinding.Path
+import ai.pathfinding.PathfindingResult
 import ai.pathfinding.graph.OccupancyMap
 import game.component.*
 import game.map.GameMap
@@ -70,6 +72,15 @@ class GameRenderer(
         path.indices.forEach { renderTile(renderer, tile, it) }
     }
 
+    fun renderPathfindingResult(renderer: TileRenderer, result: PathfindingResult) {
+        if (result is Path) {
+            renderPath(renderer, result)
+            renderTile(renderer, FullTile(Color.DARKGREEN), result.indices.last(), result.size)
+        } else if (result is NoPathFound) {
+            renderTile(renderer, FullTile(Color.DARKRED), result.goal, result.size)
+        }
+    }
+
     fun renderEntities(tileRenderer: TileRenderer, state: EcsState) {
         val bodyStore = state.getStorage<Body>()
         val graphicStore = state.getStorage<Graphic>()
@@ -96,7 +107,7 @@ class GameRenderer(
         }
     }
 
-    private fun renderTile(tileRenderer: TileRenderer, tile: Tile, pos: Int, bodySize: Int = 1) {
+    fun renderTile(tileRenderer: TileRenderer, tile: Tile, pos: Int, bodySize: Int = 1) {
         tileRenderer.renderTile(tile, area.getX(pos), area.getY(pos), bodySize)
     }
 

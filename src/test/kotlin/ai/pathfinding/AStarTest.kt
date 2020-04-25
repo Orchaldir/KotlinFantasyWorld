@@ -3,6 +3,7 @@ package ai.pathfinding
 import ai.pathfinding.graph.OccupancyMap
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEqualTo
 import assertk.assertions.isSameAs
 import org.junit.jupiter.api.Test
 import util.math.Size
@@ -25,9 +26,11 @@ class AStarTest {
         val graph = OccupancyMap(values, Size(6, 5))
         val aStar = AStar<Boolean>()
 
-        val path = aStar.find(graph, 3, 15)
+        val path = aStar.find(graph, 3, 15, 2)
 
         if (path is Path) {
+            assertThat(path.size).isSameAs(2)
+            assertThat(path.totalCost).isSameAs(6)
             assertThat(path.indices).containsExactly(4, 5, 11, 17, 16, 15)
         } else {
             fail("Not a valid plan!")
@@ -40,7 +43,7 @@ class AStarTest {
         val graph = OccupancyMap(values, Size(1, 1))
         val aStar = AStar<Boolean>()
 
-        assertThat(aStar.find(graph, 0, 0)).isSameAs(GoalAlreadyReached)
+        assertThat(aStar.find(graph, 0, 0, 1)).isSameAs(GoalAlreadyReached)
     }
 
     @Test
@@ -49,7 +52,7 @@ class AStarTest {
         val graph = OccupancyMap(values, Size(3, 1))
         val aStar = AStar<Boolean>()
 
-        assertThat(aStar.find(graph, 0, 2)).isSameAs(NoPath)
+        assertThat(aStar.find(graph, 0, 2, 1)).isEqualTo(NoPathFound(2, 1))
     }
 
     @Test
@@ -59,7 +62,7 @@ class AStarTest {
 
         val aStar = AStar<Boolean>()
 
-        assertThat(aStar.find(graph, 0, 2)).isSameAs(NoPath)
+        assertThat(aStar.find(graph, 0, 2, 2)).isEqualTo(NoPathFound(2, 2))
     }
 
     @Test
@@ -69,6 +72,6 @@ class AStarTest {
 
         val aStar = AStar<Boolean>()
 
-        assertThat(aStar.find(graph, 0, 2)).isSameAs(NoPath)
+        assertThat(aStar.find(graph, 0, 2, 3)).isEqualTo(NoPathFound(2, 3))
     }
 }

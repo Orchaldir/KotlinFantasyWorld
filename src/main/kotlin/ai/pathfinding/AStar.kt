@@ -8,7 +8,7 @@ private val logger = KotlinLogging.logger {}
 
 class AStar<T> {
 
-    fun find(graph: Graph<T>, start: Int, goal: Int): PathfindingResult {
+    fun find(graph: Graph<T>, start: Int, goal: Int, pathSize: Int): PathfindingResult {
         logger.info("Find path from $start to $goal.")
 
         if (start == goal) {
@@ -16,7 +16,7 @@ class AStar<T> {
             return GoalAlreadyReached
         } else if (!graph.isValid(goal)) {
             logger.info("Goal is an obstacle")
-            return NoPath
+            return NoPathFound(goal = goal, size = pathSize)
         }
 
         val openNodes = PriorityQueue<AStarNode>()
@@ -31,7 +31,7 @@ class AStar<T> {
             val currentNode = openNodes.poll()
 
             if (currentNode.index == start) {
-                return backtrack(currentNode)
+                return backtrack(currentNode, pathSize)
             }
 
             for (neighbor in graph.getNeighbors(currentNode.index)) {
@@ -55,10 +55,10 @@ class AStar<T> {
 
         logger.info("Failed to find a path.")
 
-        return NoPath
+        return NoPathFound(goal = goal, size = pathSize)
     }
 
-    private fun backtrack(startNode: AStarNode): Path {
+    private fun backtrack(startNode: AStarNode, pathSize: Int): Path {
         val indices = mutableListOf<Int>()
         var currentNode: AStarNode? = startNode.previous
 
@@ -68,7 +68,7 @@ class AStar<T> {
         }
 
         logger.info("Found path with ${indices.size} nodes.")
-        return Path(startNode.costSoFar, indices)
+        return Path(size = pathSize, totalCost = startNode.costSoFar, indices = indices)
     }
 
     private data class AStarNode(val index: Int) : Comparable<AStarNode> {

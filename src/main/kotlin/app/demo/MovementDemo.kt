@@ -1,7 +1,7 @@
 package app.demo
 
 import ai.pathfinding.AStar
-import ai.pathfinding.NoPath
+import ai.pathfinding.NotSearched
 import ai.pathfinding.Path
 import ai.pathfinding.PathfindingResult
 import game.GameRenderer
@@ -50,7 +50,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
     private val mapRender = GameRenderer(0, LOG_SIZE, Size(size.x, size.y - LOG_SIZE - STATUS_SIZE))
 
     private val pathfinding = AStar<Boolean>()
-    private var pathfindingResult: PathfindingResult = NoPath
+    private var pathfindingResult: PathfindingResult = NotSearched
 
     override fun start(primaryStage: Stage) {
         init(primaryStage, "Movement Demo")
@@ -124,7 +124,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
 
         val map = state.getData<GameMap>()
         val mapRender = GameRenderer(0, LOG_SIZE, map.size)
-        renderPath(mapRender, pathfindingResult)
+        mapRender.renderPathfindingResult(tileRenderer, pathfindingResult)
         mapRender.renderMap(tileRenderer, map)
         mapRender.renderEntities(tileRenderer, state)
 
@@ -144,12 +144,6 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         )
 
         logger.info("render(): finished")
-    }
-
-    private fun renderPath(mapRender: GameRenderer, result: PathfindingResult) {
-        if (result is Path) {
-            mapRender.renderPath(tileRenderer, result)
-        }
     }
 
     private fun getStatusText(timeSystem: TimeSystem, turnData: TurnData): String {
@@ -174,7 +168,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
             else -> logger.info("onKeyReleased(): keyCode=$keyCode")
         }
 
-        pathfindingResult = NoPath
+        pathfindingResult = NotSearched
     }
 
     override fun onTileClicked(x: Int, y: Int, button: MouseButton) {
@@ -200,14 +194,14 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
             val entitySize = getSize(body)
             val occupancyMap = state.getData<GameMap>().createOccupancyMap(entitySize, entity)
 
-            pathfindingResult = pathfinding.find(occupancyMap, start, goal)
-        } else NoPath
+            pathfindingResult = pathfinding.find(occupancyMap, start, goal, entitySize)
+        } else pathfindingResult = NotSearched
     }
 
     private fun usePath(result: PathfindingResult) {
         if (result is Path) {
             store.dispatch(FollowPath(store.getState().getData<TimeSystem>().getCurrent(), result))
-            pathfindingResult = NoPath
+            pathfindingResult = NotSearched
         }
     }
 }

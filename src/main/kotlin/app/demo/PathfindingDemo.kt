@@ -52,7 +52,7 @@ class PathfindingDemo : TileApplication(60, 45, 20, 20) {
         }
 
         if (start != null && goal != null) {
-            val path = pathfinding.find(occupancyMap, start!!, goal!!)
+            val path = pathfinding.find(occupancyMap, start!!, goal!!, pathSize)
 
             if (path is Path) {
                 path.indices.forEach { renderNode(it, "P", Color.BLUE) }
