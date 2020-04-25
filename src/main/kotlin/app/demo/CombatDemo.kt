@@ -16,6 +16,7 @@ import game.rpg.Damage
 import game.rpg.character.Defense
 import game.rpg.character.ability.DamageEffect
 import game.rpg.character.ability.MeleeAttack
+import game.rpg.character.ability.RangedAttack
 import game.rpg.character.skill.Skill
 import game.rpg.character.skill.SkillManager
 import game.rpg.character.skill.SkillUsage
@@ -25,6 +26,7 @@ import game.rpg.time.TurnData
 import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.input.MouseButton
+import javafx.scene.input.MouseButton.PRIMARY
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import mu.KotlinLogging
@@ -49,12 +51,12 @@ private val logger = KotlinLogging.logger {}
 private const val LOG_SIZE = 5
 private const val STATUS_SIZE = 1
 
-class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
+class CombatDemo : TileApplication(60, 45, 20, 20) {
     private lateinit var store: DefaultStore<Action, EcsState>
     private lateinit var mapRender: GameRenderer
 
     override fun start(primaryStage: Stage) {
-        init(primaryStage, "Melee Combat Demo")
+        init(primaryStage, "Combat Demo")
         create()
     }
 
@@ -64,13 +66,15 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
         val paladinImage = renderer.loadImage("tiles\\paladin.png")
         val skeletonImage = renderer.loadImage("tiles\\skeleton.png")
 
+        val divineMagic = Skill("Divine Magic")
         val fighting = Skill("Fighting")
         val speed = Skill("Speed")
         val toughness = Skill("Toughness")
-        val skillManager = SkillManager(listOf(fighting, speed, toughness))
+        val skillManager = SkillManager(listOf(divineMagic, fighting, speed, toughness))
         val skillUsage = SkillUsage(speed = speed, toughness = toughness)
 
-        val meleeAttack = MeleeAttack(fighting, 1, DamageEffect(Damage(5)))
+        val meleeAttack = MeleeAttack(fighting, 1, DamageEffect(Damage(10)))
+        val holyBolt = RangedAttack(divineMagic, 5, 10, 20, DamageEffect(Damage(5)))
         val defense = Defense(fighting, 0)
 
         val gameMap = GameMapBuilder(Size(size.x, size.y - LOG_SIZE - STATUS_SIZE), Terrain.FLOOR)
@@ -95,11 +99,11 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
             registerComponent<Statistics>()
             registerComponent<Text>()
             add(BigBody(gameMap.size.getIndex(10, 5), 2) as Body)
-            add(Combat(listOf(meleeAttack), defense))
+            add(Combat(listOf(meleeAttack, holyBolt), defense))
             add(Player as Controller)
             add(Graphic(ImageTile(paladinImage)))
             add(Health())
-            add(Statistics(mapOf(fighting to 8, speed to 6, toughness to 6)))
+            add(Statistics(mapOf(divineMagic to 5, fighting to 8, speed to 6, toughness to 6)))
             add(Description("Paladin") as Text)
             buildEntity()
             add(BigBody(gameMap.size.getIndex(15, 10), 2) as Body)
@@ -195,8 +199,9 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
 
             if (target != null) {
                 val entity = store.getState().getData<TimeSystem>().getCurrent()
+                val ability = if (button == PRIMARY) 0 else 1
                 try {
-                    store.dispatch(UseAbility(entity, 0, position))
+                    store.dispatch(UseAbility(entity, ability, position))
                 } catch (e: OutOfRangeException) {
                     store.dispatch(AddMessage(Message("Target is out of range!", Color.YELLOW)))
                 } catch (e: NoActionPointsException) {
@@ -210,5 +215,5 @@ class MeleeCombatDemo : TileApplication(60, 45, 20, 20) {
 }
 
 fun main() {
-    Application.launch(MeleeCombatDemo::class.java)
+    Application.launch(CombatDemo::class.java)
 }
