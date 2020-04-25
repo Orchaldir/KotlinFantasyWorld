@@ -1,6 +1,6 @@
 package game.reducer.action
 
-import game.CannotTargetSelf
+import game.CannotTargetSelfException
 import game.OutOfRangeException
 import game.action.Action
 import game.action.OnDamage
@@ -35,7 +35,7 @@ val USE_ABILITY_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
     val target =
         map.entities[action.position] ?: throw  IllegalStateException("No target at position ${action.position}")
 
-    if (action.entity == target) throw CannotTargetSelf(target)
+    if (action.entity == target) throw CannotTargetSelfException(target)
 
     val ability = getAbility(state = state, entity = action.entity, index = action.ability)
 

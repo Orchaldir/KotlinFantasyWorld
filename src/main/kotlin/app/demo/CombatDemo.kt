@@ -4,7 +4,7 @@ import ai.pathfinding.AStar
 import ai.pathfinding.NotSearched
 import ai.pathfinding.Path
 import ai.pathfinding.PathfindingResult
-import game.CannotTargetSelf
+import game.CannotTargetSelfException
 import game.GameRenderer
 import game.NoActionPointsException
 import game.OutOfRangeException
@@ -18,9 +18,7 @@ import game.reducer.event.ON_DAMAGE_REDUCER
 import game.reducer.event.ON_DEATH_REDUCER
 import game.rpg.Damage
 import game.rpg.character.Defense
-import game.rpg.character.ability.DamageEffect
-import game.rpg.character.ability.MeleeAttack
-import game.rpg.character.ability.RangedAttack
+import game.rpg.character.ability.*
 import game.rpg.character.skill.Skill
 import game.rpg.character.skill.SkillManager
 import game.rpg.character.skill.SkillUsage
@@ -46,6 +44,7 @@ import util.math.Size
 import util.redux.DefaultStore
 import util.redux.Reducer
 import util.redux.middleware.logAction
+import util.rendering.tile.FullTile
 import util.rendering.tile.ImageTile
 import kotlin.random.Random
 import kotlin.system.exitProcess
@@ -61,6 +60,9 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
 
     private val pathfinding = AStar<Boolean>()
     private var pathfindingResult: PathfindingResult = NotSearched
+
+    private var selectedAbility: Ability? = null
+    private var abilityCheckResult: AbilityCheckResult = NoTarget
 
     override fun start(primaryStage: Stage) {
         init(primaryStage, "Combat Demo")
@@ -148,7 +150,7 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
         renderer.clear()
 
         val map = state.getData<GameMap>()
-        mapRender.renderPathfindingResult(tileRenderer, pathfindingResult)
+        renderAction(selectedAbility)
         mapRender.renderMap(tileRenderer, map)
         mapRender.renderEntities(tileRenderer, state)
 
@@ -172,6 +174,19 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
         logger.info("render(): finished")
     }
 
+    private fun renderAction(selectedAbility: Ability?) {
+        if (selectedAbility == null) {
+            mapRender.renderPathfindingResult(tileRenderer, pathfindingResult)
+        } else renderAbility(abilityCheckResult)
+    }
+
+    private fun renderAbility(result: AbilityCheckResult) {
+        when (result) {
+            is OutOfRange -> mapRender.renderTile(tileRenderer, FullTile(Color.DARKRED), result.position)
+            is ValidUsage -> mapRender.renderTile(tileRenderer, FullTile(Color.DARKGREEN), result.position)
+        }
+    }
+
     private fun getStatusText(
         timeSystem: TimeSystem,
         health: Health,
@@ -184,14 +199,21 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
     }
 
     override fun onKeyReleased(keyCode: KeyCode) {
-        val entity = getCurrentEntity(store.getState())
+        val state = store.getState()
+        val entity = getCurrentEntity(state)
 
         when (keyCode) {
             KeyCode.UP -> store.dispatch(Move(entity, NORTH))
             KeyCode.RIGHT -> store.dispatch(Move(entity, EAST))
             KeyCode.DOWN -> store.dispatch(Move(entity, SOUTH))
             KeyCode.LEFT -> store.dispatch(Move(entity, WEST))
-            KeyCode.SPACE -> store.dispatch(FinishTurn(entity))
+            KeyCode.SPACE -> {
+                selectedAbility = null
+                store.dispatch(FinishTurn(entity))
+            }
+            KeyCode.DIGIT1 -> selectedAbility = getAbilityOrNull(state, entity, 0)
+            KeyCode.DIGIT2 -> selectedAbility = getAbilityOrNull(state, entity, 1)
+            KeyCode.DIGIT3 -> selectedAbility = getAbilityOrNull(state, entity, 2)
             KeyCode.ESCAPE -> exitProcess(0)
             else -> logger.info("onKeyReleased(): keyCode=$keyCode")
         }
@@ -214,7 +236,7 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
                     store.dispatch(AddMessage(Message("Target is out of range!", Color.YELLOW)))
                 } catch (e: NoActionPointsException) {
                     store.dispatch(AddMessage(Message("No Action points!", Color.YELLOW)))
-                } catch (e: CannotTargetSelf) {
+                } catch (e: CannotTargetSelfException) {
                     store.dispatch(AddMessage(Message("Cannot target self!", Color.YELLOW)))
                 }
             } else {
@@ -226,8 +248,23 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
 
     override fun onMouseMoved(x: Int, y: Int) {
         logger.info("onMouseMoved(): x=$x y=$y")
-        pathfindingResult = updatePath(x, y)
+
+        if (selectedAbility == null) {
+            pathfindingResult = updatePath(x, y)
+        } else {
+            abilityCheckResult = checkAbility(selectedAbility!!, x, y)
+        }
+
         render(store.getState())
+    }
+
+    private fun checkAbility(ability: Ability, x: Int, y: Int): AbilityCheckResult {
+        val state = store.getState()
+        val entity = getCurrentEntity(state)
+
+        return if (mapRender.area.isInside(x, y)) {
+            checkAbility(state, ability, entity, mapRender.area.convert(x, y))
+        } else NoTarget
     }
 
     private fun updatePath(x: Int, y: Int): PathfindingResult {
