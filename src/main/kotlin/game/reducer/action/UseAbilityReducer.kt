@@ -8,7 +8,9 @@ import game.action.UseAbility
 import game.component.*
 import game.map.GameMap
 import game.rpg.character.ability.DamageEffect
+import game.rpg.character.ability.Effect
 import game.rpg.character.ability.MeleeAttack
+import game.rpg.character.ability.RangedAttack
 import game.rpg.check.Checker
 import game.rpg.check.Failure
 import game.rpg.time.TimeSystem
@@ -18,6 +20,7 @@ import util.log.Message
 import util.log.MessageLog
 import util.log.inform
 import util.redux.Reducer
+import util.redux.random.RandomNumberGenerator
 import util.redux.random.RandomNumberState
 
 val USE_ABILITY_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
@@ -37,7 +40,6 @@ val USE_ABILITY_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
     val ability = getAbility(state = state, entity = action.entity, index = action.ability)
 
     val rng = state.getData<RandomNumberState>().createGenerator()
-    val checker = state.getData<Checker>()
 
     val body = state.getStorage<Body>().getOrThrow(action.entity)
 
@@ -55,22 +57,72 @@ val USE_ABILITY_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
             val attackRank = getRank(state, action.entity, ability.skill)
             val defenseRank = getRank(state, target, defense.skill)
 
-            when (checker.check(rng, attackRank, defenseRank)) {
-                is Failure -> messages += inform(state, "%s missed %s", action.entity, target)
-                else -> {
-                    messages += inform(state, "%s hits %s", action.entity, target)
+            handleEffect(
+                state,
+                messages,
+                events,
+                rng,
+                action.entity,
+                target,
+                attackRank,
+                defenseRank,
+                ability.effect
+            )
+        }
+        is RangedAttack -> {
+            val distance = calculateDistanceToPosition(map.size, body, action.position)
 
-                    when (val effect = ability.effect) {
-                        is DamageEffect -> {
-                            events += OnDamage(target, effect.damage)
-                        }
-                    }
-                }
+            if (distance > ability.longRange) throw OutOfRangeException(distance)
+
+            val attackRank = getRank(state, action.entity, ability.skill)
+            val difficulty = when {
+                distance < ability.shortRange -> 2
+                distance < ability.mediumRange -> 4
+                else -> 6
             }
+
+            handleEffect(
+                state,
+                messages,
+                events,
+                rng,
+                action.entity,
+                target,
+                attackRank,
+                difficulty,
+                ability.effect
+            )
         }
     }
 
     val messageLog = state.getData<MessageLog>().add(messages)
 
     Pair(state.copy(updatedData = listOf(messageLog, rng.createState(), newTurnData)), events)
+}
+
+private fun handleEffect(
+    state: EcsState,
+    messages: MutableList<Message>,
+    events: MutableList<Action>,
+    rng: RandomNumberGenerator,
+    entity: Int,
+    target: Int,
+    attackRank: Int,
+    defenseRank: Int,
+    effect: Effect
+) {
+    val checker = state.getData<Checker>()
+
+    when (checker.check(rng, attackRank, defenseRank)) {
+        is Failure -> messages += inform(state, "%s missed %s", entity, target)
+        else -> {
+            messages += inform(state, "%s hits %s", entity, target)
+
+            when (effect) {
+                is DamageEffect -> {
+                    events += OnDamage(target, effect.damage)
+                }
+            }
+        }
+    }
 }
