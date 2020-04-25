@@ -52,7 +52,7 @@ import kotlin.system.exitProcess
 private val logger = KotlinLogging.logger {}
 
 private const val LOG_SIZE = 5
-private const val STATUS_SIZE = 1
+private const val STATUS_SIZE = 2
 
 class CombatDemo : TileApplication(60, 45, 20, 20) {
     private lateinit var store: DefaultStore<Action, EcsState>
@@ -229,17 +229,20 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
         render(store.getState())
     }
 
-    private fun updatePath(x: Int, y: Int) = if (mapRender.area.isInside(x, y)) {
-        val goal = mapRender.area.convert(x, y)
+    private fun updatePath(x: Int, y: Int): PathfindingResult {
         val state = store.getState()
         val entity = state.getData<TimeSystem>().getCurrent()
         val body = state.getStorage<Body>()[entity]!!
-        val start = getPosition(body)
         val entitySize = getSize(body)
-        val occupancyMap = state.getData<GameMap>().createOccupancyMap(entitySize, entity)
 
-        pathfinding.find(occupancyMap, start, goal, entitySize)
-    } else NotSearched
+        return if (mapRender.area.isAreaInside(x, y, entitySize)) {
+            val goal = mapRender.area.convert(x, y)
+            val start = getPosition(body)
+            val occupancyMap = state.getData<GameMap>().createOccupancyMap(entitySize, entity)
+
+            pathfinding.find(occupancyMap, start, goal, entitySize)
+        } else NotSearched
+    }
 
     private fun usePath(result: PathfindingResult) {
         if (result is Path) {

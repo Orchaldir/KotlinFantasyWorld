@@ -173,25 +173,26 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
 
     override fun onTileClicked(x: Int, y: Int, button: MouseButton) {
         logger.info("onTileClicked(): x=$x y=$y")
-        updatePath(x, y)
+        pathfindingResult = updatePath(x, y)
         usePath(pathfindingResult)
         render(store.getState())
     }
 
     override fun onMouseMoved(x: Int, y: Int) {
         logger.info("onMouseMoved(): x=$x y=$y")
-        updatePath(x, y)
+        pathfindingResult = updatePath(x, y)
         render(store.getState())
     }
 
-    private fun updatePath(x: Int, y: Int) {
-        pathfindingResult = if (mapRender.area.isInside(x, y)) {
+    private fun updatePath(x: Int, y: Int): PathfindingResult {
+        val state = store.getState()
+        val entity = state.getData<TimeSystem>().getCurrent()
+        val body = state.getStorage<Body>()[entity]!!
+        val entitySize = getSize(body)
+
+        return if (mapRender.area.isAreaInside(x, y, entitySize)) {
             val goal = mapRender.area.convert(x, y)
-            val state = store.getState()
-            val entity = state.getData<TimeSystem>().getCurrent()
-            val body = state.getStorage<Body>()[entity]!!
             val start = getPosition(body)
-            val entitySize = getSize(body)
             val occupancyMap = state.getData<GameMap>().createOccupancyMap(entitySize, entity)
 
             pathfinding.find(occupancyMap, start, goal, entitySize)

@@ -14,6 +14,8 @@ data class Area(
 
     // inside check
 
+    fun isAreaInside(x: Int, y: Int, areaSize: Int) = isInside(x, y) && isInside(x + areaSize, y + areaSize)
+
     fun isInside(x: Int, y: Int) = isInsideForX(x) && isInsideForY(y)
 
     fun isInsideForX(x: Int) = size.isInsideForX(x - this.x)
