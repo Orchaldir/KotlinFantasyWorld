@@ -16,6 +16,10 @@ data class TurnData(
 
     constructor(movementPoints: Int, actions: Int) : this(movementPoints, movementPoints, actions, actions)
 
+    fun canAct() = actionPoints > 0
+
+    fun canMove() = movementPoints > 0
+
     fun isFinished() = movementPoints <= 0 && actionPoints <= 0
 
     fun reduceMovementPoints(entity: Int): TurnData {

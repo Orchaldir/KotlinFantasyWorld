@@ -44,7 +44,6 @@ import util.math.Size
 import util.redux.DefaultStore
 import util.redux.Reducer
 import util.redux.middleware.logAction
-import util.rendering.tile.FullTile
 import util.rendering.tile.ImageTile
 import kotlin.random.Random
 import kotlin.system.exitProcess
@@ -182,8 +181,9 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
 
     private fun renderAbility(result: AbilityCheckResult) {
         when (result) {
-            is OutOfRange -> mapRender.renderTile(tileRenderer, FullTile(Color.DARKRED), result.position)
-            is ValidUsage -> mapRender.renderTile(tileRenderer, FullTile(Color.DARKGREEN), result.position)
+            is NoActionPoints -> mapRender.renderError(tileRenderer, result.position)
+            is OutOfRange -> mapRender.renderError(tileRenderer, result.position)
+            is ValidUsage -> mapRender.renderSuccess(tileRenderer, result.position)
         }
     }
 
@@ -228,6 +228,7 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
             val target = state.getData<GameMap>().entities[position]
 
             if (target != null) {
+                abilityCheckResult = NoTarget
                 val entity = getCurrentEntity(state)
                 val ability = if (button == PRIMARY) 0 else 1
                 try {
@@ -243,7 +244,10 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
                 pathfindingResult = updatePath(x, y)
                 usePath(pathfindingResult)
             }
-        } else pathfindingResult = NotSearched
+        } else {
+            abilityCheckResult = NoTarget
+            pathfindingResult = NotSearched
+        }
     }
 
     override fun onMouseMoved(x: Int, y: Int) {

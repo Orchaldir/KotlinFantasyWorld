@@ -24,6 +24,8 @@ class GameRenderer(
     private val offsetY: Int = 0
 ) {
     val area = Area(startX, startY, size)
+    val successTile = FullTile(Color.DARKGREEN)
+    val errorTile = FullTile(Color.DARKRED)
 
     constructor(size: Size) : this(0, 0, size, 0, 0)
 
@@ -75,9 +77,9 @@ class GameRenderer(
     fun renderPathfindingResult(renderer: TileRenderer, result: PathfindingResult) {
         if (result is Path) {
             renderPath(renderer, result)
-            renderTile(renderer, FullTile(Color.DARKGREEN), result.indices.last(), result.size)
+            renderSuccess(renderer, result.indices.last(), result.size)
         } else if (result is NoPathFound) {
-            renderTile(renderer, FullTile(Color.DARKRED), result.goal, result.size)
+            renderError(renderer, result.goal, result.size)
         }
     }
 
@@ -107,9 +109,14 @@ class GameRenderer(
         }
     }
 
-    fun renderTile(tileRenderer: TileRenderer, tile: Tile, pos: Int, bodySize: Int = 1) {
+    fun renderTile(tileRenderer: TileRenderer, tile: Tile, pos: Int, bodySize: Int = 1) =
         tileRenderer.renderTile(tile, area.getX(pos), area.getY(pos), bodySize)
-    }
+
+    fun renderSuccess(tileRenderer: TileRenderer, pos: Int, bodySize: Int = 1) =
+        tileRenderer.renderTile(successTile, area.getX(pos), area.getY(pos), bodySize)
+
+    fun renderError(tileRenderer: TileRenderer, pos: Int, bodySize: Int = 1) =
+        tileRenderer.renderTile(errorTile, area.getX(pos), area.getY(pos), bodySize)
 
     private val corpse = Graphic(UnicodeTile("%", Color.WHITE))
 

@@ -4,6 +4,7 @@ import game.component.Body
 import game.component.calculateDistanceToPosition
 import game.map.GameMap
 import game.rpg.character.skill.Skill
+import game.rpg.time.TurnData
 import util.ecs.EcsState
 
 sealed class Ability
@@ -18,6 +19,7 @@ data class RangedAttack(
 
 sealed class AbilityCheckResult
 object CannotTargetSelf : AbilityCheckResult()
+data class NoActionPoints(val target: Int, val position: Int) : AbilityCheckResult()
 object NoTarget : AbilityCheckResult()
 data class OutOfRange(val target: Int, val position: Int, val distance: Int) : AbilityCheckResult()
 data class ValidUsage(val target: Int, val position: Int, val distance: Int) : AbilityCheckResult()
@@ -27,6 +29,8 @@ fun checkAbility(state: EcsState, ability: Ability, entity: Int, position: Int):
     val target = map.entities[position] ?: return NoTarget
 
     if (entity == target) return CannotTargetSelf
+
+    if (!state.getData<TurnData>().canAct()) return NoActionPoints(target, position)
 
     val body = state.getStorage<Body>()[entity] ?: return NoTarget
     val distance = calculateDistanceToPosition(map.size, body, position)
