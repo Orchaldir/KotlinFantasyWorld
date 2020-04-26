@@ -30,7 +30,6 @@ import game.rpg.time.getCurrentMovementPoints
 import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.input.MouseButton
-import javafx.scene.input.MouseButton.PRIMARY
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import mu.KotlinLogging
@@ -61,7 +60,7 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
     private val pathfinding = AStar<Boolean>()
     private var pathfindingResult: PathfindingResult = NotSearched
 
-    private var selectedAbility: Ability? = null
+    private var selectedAbility: Int? = null
     private var abilityCheckResult: AbilityCheckResult = NoTarget
 
     override fun start(primaryStage: Stage) {
@@ -172,7 +171,7 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
         logger.info("render(): finished")
     }
 
-    private fun renderAction(state: EcsState, selectedAbility: Ability?) {
+    private fun renderAction(state: EcsState, selectedAbility: Int?) {
         if (selectedAbility == null) {
             val movementPoints = getCurrentMovementPoints(state)
             mapRender.renderPathfindingResult(tileRenderer, pathfindingResult, movementPoints)
@@ -211,9 +210,9 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
                 selectedAbility = null
                 store.dispatch(FinishTurn(entity))
             }
-            KeyCode.DIGIT1 -> selectedAbility = getAbilityOrNull(state, entity, 0)
-            KeyCode.DIGIT2 -> selectedAbility = getAbilityOrNull(state, entity, 1)
-            KeyCode.DIGIT3 -> selectedAbility = getAbilityOrNull(state, entity, 2)
+            KeyCode.DIGIT1 -> selectedAbility = getAbilityIndexOrNull(state, entity, 0)
+            KeyCode.DIGIT2 -> selectedAbility = getAbilityIndexOrNull(state, entity, 1)
+            KeyCode.DIGIT3 -> selectedAbility = getAbilityIndexOrNull(state, entity, 2)
             KeyCode.ESCAPE -> exitProcess(0)
             else -> logger.info("onKeyReleased(): keyCode=$keyCode")
         }
@@ -227,12 +226,11 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
             val position = mapRender.area.convert(x, y)
             val target = state.getData<GameMap>().entities[position]
 
-            if (target != null) {
+            if (target != null && selectedAbility != null) {
                 abilityCheckResult = NoTarget
                 val entity = getCurrentEntity(state)
-                val ability = if (button == PRIMARY) 0 else 1
                 try {
-                    store.dispatch(UseAbility(entity, ability, position))
+                    store.dispatch(UseAbility(entity, selectedAbility!!, position))
                 } catch (e: OutOfRangeException) {
                     store.dispatch(AddMessage(Message("Target is out of range!", Color.YELLOW)))
                 } catch (e: NoActionPointsException) {
@@ -262,9 +260,10 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
         render(store.getState())
     }
 
-    private fun checkAbility(ability: Ability, x: Int, y: Int): AbilityCheckResult {
+    private fun checkAbility(index: Int, x: Int, y: Int): AbilityCheckResult {
         val state = store.getState()
         val entity = getCurrentEntity(state)
+        val ability = getAbility(state, entity, index)
 
         return if (mapRender.area.isInside(x, y)) {
             checkAbility(state, ability, entity, mapRender.area.convert(x, y))

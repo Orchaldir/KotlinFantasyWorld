@@ -21,5 +21,11 @@ fun getAbility(state: EcsState, entity: Int, index: Int) =
 fun getAbilityOrNull(state: EcsState, entity: Int, index: Int) =
     state.getStorage<Combat>().get(entity)?.getAbilityOrNull(index)
 
+fun getAbilityIndexOrNull(state: EcsState, entity: Int, index: Int): Int? {
+    val ability = getAbilityOrNull(state, entity, index)
+
+    return if (ability == null) null else index
+}
+
 fun getDefense(state: EcsState, entity: Int) =
     state.getStorage<Combat>().getOrThrow(entity).defense
