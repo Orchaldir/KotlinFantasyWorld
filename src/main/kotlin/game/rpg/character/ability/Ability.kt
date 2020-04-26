@@ -46,3 +46,12 @@ fun checkAbility(state: EcsState, ability: Ability, entity: Int, position: Int):
         }
     }
 }
+
+fun AbilityCheckResult.getText() =
+    when (this) {
+        CannotTargetSelf -> "Cannot target self!"
+        is NoActionPoints -> "No Action points!"
+        NoTarget -> "No target at position"
+        is OutOfRange -> "Target is out of range!"
+        is ValidUsage -> ""
+    }

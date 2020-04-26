@@ -1,16 +1,13 @@
 package game.reducer.action
 
-import game.CannotTargetSelfException
-import game.OutOfRangeException
+import game.InvalidAbilityUsageException
 import game.action.Action
 import game.action.OnDamage
 import game.action.UseAbility
-import game.component.*
-import game.map.GameMap
-import game.rpg.character.ability.DamageEffect
-import game.rpg.character.ability.Effect
-import game.rpg.character.ability.MeleeAttack
-import game.rpg.character.ability.RangedAttack
+import game.component.getAbility
+import game.component.getDefense
+import game.component.getRank
+import game.rpg.character.ability.*
 import game.rpg.check.Checker
 import game.rpg.check.Failure
 import game.rpg.time.TimeSystem
@@ -28,34 +25,25 @@ val USE_ABILITY_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
 
     state.getData<TimeSystem>().validateCurrent(action.entity)
 
+    val ability = getAbility(state = state, entity = action.entity, index = action.ability)
+    val result = checkAbility(state, ability, action.entity, action.position)
+
+    if (result !is ValidUsage) throw InvalidAbilityUsageException(result)
+
     val turnData = state.getData<TurnData>()
     val newTurnData = turnData.reduceActionPoints(action.entity)
 
-    val map = state.getData<GameMap>()
-    val target =
-        map.entities[action.position] ?: throw  IllegalStateException("No target at position ${action.position}")
-
-    if (action.entity == target) throw CannotTargetSelfException(target)
-
-    val ability = getAbility(state = state, entity = action.entity, index = action.ability)
-
     val rng = state.getData<RandomNumberState>().createGenerator()
-
-    val body = state.getStorage<Body>().getOrThrow(action.entity)
 
     val events = mutableListOf<Action>()
     val messages = mutableListOf<Message>()
 
     when (ability) {
         is MeleeAttack -> {
-            val distance = calculateDistanceToPosition(map.size, body, action.position)
-
-            if (distance > ability.reach) throw OutOfRangeException(distance)
-
-            val defense = getDefense(state, target)
+            val defense = getDefense(state, result.target)
 
             val attackRank = getRank(state, action.entity, ability.skill)
-            val defenseRank = getRank(state, target, defense.skill)
+            val defenseRank = getRank(state, result.target, defense.skill)
 
             handleEffect(
                 state,
@@ -63,21 +51,17 @@ val USE_ABILITY_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
                 events,
                 rng,
                 action.entity,
-                target,
+                result.target,
                 attackRank,
                 defenseRank,
                 ability.effect
             )
         }
         is RangedAttack -> {
-            val distance = calculateDistanceToPosition(map.size, body, action.position)
-
-            if (distance > ability.longRange) throw OutOfRangeException(distance)
-
             val attackRank = getRank(state, action.entity, ability.skill)
             val difficulty = when {
-                distance < ability.shortRange -> 2
-                distance < ability.mediumRange -> 4
+                result.distance < ability.shortRange -> 2
+                result.distance < ability.mediumRange -> 4
                 else -> 6
             }
 
@@ -87,7 +71,7 @@ val USE_ABILITY_REDUCER: Reducer<Action, EcsState> = a@{ state, action ->
                 events,
                 rng,
                 action.entity,
-                target,
+                result.target,
                 attackRank,
                 difficulty,
                 ability.effect

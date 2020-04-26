@@ -4,10 +4,8 @@ import ai.pathfinding.AStar
 import ai.pathfinding.NotSearched
 import ai.pathfinding.Path
 import ai.pathfinding.PathfindingResult
-import game.CannotTargetSelfException
 import game.GameRenderer
-import game.NoActionPointsException
-import game.OutOfRangeException
+import game.InvalidAbilityUsageException
 import game.action.*
 import game.component.*
 import game.map.GameMap
@@ -231,12 +229,8 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
                 val entity = getCurrentEntity(state)
                 try {
                     store.dispatch(UseAbility(entity, selectedAbility!!, position))
-                } catch (e: OutOfRangeException) {
-                    store.dispatch(AddMessage(Message("Target is out of range!", Color.YELLOW)))
-                } catch (e: NoActionPointsException) {
-                    store.dispatch(AddMessage(Message("No Action points!", Color.YELLOW)))
-                } catch (e: CannotTargetSelfException) {
-                    store.dispatch(AddMessage(Message("Cannot target self!", Color.YELLOW)))
+                } catch (e: InvalidAbilityUsageException) {
+                    store.dispatch(AddMessage(Message(e.error.getText(), Color.YELLOW)))
                 }
             } else {
                 pathfindingResult = updatePath(x, y)
