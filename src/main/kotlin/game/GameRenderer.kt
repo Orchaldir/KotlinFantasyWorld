@@ -87,7 +87,7 @@ class GameRenderer(
             renderPath(renderer, result, movementPoints)
             renderSuccess(renderer, result.indices.last(), result.size)
         } else if (result is NoPathFound) {
-            renderError(renderer, result.goal, result.size)
+            result.goals.forEach { renderError(renderer, it, result.size) }
         }
     }
 

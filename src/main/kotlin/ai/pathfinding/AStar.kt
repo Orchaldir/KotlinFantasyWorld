@@ -8,24 +8,34 @@ private val logger = KotlinLogging.logger {}
 
 class AStar<T> {
 
-    fun find(graph: Graph<T>, start: Int, goal: Int, pathSize: Int): PathfindingResult {
-        logger.info("Find path from $start to $goal.")
+    fun find(graph: Graph<T>, start: Int, goal: Int, pathSize: Int) =
+        find(graph, start, listOf(goal), pathSize)
 
-        if (start == goal) {
-            logger.info("Goal is already reached")
-            return GoalAlreadyReached
-        } else if (!graph.isValid(goal)) {
-            logger.info("Goal is an obstacle")
-            return NoPathFound(goal = goal, size = pathSize)
-        }
+    fun find(graph: Graph<T>, start: Int, goals: List<Int>, pathSize: Int): PathfindingResult {
+        logger.info("Find path from $start to $goals.")
 
         val openNodes = PriorityQueue<AStarNode>()
         val list = arrayOfNulls<AStarNode>(graph.getSize())
-        val goalNode = AStarNode(goal)
-        goalNode.costSoFar = 0
+        var isAnyGoalReachable = false
 
-        openNodes.add(goalNode)
-        list[goal] = goalNode
+        for (goal in goals) {
+            if (start == goal) {
+                logger.info("Goal is already reached")
+                return GoalAlreadyReached
+            } else if (graph.isValid(goal)) {
+                isAnyGoalReachable = true
+            }
+
+            val goalNode = AStarNode(goal)
+            goalNode.costSoFar = 0
+            openNodes.add(goalNode)
+            list[goal] = goalNode
+        }
+
+        if (!isAnyGoalReachable) {
+            logger.info("All goals are an obstacle")
+            return NoPathFound(goals = goals, size = pathSize)
+        }
 
         while (!openNodes.isEmpty()) {
             val currentNode = openNodes.poll()
@@ -55,7 +65,7 @@ class AStar<T> {
 
         logger.info("Failed to find a path.")
 
-        return NoPathFound(goal = goal, size = pathSize)
+        return NoPathFound(goals = goals, size = pathSize)
     }
 
     private fun backtrack(startNode: AStarNode, pathSize: Int): Path {

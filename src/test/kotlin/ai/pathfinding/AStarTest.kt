@@ -2,39 +2,51 @@ package ai.pathfinding
 
 import ai.pathfinding.graph.OccupancyMap
 import assertk.assertThat
-import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isSameAs
 import org.junit.jupiter.api.Test
 import util.math.Size
-import kotlin.test.fail
 
 class AStarTest {
 
     private val f = true
     private val o = false
 
+    private val largeMap = listOf(
+        f, f, f, f, f, f,
+        f, o, o, o, o, f,
+        f, f, o, f, f, f,
+        f, f, f, f, f, f,
+        f, f, f, f, f, f
+    )
+    private val largeSize = Size(6, 5)
+    private val largeGraph = OccupancyMap(largeMap, largeSize)
+
     @Test
     fun `Find a valid plan`() {
-        val values = listOf(
-            f, f, f, f, f, f,
-            f, o, o, o, o, f,
-            f, f, o, f, f, f,
-            f, f, f, f, f, f,
-            f, f, f, f, f, f
-        )
-        val graph = OccupancyMap(values, Size(6, 5))
         val aStar = AStar<Boolean>()
 
-        val path = aStar.find(graph, 3, 15, 2)
+        val path = aStar.find(largeGraph, 3, 15, 2)
 
-        if (path is Path) {
-            assertThat(path.size).isSameAs(2)
-            assertThat(path.totalCost).isSameAs(6)
-            assertThat(path.indices).containsExactly(4, 5, 11, 17, 16, 15)
-        } else {
-            fail("Not a valid plan!")
-        }
+        assertThat(path).isEqualTo(Path(size = 2, totalCost = 6, indices = listOf(4, 5, 11, 17, 16, 15)))
+    }
+
+    @Test
+    fun `Find a valid plan to the first goal of 2`() {
+        val aStar = AStar<Boolean>()
+
+        val path = aStar.find(largeGraph, 2, listOf(13, 15), 2)
+
+        assertThat(path).isEqualTo(Path(size = 2, totalCost = 5, indices = listOf(1, 0, 6, 12, 13)))
+    }
+
+    @Test
+    fun `Find a valid plan to the second goal of 2`() {
+        val aStar = AStar<Boolean>()
+
+        val path = aStar.find(largeGraph, 5, listOf(13, 15), 2)
+
+        assertThat(path).isEqualTo(Path(size = 2, totalCost = 4, indices = listOf(11, 17, 16, 15)))
     }
 
     @Test
@@ -52,7 +64,7 @@ class AStarTest {
         val graph = OccupancyMap(values, Size(3, 1))
         val aStar = AStar<Boolean>()
 
-        assertThat(aStar.find(graph, 0, 2, 1)).isEqualTo(NoPathFound(2, 1))
+        assertThat(aStar.find(graph, 0, 2, 1)).isEqualTo(NoPathFound(listOf(2), 1))
     }
 
     @Test
@@ -62,16 +74,42 @@ class AStarTest {
 
         val aStar = AStar<Boolean>()
 
-        assertThat(aStar.find(graph, 0, 2, 2)).isEqualTo(NoPathFound(2, 2))
+        assertThat(aStar.find(graph, 0, 2, 2)).isEqualTo(NoPathFound(listOf(2), 2))
     }
 
     @Test
-    fun `Goal is an  obstacle`() {
+    fun `Only goal is an  obstacle`() {
         val values = listOf(f, f, o)
         val graph = OccupancyMap(values, Size(3, 1))
 
         val aStar = AStar<Boolean>()
 
-        assertThat(aStar.find(graph, 0, 2, 3)).isEqualTo(NoPathFound(2, 3))
+        assertThat(aStar.find(graph, 0, 2, 3)).isEqualTo(NoPathFound(listOf(2), 3))
+    }
+
+    @Test
+    fun `1 of 2 goals is an  obstacle`() {
+        val values = listOf(f, f, o)
+        val graph = OccupancyMap(values, Size(3, 1))
+
+        val aStar = AStar<Boolean>()
+
+        assertThat(aStar.find(graph, 1, listOf(0, 2), 3)).isEqualTo(
+            Path(
+                size = 3,
+                totalCost = 1,
+                indices = listOf(0)
+            )
+        )
+    }
+
+    @Test
+    fun `All goals are an  obstacle`() {
+        val values = listOf(o, f, o)
+        val graph = OccupancyMap(values, Size(3, 1))
+
+        val aStar = AStar<Boolean>()
+
+        assertThat(aStar.find(graph, 1, listOf(0, 2), 3)).isEqualTo(NoPathFound(listOf(0, 2), 3))
     }
 }
