@@ -1,11 +1,13 @@
 package game.component
 
+import util.math.Direction
+import util.math.Direction.NORTH
 import util.math.Size
 
 sealed class Body
-data class SimpleBody(val position: Int) : Body()
-data class BigBody(val position: Int, val size: Int) : Body()
-data class SnakeBody(val positions: List<Int>) : Body()
+data class SimpleBody(val position: Int, val direction: Direction = NORTH) : Body()
+data class BigBody(val position: Int, val size: Int, val direction: Direction = NORTH) : Body()
+data class SnakeBody(val positions: List<Int>, val direction: Direction = NORTH) : Body()
 
 fun calculateDistanceToPosition(mapSize: Size, body: Body, position: Int): Int {
     val origins = getPositions(mapSize, body)

@@ -26,6 +26,7 @@ import util.ecs.EcsBuilder
 import util.ecs.EcsState
 import util.log.MessageLog
 import util.log.MessageLogRenderer
+import util.math.Direction.WEST
 import util.math.Size
 import util.redux.DefaultStore
 import util.redux.Reducer
@@ -70,7 +71,7 @@ class DamageDemo : TileApplication(60, 40, 20, 20) {
             registerComponent<Health>()
             registerComponent<Text>()
             listOf("very weak", "weak", "average", "strong", "very strong").forEachIndexed { i, s ->
-                add(SimpleBody(gameMap.size.getIndex(5, 5 + 5 * i)) as Body)
+                add(SimpleBody(gameMap.size.getIndex(5, 5 + 5 * i), WEST) as Body)
                 add(Graphic(UnicodeTile("O", Color.DARKGREEN)))
                 add(Statistics(mapOf(toughness to (3 * i))))
                 add(Health())

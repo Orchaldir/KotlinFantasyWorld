@@ -84,18 +84,18 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
             registerComponent<Graphic>()
             registerComponent<Health>()
             registerComponent<Statistics>()
-            add(SimpleBody(gameMap.size.getIndex(10, 5)) as Body)
+            add(SimpleBody(gameMap.size.getIndex(10, 5), SOUTH) as Body)
             add(Graphic(UnicodeTile("@", Color.BLUE)))
             add(Player as Controller)
             add(Statistics(mapOf(speed to 6)))
             buildEntity()
-            add(BigBody(gameMap.size.getIndex(10, 25), 4) as Body)
+            add(BigBody(gameMap.size.getIndex(10, 25), 4, NORTH) as Body)
             add(Graphic(UnicodeTile("D", Color.RED)))
             add(Player as Controller)
             add(Statistics(mapOf(speed to 4)))
             buildEntity()
             add(
-                SnakeBody(List(20) { gameMap.size.getIndex(50, 5) }) as Body
+                SnakeBody(List(20) { gameMap.size.getIndex(50, 5) }, EAST) as Body
             )
             add(Graphic(UnicodeTile("S", Color.GREEN)))
             add(Player as Controller)
