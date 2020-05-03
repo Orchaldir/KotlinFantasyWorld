@@ -7,29 +7,29 @@ data class SimpleBody(val position: Int) : Body()
 data class BigBody(val position: Int, val size: Int) : Body()
 data class SnakeBody(val positions: List<Int>) : Body()
 
-fun calculateDistanceToPosition(size: Size, body: Body, position: Int): Int {
-    val origins = getPositions(size, body)
+fun calculateDistanceToPosition(mapSize: Size, body: Body, position: Int): Int {
+    val origins = getPositions(mapSize, body)
 
     if (origins.isEmpty()) throw IllegalStateException("No valid origins!")
 
-    return origins.map { size.getChebyshevDistance(it, position) }.min()!!
+    return origins.map { mapSize.getChebyshevDistance(it, position) }.min()!!
 }
 
-fun calculateDistance(size: Size, body: Body, target: Body): Int {
-    val origins = getPositions(size, body)
+fun calculateDistance(mapSize: Size, from: Body, to: Body): Int {
+    val origins = getPositions(mapSize, from)
 
     if (origins.isEmpty()) throw IllegalStateException("No valid origins!")
 
-    val destinations = getPositions(size, target)
+    val destinations = getPositions(mapSize, to)
 
     if (destinations.isEmpty()) throw IllegalStateException("No valid destinations!")
 
-    return origins.flatMap { o -> destinations.map { d -> size.getChebyshevDistance(o, d) } }.min()!!
+    return origins.flatMap { o -> destinations.map { d -> mapSize.getChebyshevDistance(o, d) } }.min()!!
 }
 
-private fun getPositions(size: Size, body: Body): List<Int> = when (body) {
+private fun getPositions(mapSize: Size, body: Body): List<Int> = when (body) {
     is SimpleBody -> listOf(body.position)
-    is BigBody -> size.getIndices(body.position, body.size)
+    is BigBody -> mapSize.getIndices(body.position, body.size)
     is SnakeBody -> listOf(body.positions.first())
 }
 
