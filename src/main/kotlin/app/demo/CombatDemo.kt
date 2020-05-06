@@ -38,7 +38,7 @@ import util.log.Message
 import util.log.MessageLog
 import util.log.MessageLogRenderer
 import util.math.Direction.*
-import util.math.Size
+import util.math.rectangle.Size
 import util.redux.DefaultStore
 import util.redux.Reducer
 import util.redux.middleware.logAction

@@ -11,7 +11,7 @@ import javafx.scene.input.MouseButton
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import mu.KotlinLogging
-import util.math.Size
+import util.math.rectangle.Size
 import util.rendering.CanvasRenderer
 import util.rendering.Renderer
 import util.rendering.tile.TileRenderer
@@ -25,7 +25,10 @@ abstract class TileApplication(
     tileWidth: Int,
     tileHeight: Int
 ) : Application() {
-    val size = Size(requireGreater(sizeX, 0, "sizeX"), requireGreater(sizeY, 0, "sizeY"))
+    val size = Size(
+        requireGreater(sizeX, 0, "sizeX"),
+        requireGreater(sizeY, 0, "sizeY")
+    )
     private val tileWidth = requireGreater(tileWidth, 0, "tileWidth")
     private val tileHeight = requireGreater(tileHeight, 0, "tileHeight")
     private var canvasRenderer: CanvasRenderer? = null

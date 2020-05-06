@@ -1,4 +1,4 @@
-package util.math
+package util.math.rectangle
 
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -6,6 +6,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isSameAs
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import util.math.Direction
 import kotlin.test.*
 
 private val size = Size(2, 3)
@@ -256,7 +257,7 @@ class SizeTest {
     }
 
     @Nested
-    inner class IsAreaInside {
+    inner class IsRectangleInside {
 
         private val size = Size(3, 4)
 

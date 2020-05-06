@@ -2,7 +2,7 @@ package game.component
 
 import util.math.Direction
 import util.math.Direction.NORTH
-import util.math.Size
+import util.math.rectangle.Size
 
 sealed class Body
 data class SimpleBody(val position: Int, val direction: Direction = NORTH) : Body()

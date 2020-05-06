@@ -9,8 +9,8 @@ import game.map.GameMap
 import game.map.Terrain
 import javafx.scene.paint.Color
 import util.ecs.EcsState
-import util.math.Area
-import util.math.Size
+import util.math.rectangle.Rectangle
+import util.math.rectangle.Size
 import util.rendering.tile.FullTile
 import util.rendering.tile.Tile
 import util.rendering.tile.TileRenderer
@@ -23,12 +23,16 @@ class GameRenderer(
     private val offsetX: Int = 0,
     private val offsetY: Int = 0
 ) {
-    val area = Area(startX, startY, size)
+    val area = Rectangle(startX, startY, size)
 
+    // tiles
     private val successTile = FullTile(Color.DARKGREEN)
     private val errorTile = FullTile(Color.DARKRED)
     private val pathWithMovementPointsTile = FullTile(Color.GRAY)
     private val pathWithoutMovementPointsTile = FullTile(Color.GRAY.darker().darker())
+
+    // graphics
+    private val corpseGraphic = Graphic(UnicodeTile("%", Color.WHITE))
 
     constructor(size: Size) : this(0, 0, size, 0, 0)
 
@@ -126,9 +130,7 @@ class GameRenderer(
     fun renderError(tileRenderer: TileRenderer, pos: Int, bodySize: Int = 1) =
         tileRenderer.renderTile(errorTile, area.getX(pos), area.getY(pos), bodySize)
 
-    private val corpse = Graphic(UnicodeTile("%", Color.WHITE))
-
     private fun renderCopse(tileRenderer: TileRenderer, body: Body) =
-        renderBody(tileRenderer, body, corpse)
+        renderBody(tileRenderer, body, corpseGraphic)
 
 }

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import util.math.Direction.NORTH
 import util.math.Direction.WEST
-import util.math.Size
+import util.math.rectangle.Size
 import kotlin.test.assertNull
 import kotlin.test.fail
 

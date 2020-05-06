@@ -8,7 +8,7 @@ import game.map.Terrain.FLOOR
 import game.map.Terrain.WALL
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import util.math.Size
+import util.math.rectangle.Size
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull

@@ -1,6 +1,6 @@
-package util.math
+package util.math.rectangle
 
-data class Area(
+data class Rectangle(
     val x: Int,
     val y: Int,
     val size: Size

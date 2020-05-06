@@ -8,7 +8,7 @@ import util.app.TileApplication
 import util.log.Message
 import util.log.MessageLog
 import util.log.MessageLogRenderer
-import util.math.Size
+import util.math.rectangle.Size
 
 private val logger = KotlinLogging.logger {}
 

@@ -1,6 +1,6 @@
 package ai.pathfinding.graph
 
-import util.math.Size
+import util.math.rectangle.Size
 
 class OccupancyMap(list: List<Boolean>, size: Size) : PathfindingMap<Boolean>(list, size) {
 

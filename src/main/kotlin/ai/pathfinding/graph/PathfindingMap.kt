@@ -1,6 +1,6 @@
 package ai.pathfinding.graph
 
-import util.math.Size
+import util.math.rectangle.Size
 
 abstract class PathfindingMap<T>(val list: List<T>, val size: Size) : Graph<T> {
 

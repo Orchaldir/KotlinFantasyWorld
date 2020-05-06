@@ -3,7 +3,7 @@ package util.log
 import io.mockk.*
 import javafx.scene.paint.Color.*
 import org.junit.jupiter.api.Test
-import util.math.Size
+import util.math.rectangle.Size
 import util.rendering.tile.TileRenderer
 
 const val STRING0 = "1.Message"

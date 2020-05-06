@@ -6,7 +6,7 @@ import game.map.Terrain.FLOOR
 import game.map.Terrain.WALL
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import util.math.Size
+import util.math.rectangle.Size
 import kotlin.test.assertNull
 
 private const val ENTITY0 = 1

@@ -1,6 +1,6 @@
 package game.map
 
-import util.math.Size
+import util.math.rectangle.Size
 
 class GameMapBuilder(
     val size: Size,

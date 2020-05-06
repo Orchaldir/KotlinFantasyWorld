@@ -1,6 +1,6 @@
 package util.log
 
-import util.math.Size
+import util.math.rectangle.Size
 import util.rendering.tile.TileRenderer
 
 class MessageLogRenderer(val x: Int, val y: Int, val size: Size, val fontSize: Int = 1) {

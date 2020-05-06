@@ -8,7 +8,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import util.math.Size
+import util.math.rectangle.Size
 
 class BodyTest {
 

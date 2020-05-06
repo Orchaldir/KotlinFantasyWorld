@@ -1,5 +1,6 @@
-package util.math
+package util.math.rectangle
 
+import util.math.Direction
 import util.math.Direction.*
 import util.requireGreater
 import java.lang.Integer.max

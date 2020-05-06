@@ -1,7 +1,7 @@
 package game.map
 
 import ai.pathfinding.graph.OccupancyMap
-import util.math.Size
+import util.math.rectangle.Size
 
 data class GameMap(
     val size: Size,
