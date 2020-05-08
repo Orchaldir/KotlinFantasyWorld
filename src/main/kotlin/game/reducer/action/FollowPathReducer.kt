@@ -3,6 +3,8 @@ package game.reducer.action
 import game.action.FollowPath
 import game.component.BigBody
 import game.component.Body
+import game.component.getPosition
+import game.component.updateBody
 import game.map.GameMap
 import game.map.Walkable
 import game.rpg.time.TurnData
@@ -24,6 +26,7 @@ val FOLLOW_PATH_REDUCER: Reducer<FollowPath, EcsState> = a@{ state, action ->
     val bodyStorage = state.getStorage<Body>()
     var body = bodyStorage.getOrThrow(entity)
     var pathIndex = 0
+    var oldPosition = getPosition(body)
 
     while (turnData.movementPoints > 0 && pathIndex < action.path.indices.size) {
         val newPosition = action.path.indices[pathIndex]
@@ -33,7 +36,9 @@ val FOLLOW_PATH_REDUCER: Reducer<FollowPath, EcsState> = a@{ state, action ->
             is Walkable -> {
                 turnData = turnData.reduceMovementPoints(action.entity)
                 map = updateMap(map, entity, body, newPosition)
-                body = updateBody(body, newPosition)
+                val direction = map.size.getDirection(oldPosition, newPosition)
+                body = updateBody(body, newPosition, direction)
+                oldPosition = newPosition
             }
             else -> return@a noFollowUps(handleError(state, walkability))
         }

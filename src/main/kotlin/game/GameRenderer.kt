@@ -31,7 +31,7 @@ class GameRenderer(
     private val pathWithoutMovementPointsTile = FullTile(Color.GRAY.darker().darker())
 
     // direction
-    private val directionColor = Color.RED
+    private val directionColor = Color.DARKRED
     private val northTile = PolygonTile(createPolygon(0.3, 0.2, 0.7, 0.2, 0.5, 0.0), directionColor)
     private val eastTile = PolygonTile(createPolygon(0.8, 0.3, 0.8, 0.7, 1.0, 0.5), directionColor)
     private val southTile = PolygonTile(createPolygon(0.3, 0.8, 0.7, 0.8, 0.5, 1.0), directionColor)

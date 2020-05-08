@@ -1,10 +1,7 @@
 package game.reducer.action
 
 import game.action.Move
-import game.component.BigBody
-import game.component.Body
-import game.component.SimpleBody
-import game.component.SnakeBody
+import game.component.*
 import game.map.*
 import game.rpg.time.TurnData
 import javafx.scene.paint.Color.YELLOW
@@ -31,7 +28,7 @@ val MOVE_REDUCER: Reducer<Move, EcsState> = a@{ state, action ->
     val walkability = getNewPosition(map, action.entity, body, action.direction)
 
     val newState = when (walkability) {
-        is Walkable -> move(state, map, action.entity, bodyStorage, body, walkability, turnData)
+        is Walkable -> move(state, map, action.entity, bodyStorage, body, walkability, action.direction, turnData)
         else -> handleError(state, walkability)
     }
 
@@ -68,11 +65,12 @@ private fun move(
     bodyStorage: ComponentStorage<Body>,
     body: Body,
     walkable: Walkable,
+    direction: Direction,
     turnData: TurnData
 ): EcsState {
     val newMap = updateMap(map, entity, body, walkable.position)
 
-    val newBody = updateBody(body, walkable.position)
+    val newBody = updateBody(body, walkable.position, direction)
     val newBodyStorage = bodyStorage.updateAndRemove(mapOf(entity to newBody))
 
     val newTurnData = turnData.reduceMovementPoints(entity)
@@ -103,15 +101,5 @@ fun updateMap(map: GameMap, entity: Int, body: Body, position: Int) = when (body
         }
         setEntity(index = position, entity = entity)
         build()
-    }
-}
-
-fun updateBody(body: Body, position: Int) = when (body) {
-    is SimpleBody -> body.copy(position)
-    is BigBody -> body.copy(position, body.size)
-    is SnakeBody -> {
-        val positions = body.positions.toMutableList()
-        positions.removeAt(positions.lastIndex)
-        body.copy(listOf(position) + positions)
     }
 }

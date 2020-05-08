@@ -45,3 +45,13 @@ fun getSize(body: Body) = when (body) {
     is BigBody -> body.size
     else -> 1
 }
+
+fun updateBody(body: Body, position: Int, direction: Direction) = when (body) {
+    is SimpleBody -> body.copy(position, direction)
+    is BigBody -> body.copy(position, body.size, direction)
+    is SnakeBody -> {
+        val positions = body.positions.toMutableList()
+        positions.removeAt(positions.lastIndex)
+        body.copy(listOf(position) + positions, direction)
+    }
+}

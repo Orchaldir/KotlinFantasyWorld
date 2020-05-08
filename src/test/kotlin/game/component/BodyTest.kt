@@ -8,6 +8,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import util.math.Direction.*
 import util.math.rectangle.Size
 
 class BodyTest {
@@ -110,6 +111,33 @@ class BodyTest {
 
             verify(exactly = 1) { size.getChebyshevDistance(4, 1) }
             confirmVerified(size)
+        }
+    }
+
+    @Nested
+    inner class UpdateBody {
+
+        @Test
+        fun `Update a simple body`() {
+            val body = SimpleBody(4, NORTH)
+
+            assertThat(updateBody(body, 1, SOUTH)).isEqualTo(SimpleBody(1, SOUTH))
+        }
+
+        @Test
+        fun `Update a big body`() {
+            val body = BigBody(4, 2, WEST)
+            val newBody = updateBody(body, 1, EAST)
+
+            assertThat(newBody).isEqualTo(BigBody(1, 2, EAST))
+        }
+
+        @Test
+        fun `Update a snake body`() {
+            val body = SnakeBody(listOf(4, 3, 6))
+            val newBody = updateBody(body, 1, WEST)
+
+            assertThat(newBody).isEqualTo(SnakeBody(listOf(1, 4, 3), WEST))
         }
     }
 }

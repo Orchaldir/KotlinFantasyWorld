@@ -52,6 +52,19 @@ data class Size(
 
     fun getPos(index: Int) = Pair(getX(index), getY(index))
 
+    fun getDirection(from: Int, to: Int): Direction {
+        val (fromX, fromY) = getPos(from)
+        val (toX, toY) = getPos(to)
+        val diffX = toX - fromX
+        val diffY = toY - fromY
+
+        return if (diffX == 0 && diffY == -1) NORTH
+        else if (diffX == 1 && diffY == 0) EAST
+        else if (diffX == 0 && diffY == 1) SOUTH
+        else if (diffX == -1 && diffY == 0) WEST
+        else throw IllegalArgumentException("From $from & to $to are not neighbors!")
+    }
+
     fun getNeighbor(index: Int, direction: Direction): Int? {
         return when (direction) {
             NORTH -> getOffset(index, 0, -1)
