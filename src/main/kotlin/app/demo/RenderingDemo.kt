@@ -8,6 +8,7 @@ import util.app.TileApplication
 import util.log.Message
 import util.log.MessageLog
 import util.log.MessageLogRenderer
+import util.math.createPolygon
 import util.math.rectangle.Size
 
 private val logger = KotlinLogging.logger {}
@@ -46,12 +47,15 @@ class RenderingDemo : TileApplication(50, 20, 22, 32) {
             renderUnicode("🌳", 200, 200)
             setColor(Color.BLUE)
             renderRectangle(400, 300, 100, 200)
+            setColor(Color.GREEN)
+            renderPolygon(createPolygon(600.0, 400.0, 600.0, 500.0, 700.0, 450.0))
         }
 
         with(tileRenderer) {
             renderFullTile(Color.GREEN, 5, 10)
             renderFullTile(Color.BLUE, 6, 10)
             renderUnicodeTile("@", Color.CYAN, 5, 11, 2)
+            renderPolygon(createPolygon(0.8, 0.3, 0.8, 0.7, 1.0, 0.5), Color.RED, 5, 11, 2)
         }
 
         with(tileRenderer) {

@@ -1,6 +1,7 @@
 package util.rendering.tile
 
 import javafx.scene.paint.Color
+import util.math.Polygon
 import util.rendering.Renderer
 import util.requireGreater
 
@@ -72,6 +73,19 @@ class TileRenderer(
         renderer.renderImage(id, getStartPixelX(x), getStartPixelY(y), tileWidth * size, tileHeight * size)
     }
 
+    fun renderPolygon(
+        polygon: Polygon,
+        color: Color,
+        x: Int,
+        y: Int,
+        size: Int = 1
+    ) {
+        renderer.setColor(color)
+        val startX = getStartPixelX(x)
+        val startY = getStartPixelY(y)
+        renderer.renderPolygon(polygon, startX, startY, tileWidth * size, tileHeight * size)
+    }
+
     fun renderTile(
         tile: Tile,
         x: Int,
@@ -82,6 +96,7 @@ class TileRenderer(
             is FullTile -> renderFullTile(tile.color, x, y, size)
             is UnicodeTile -> renderUnicodeTile(tile.symbol, tile.color, x, y, size)
             is ImageTile -> renderImageTile(tile.id, x, y, size)
+            is PolygonTile -> renderPolygon(tile.polygon, tile.color, x, y, size)
             is EmptyTile -> return
         }
     }
