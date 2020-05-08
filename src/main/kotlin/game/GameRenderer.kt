@@ -9,12 +9,11 @@ import game.map.GameMap
 import game.map.Terrain
 import javafx.scene.paint.Color
 import util.ecs.EcsState
+import util.math.Direction
+import util.math.createPolygon
 import util.math.rectangle.Rectangle
 import util.math.rectangle.Size
-import util.rendering.tile.FullTile
-import util.rendering.tile.Tile
-import util.rendering.tile.TileRenderer
-import util.rendering.tile.UnicodeTile
+import util.rendering.tile.*
 
 class GameRenderer(
     startX: Int,
@@ -30,6 +29,13 @@ class GameRenderer(
     private val errorTile = FullTile(Color.DARKRED)
     private val pathWithMovementPointsTile = FullTile(Color.GRAY)
     private val pathWithoutMovementPointsTile = FullTile(Color.GRAY.darker().darker())
+
+    // direction
+    private val directionColor = Color.RED
+    private val northTile = PolygonTile(createPolygon(0.3, 0.2, 0.7, 0.2, 0.5, 0.0), directionColor)
+    private val eastTile = PolygonTile(createPolygon(0.8, 0.3, 0.8, 0.7, 1.0, 0.5), directionColor)
+    private val southTile = PolygonTile(createPolygon(0.3, 0.8, 0.7, 0.8, 0.5, 1.0), directionColor)
+    private val westTile = PolygonTile(createPolygon(0.0, 0.5, 0.2, 0.3, 0.2, 0.7), directionColor)
 
     // graphics
     private val corpseGraphic = Graphic(UnicodeTile("%", Color.WHITE))
@@ -114,15 +120,34 @@ class GameRenderer(
     }
 
     private fun renderBody(tileRenderer: TileRenderer, body: Body, graphic: Graphic) = when (body) {
-        is SimpleBody -> renderTile(tileRenderer, graphic.get(0), body.position)
-        is BigBody -> renderTile(tileRenderer, graphic.get(0), body.position, body.size)
-        is SnakeBody -> for (pos in body.positions) {
-            renderTile(tileRenderer, graphic.get(0), pos)
+        is SimpleBody -> {
+            renderTile(tileRenderer, graphic.get(0), body.position)
+            renderDirection(tileRenderer, body.direction, body.position)
+        }
+        is BigBody -> {
+            renderTile(tileRenderer, graphic.get(0), body.position, body.size)
+            renderDirection(tileRenderer, body.direction, body.position, body.size)
+        }
+        is SnakeBody -> {
+            for (pos in body.positions) {
+                renderTile(tileRenderer, graphic.get(0), pos)
+            }
+            renderDirection(tileRenderer, body.direction, body.positions.first())
         }
     }
 
     fun renderTile(tileRenderer: TileRenderer, tile: Tile, pos: Int, bodySize: Int = 1) =
         tileRenderer.renderTile(tile, area.getX(pos), area.getY(pos), bodySize)
+
+    fun renderDirection(tileRenderer: TileRenderer, direction: Direction, pos: Int, bodySize: Int = 1) =
+        tileRenderer.renderTile(getDirectionTile(direction), area.getX(pos), area.getY(pos), bodySize)
+
+    private fun getDirectionTile(direction: Direction) = when (direction) {
+        Direction.NORTH -> northTile
+        Direction.EAST -> eastTile
+        Direction.SOUTH -> southTile
+        Direction.WEST -> westTile
+    }
 
     fun renderSuccess(tileRenderer: TileRenderer, pos: Int, bodySize: Int = 1) =
         tileRenderer.renderTile(successTile, area.getX(pos), area.getY(pos), bodySize)

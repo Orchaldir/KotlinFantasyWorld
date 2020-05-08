@@ -107,11 +107,11 @@ fun updateMap(map: GameMap, entity: Int, body: Body, position: Int) = when (body
 }
 
 fun updateBody(body: Body, position: Int) = when (body) {
-    is SimpleBody -> SimpleBody(position)
-    is BigBody -> BigBody(position, body.size)
+    is SimpleBody -> body.copy(position)
+    is BigBody -> body.copy(position, body.size)
     is SnakeBody -> {
         val positions = body.positions.toMutableList()
         positions.removeAt(positions.lastIndex)
-        SnakeBody(listOf(position) + positions)
+        body.copy(listOf(position) + positions)
     }
 }
