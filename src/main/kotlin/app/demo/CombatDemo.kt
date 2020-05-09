@@ -199,6 +199,8 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
         val state = store.getState()
         val entity = getCurrentEntity(state)
 
+        pathfindingResult = NotSearched
+
         when (keyCode) {
             KeyCode.UP -> store.dispatch(Move(entity, NORTH))
             KeyCode.RIGHT -> store.dispatch(Move(entity, EAST))
