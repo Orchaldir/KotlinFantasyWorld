@@ -101,7 +101,7 @@ class GameRenderer(
         }
     }
 
-    fun renderEntities(tileRenderer: TileRenderer, state: EcsState) {
+    fun renderEntities(tileRenderer: TileRenderer, state: EcsState, renderDir: Boolean = false) {
         val bodyStore = state.getStorage<Body>()
         val graphicStore = state.getStorage<Graphic>()
         val healthStore = state.getStorage<Health>()
@@ -115,25 +115,24 @@ class GameRenderer(
                 renderCopse(tileRenderer, body)
             } else if (body != null && graphic != null) {
                 renderBody(tileRenderer, body, graphic)
+
+                if (renderDir) renderDirection(tileRenderer, body)
             }
         }
     }
 
     private fun renderBody(tileRenderer: TileRenderer, body: Body, graphic: Graphic) = when (body) {
-        is SimpleBody -> {
-            renderTile(tileRenderer, graphic.get(0), body.position)
-            renderDirection(tileRenderer, body.direction, body.position)
+        is SimpleBody -> renderTile(tileRenderer, graphic.get(0), body.position)
+        is BigBody -> renderTile(tileRenderer, graphic.get(0), body.position, body.size)
+        is SnakeBody -> for (pos in body.positions) {
+            renderTile(tileRenderer, graphic.get(0), pos)
         }
-        is BigBody -> {
-            renderTile(tileRenderer, graphic.get(0), body.position, body.size)
-            renderDirection(tileRenderer, body.direction, body.position, body.size)
-        }
-        is SnakeBody -> {
-            for (pos in body.positions) {
-                renderTile(tileRenderer, graphic.get(0), pos)
-            }
-            renderDirection(tileRenderer, body.direction, body.positions.first())
-        }
+    }
+
+    private fun renderDirection(tileRenderer: TileRenderer, body: Body) = when (body) {
+        is SimpleBody -> renderDirection(tileRenderer, body.direction, body.position)
+        is BigBody -> renderDirection(tileRenderer, body.direction, body.position, body.size)
+        is SnakeBody -> renderDirection(tileRenderer, body.direction, body.positions.first())
     }
 
     fun renderTile(tileRenderer: TileRenderer, tile: Tile, pos: Int, bodySize: Int = 1) =

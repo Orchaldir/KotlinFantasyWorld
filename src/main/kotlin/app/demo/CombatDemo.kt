@@ -149,7 +149,7 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
         val map = state.getData<GameMap>()
         renderAction(state, selectedAbility)
         mapRender.renderMap(tileRenderer, map)
-        mapRender.renderEntities(tileRenderer, state)
+        mapRender.renderEntities(tileRenderer, state, true)
 
         val messageLogRenderer = MessageLogRenderer(0, 0, Size(size.x, LOG_SIZE))
         messageLogRenderer.render(tileRenderer, state.getData())
