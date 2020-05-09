@@ -3,8 +3,6 @@ package util.math.rectangle
 import util.math.Direction
 import util.math.Direction.*
 import util.requireGreater
-import java.lang.Integer.max
-import kotlin.math.absoluteValue
 
 data class Size(
     val x: Int,
@@ -88,18 +86,11 @@ data class Size(
 
     // distance
 
-    fun getChebyshevDistance(from: Int, to: Int): Int {
+    fun getDistance(calculator: DistanceCalculator, from: Int, to: Int): Int {
         val (fromX, fromY) = getPos(from)
         val (toX, toY) = getPos(to)
 
-        return max((toX - fromX).absoluteValue, (toY - fromY).absoluteValue)
-    }
-
-    fun getManhattanDistance(from: Int, to: Int): Int {
-        val (fromX, fromY) = getPos(from)
-        val (toX, toY) = getPos(to)
-
-        return (toX - fromX).absoluteValue + (toY - fromY).absoluteValue
+        return calculateDistance(calculator, fromX, fromY, toX, toY)
     }
 
     // inside check

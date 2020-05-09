@@ -5,6 +5,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isSameAs
 import org.junit.jupiter.api.Test
+import util.math.rectangle.Chebyshev
 import util.math.rectangle.Size
 
 class AStarTest {
@@ -20,7 +21,7 @@ class AStarTest {
         f, f, f, f, f, f
     )
     private val largeSize = Size(6, 5)
-    private val largeGraph = OccupancyMap(largeMap, largeSize)
+    private val largeGraph = OccupancyMap(Chebyshev, largeMap, largeSize)
 
     @Test
     fun `Find a valid plan`() {
@@ -52,7 +53,7 @@ class AStarTest {
     @Test
     fun `Start & goal are the same`() {
         val values = listOf(f)
-        val graph = OccupancyMap(values, Size(1, 1))
+        val graph = OccupancyMap(Chebyshev, values, Size(1, 1))
         val aStar = AStar<Boolean>()
 
         assertThat(aStar.find(graph, 0, 0, 1)).isSameAs(GoalAlreadyReached)
@@ -61,7 +62,7 @@ class AStarTest {
     @Test
     fun `Blocked by obstacle`() {
         val values = listOf(f, o, f)
-        val graph = OccupancyMap(values, Size(3, 1))
+        val graph = OccupancyMap(Chebyshev, values, Size(3, 1))
         val aStar = AStar<Boolean>()
 
         assertThat(aStar.find(graph, 0, 2, 1)).isEqualTo(NoPathFound(listOf(2), 1))
@@ -70,7 +71,7 @@ class AStarTest {
     @Test
     fun `Start is an  obstacle`() {
         val values = listOf(o, f, f)
-        val graph = OccupancyMap(values, Size(3, 1))
+        val graph = OccupancyMap(Chebyshev, values, Size(3, 1))
 
         val aStar = AStar<Boolean>()
 
@@ -80,7 +81,7 @@ class AStarTest {
     @Test
     fun `Only goal is an  obstacle`() {
         val values = listOf(f, f, o)
-        val graph = OccupancyMap(values, Size(3, 1))
+        val graph = OccupancyMap(Chebyshev, values, Size(3, 1))
 
         val aStar = AStar<Boolean>()
 
@@ -90,7 +91,7 @@ class AStarTest {
     @Test
     fun `1 of 2 goals is an  obstacle`() {
         val values = listOf(f, f, o)
-        val graph = OccupancyMap(values, Size(3, 1))
+        val graph = OccupancyMap(Chebyshev, values, Size(3, 1))
 
         val aStar = AStar<Boolean>()
 
@@ -106,7 +107,7 @@ class AStarTest {
     @Test
     fun `All goals are an  obstacle`() {
         val values = listOf(o, f, o)
-        val graph = OccupancyMap(values, Size(3, 1))
+        val graph = OccupancyMap(Chebyshev, values, Size(3, 1))
 
         val aStar = AStar<Boolean>()
 

@@ -2,11 +2,11 @@ package ai.pathfinding.graph
 
 import util.math.rectangle.Size
 
-abstract class PathfindingMap<T>(val list: List<T>, val size: Size) : Graph<T> {
+abstract class PathfindingMap<T>(val cells: List<T>, val size: Size) : Graph<T> {
 
     override fun getSize() = size.cells
 
-    override fun get(index: Int) = list[index]
+    override fun get(index: Int) = cells[index]
 
     override fun getNeighbors(index: Int): List<Neighbor> {
         size.requireInside(index)

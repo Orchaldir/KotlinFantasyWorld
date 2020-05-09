@@ -1,8 +1,13 @@
 package ai.pathfinding.graph
 
+import util.math.rectangle.DistanceCalculator
 import util.math.rectangle.Size
 
-class OccupancyMap(list: List<Boolean>, size: Size) : PathfindingMap<Boolean>(list, size) {
+class OccupancyMap(
+    val calculator: DistanceCalculator,
+    cells: List<Boolean>,
+    size: Size
+) : PathfindingMap<Boolean>(cells, size) {
 
     override fun isValid(index: Int) = get(index)
 
@@ -14,6 +19,6 @@ class OccupancyMap(list: List<Boolean>, size: Size) : PathfindingMap<Boolean>(li
         }
     }
 
-    override fun estimate(from: Int, to: Int) = size.getChebyshevDistance(from, to)
+    override fun estimate(from: Int, to: Int) = size.getDistance(calculator, from, to)
 
 }

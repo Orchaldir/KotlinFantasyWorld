@@ -14,6 +14,7 @@ import javafx.scene.paint.Color
 import javafx.stage.Stage
 import mu.KotlinLogging
 import util.app.TileApplication
+import util.math.rectangle.Chebyshev
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
@@ -27,7 +28,7 @@ class PathfindingDemo : TileApplication(60, 45, 20, 20) {
         build()
     }
     private val mapRender = GameRenderer(0, 0, size)
-    private var occupancyMap = map.createOccupancyMap(0)
+    private var occupancyMap = map.createOccupancyMap(Chebyshev, 0)
     private val pathfinding = AStar<Boolean>()
     private var renderOccupancyMap = false
 
@@ -86,7 +87,7 @@ class PathfindingDemo : TileApplication(60, 45, 20, 20) {
             else -> return
         }
 
-        occupancyMap = map.createOccupancyMap(entitySize = pathSize, entity = 0)
+        occupancyMap = map.createOccupancyMap(calculator = Chebyshev, entitySize = pathSize, entity = 0)
 
         render()
     }

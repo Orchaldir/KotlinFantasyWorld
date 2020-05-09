@@ -2,6 +2,7 @@ package game.component
 
 import util.math.Direction
 import util.math.Direction.NORTH
+import util.math.rectangle.DistanceCalculator
 import util.math.rectangle.Size
 
 sealed class Body
@@ -9,15 +10,15 @@ data class SimpleBody(val position: Int, val direction: Direction = NORTH) : Bod
 data class BigBody(val position: Int, val size: Int, val direction: Direction = NORTH) : Body()
 data class SnakeBody(val positions: List<Int>, val direction: Direction = NORTH) : Body()
 
-fun calculateDistanceToPosition(mapSize: Size, body: Body, position: Int): Int {
+fun calculateDistanceToPosition(calculator: DistanceCalculator, mapSize: Size, body: Body, position: Int): Int {
     val origins = getPositions(mapSize, body)
 
     if (origins.isEmpty()) throw IllegalStateException("No valid origins!")
 
-    return origins.map { mapSize.getChebyshevDistance(it, position) }.min()!!
+    return origins.map { mapSize.getDistance(calculator, it, position) }.min()!!
 }
 
-fun calculateDistance(mapSize: Size, from: Body, to: Body): Int {
+fun calculateDistance(calculator: DistanceCalculator, mapSize: Size, from: Body, to: Body): Int {
     val origins = getPositions(mapSize, from)
 
     if (origins.isEmpty()) throw IllegalStateException("No valid origins!")
@@ -26,7 +27,7 @@ fun calculateDistance(mapSize: Size, from: Body, to: Body): Int {
 
     if (destinations.isEmpty()) throw IllegalStateException("No valid destinations!")
 
-    return origins.flatMap { o -> destinations.map { d -> mapSize.getChebyshevDistance(o, d) } }.min()!!
+    return origins.flatMap { o -> destinations.map { d -> mapSize.getDistance(calculator, o, d) } }.min()!!
 }
 
 private fun getPositions(mapSize: Size, body: Body): List<Int> = when (body) {

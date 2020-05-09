@@ -33,6 +33,8 @@ import util.ecs.EcsState
 import util.log.MessageLog
 import util.log.MessageLogRenderer
 import util.math.Direction.*
+import util.math.rectangle.Chebyshev
+import util.math.rectangle.DistanceCalculator
 import util.math.rectangle.Size
 import util.redux.DefaultStore
 import util.redux.Reducer
@@ -74,6 +76,7 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
             .build()
 
         val ecsState = with(EcsBuilder()) {
+            addData(Chebyshev as DistanceCalculator)
             addData(gameMap)
             addData(MessageLog())
             addData(skillManager)
@@ -195,7 +198,8 @@ class MovementDemo : TileApplication(60, 45, 20, 20) {
         return if (mapRender.area.isAreaInside(x, y, entitySize)) {
             val goal = mapRender.area.convert(x, y)
             val start = getPosition(body)
-            val occupancyMap = state.getData<GameMap>().createOccupancyMap(entitySize, entity)
+            val distanceCalculator = state.getData<DistanceCalculator>()
+            val occupancyMap = state.getData<GameMap>().createOccupancyMap(distanceCalculator, entitySize, entity)
 
             pathfinding.find(occupancyMap, start, goal, entitySize)
         } else NotSearched

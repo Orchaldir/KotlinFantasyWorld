@@ -6,6 +6,7 @@ import game.map.GameMap
 import game.rpg.character.skill.Skill
 import game.rpg.time.TurnData
 import util.ecs.EcsState
+import util.math.rectangle.DistanceCalculator
 
 sealed class Ability
 data class MeleeAttack(val skill: Skill, val reach: Int, val effect: Effect) : Ability()
@@ -32,8 +33,9 @@ fun checkAbility(state: EcsState, ability: Ability, entity: Int, position: Int):
 
     if (!state.getData<TurnData>().canAct()) return NoActionPoints(target, position)
 
+    val distanceCalculator = state.getData<DistanceCalculator>()
     val body = state.getStorage<Body>()[entity] ?: return NoTarget
-    val distance = calculateDistanceToPosition(map.size, body, position)
+    val distance = calculateDistanceToPosition(distanceCalculator, map.size, body, position)
 
     return when (ability) {
         is MeleeAttack -> {

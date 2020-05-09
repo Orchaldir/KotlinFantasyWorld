@@ -9,6 +9,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import util.math.Direction.*
+import util.math.rectangle.DistanceCalculator
 import util.math.rectangle.Size
 
 class BodyTest {
@@ -16,17 +17,18 @@ class BodyTest {
     @Nested
     inner class CalculateDistanceToPosition {
 
+        private val calculator = mockk<DistanceCalculator>()
         private val size = mockk<Size>()
 
         @Test
         fun `From simple body to target`() {
             val body = SimpleBody(4)
 
-            every { size.getChebyshevDistance(4, 6) } returns 2
+            every { size.getDistance(calculator, 4, 6) } returns 2
 
-            assertThat(calculateDistanceToPosition(size, body, 6)).isEqualTo(2)
+            assertThat(calculateDistanceToPosition(calculator, size, body, 6)).isEqualTo(2)
 
-            verify(exactly = 1) { size.getChebyshevDistance(4, 6) }
+            verify(exactly = 1) { size.getDistance(calculator, 4, 6) }
             confirmVerified(size)
         }
 
@@ -35,14 +37,14 @@ class BodyTest {
             val body = BigBody(10, 2)
 
             every { size.getIndices(10, 2) } returns listOf(1, 2)
-            every { size.getChebyshevDistance(1, 20) } returns 4
-            every { size.getChebyshevDistance(2, 20) } returns 3
+            every { size.getDistance(calculator, 1, 20) } returns 4
+            every { size.getDistance(calculator, 2, 20) } returns 3
 
-            assertThat(calculateDistanceToPosition(size, body, 20)).isEqualTo(3)
+            assertThat(calculateDistanceToPosition(calculator, size, body, 20)).isEqualTo(3)
 
             verify(exactly = 1) { size.getIndices(10, 2) }
-            verify(exactly = 1) { size.getChebyshevDistance(1, 20) }
-            verify(exactly = 1) { size.getChebyshevDistance(2, 20) }
+            verify(exactly = 1) { size.getDistance(calculator, 1, 20) }
+            verify(exactly = 1) { size.getDistance(calculator, 2, 20) }
             confirmVerified(size)
         }
 
@@ -50,11 +52,11 @@ class BodyTest {
         fun `From snake body to target`() {
             val body = SnakeBody(listOf(5, 6, 7))
 
-            every { size.getChebyshevDistance(5, 8) } returns 9
+            every { size.getDistance(calculator, 5, 8) } returns 9
 
-            assertThat(calculateDistanceToPosition(size, body, 8)).isEqualTo(9)
+            assertThat(calculateDistanceToPosition(calculator, size, body, 8)).isEqualTo(9)
 
-            verify(exactly = 1) { size.getChebyshevDistance(5, 8) }
+            verify(exactly = 1) { size.getDistance(calculator, 5, 8) }
             confirmVerified(size)
         }
     }
@@ -62,6 +64,7 @@ class BodyTest {
     @Nested
     inner class CalculateDistance {
 
+        private val calculator = mockk<DistanceCalculator>()
         private val size = mockk<Size>()
 
         @Test
@@ -69,11 +72,11 @@ class BodyTest {
             val body = SimpleBody(4)
             val target = SimpleBody(6)
 
-            every { size.getChebyshevDistance(4, 6) } returns 2
+            every { size.getDistance(calculator, 4, 6) } returns 2
 
-            assertThat(calculateDistance(size, body, target)).isEqualTo(2)
+            assertThat(calculateDistance(calculator, size, body, target)).isEqualTo(2)
 
-            verify(exactly = 1) { size.getChebyshevDistance(4, 6) }
+            verify(exactly = 1) { size.getDistance(calculator, 4, 6) }
             confirmVerified(size)
         }
 
@@ -84,19 +87,19 @@ class BodyTest {
 
             every { size.getIndices(10, 2) } returns listOf(1, 2)
             every { size.getIndices(20, 3) } returns listOf(4, 5)
-            every { size.getChebyshevDistance(1, 4) } returns 100
-            every { size.getChebyshevDistance(1, 5) } returns 101
-            every { size.getChebyshevDistance(2, 4) } returns 102
-            every { size.getChebyshevDistance(2, 5) } returns 103
+            every { size.getDistance(calculator, 1, 4) } returns 100
+            every { size.getDistance(calculator, 1, 5) } returns 101
+            every { size.getDistance(calculator, 2, 4) } returns 102
+            every { size.getDistance(calculator, 2, 5) } returns 103
 
-            assertThat(calculateDistance(size, body, target)).isEqualTo(100)
+            assertThat(calculateDistance(calculator, size, body, target)).isEqualTo(100)
 
             verify(exactly = 1) { size.getIndices(10, 2) }
             verify(exactly = 1) { size.getIndices(20, 3) }
-            verify(exactly = 1) { size.getChebyshevDistance(1, 4) }
-            verify(exactly = 1) { size.getChebyshevDistance(1, 5) }
-            verify(exactly = 1) { size.getChebyshevDistance(2, 4) }
-            verify(exactly = 1) { size.getChebyshevDistance(2, 5) }
+            verify(exactly = 1) { size.getDistance(calculator, 1, 4) }
+            verify(exactly = 1) { size.getDistance(calculator, 1, 5) }
+            verify(exactly = 1) { size.getDistance(calculator, 2, 4) }
+            verify(exactly = 1) { size.getDistance(calculator, 2, 5) }
             confirmVerified(size)
         }
 
@@ -105,11 +108,11 @@ class BodyTest {
             val body = SimpleBody(4)
             val target = SnakeBody(listOf(1, 2))
 
-            every { size.getChebyshevDistance(4, 1) } returns 10
+            every { size.getDistance(calculator, 4, 1) } returns 10
 
-            assertThat(calculateDistance(size, body, target)).isEqualTo(10)
+            assertThat(calculateDistance(calculator, size, body, target)).isEqualTo(10)
 
-            verify(exactly = 1) { size.getChebyshevDistance(4, 1) }
+            verify(exactly = 1) { size.getDistance(calculator, 4, 1) }
             confirmVerified(size)
         }
     }

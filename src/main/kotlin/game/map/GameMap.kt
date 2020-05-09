@@ -1,6 +1,7 @@
 package game.map
 
 import ai.pathfinding.graph.OccupancyMap
+import util.math.rectangle.DistanceCalculator
 import util.math.rectangle.Size
 
 data class GameMap(
@@ -11,20 +12,18 @@ data class GameMap(
 
     fun getEntity(x: Int, y: Int) = entities[size.getIndex(x, y)]
 
-    fun createOccupancyMap(entity: Int): OccupancyMap {
+    fun createOccupancyMap(calculator: DistanceCalculator, entity: Int): OccupancyMap {
         val list = (0 until size.cells)
             .map { checkWalkability(it, entity) is Walkable }
-            .toList()
 
-        return OccupancyMap(list, size)
+        return OccupancyMap(calculator, list, size)
     }
 
-    fun createOccupancyMap(entitySize: Int, entity: Int): OccupancyMap {
+    fun createOccupancyMap(calculator: DistanceCalculator, entitySize: Int, entity: Int): OccupancyMap {
         val list = (0 until size.cells)
             .map { checkWalkability(it, entitySize, entity) is Walkable }
-            .toList()
 
-        return OccupancyMap(list, size)
+        return OccupancyMap(calculator, list, size)
     }
 
     fun checkWalkability(position: Int, entity: Int): Walkability {

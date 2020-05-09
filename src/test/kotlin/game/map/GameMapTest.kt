@@ -2,10 +2,12 @@ package game.map
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isSameAs
 import game.map.Terrain.FLOOR
 import game.map.Terrain.WALL
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import util.math.rectangle.Chebyshev
 import util.math.rectangle.Size
 import kotlin.test.assertNull
 
@@ -45,9 +47,10 @@ class GameMapTest {
                 .setTerrain(1, 0, WALL)
                 .build()
 
-            val occupancyMap = map.createOccupancyMap(0)
+            val occupancyMap = map.createOccupancyMap(Chebyshev, 0)
 
-            assertThat(occupancyMap.list).isEqualTo(
+            assertThat(occupancyMap.calculator).isSameAs(Chebyshev)
+            assertThat(occupancyMap.cells).isEqualTo(
                 listOf(
                     true, false,
                     true, true,
