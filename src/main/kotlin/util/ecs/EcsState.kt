@@ -6,7 +6,7 @@ import kotlin.reflect.KClass
 class EcsState(
     val entities: Set<Int> = emptySet(),
     private val storageMap: Map<String, ComponentStorage<*>> = emptyMap(),
-    private val dataMap: Map<KClass<*>, Any> = emptyMap()
+    private val dataMap: Map<String, Any> = emptyMap()
 ) {
 
     fun <T> getStorage(kClass: KClass<*>): ComponentStorage<T> {
@@ -29,7 +29,8 @@ class EcsState(
 
     inline fun <reified T : Any> getOptionalStorage(): ComponentStorage<T>? = getOptionalStorage(T::class)
 
-    fun <T> getData(type: KClass<*>): T {
+    fun <T> getData(kClass: KClass<*>): T {
+        val type = getType(kClass)
         val data = dataMap[type]
 
         @Suppress("UNCHECKED_CAST")
@@ -38,7 +39,8 @@ class EcsState(
 
     inline fun <reified T : Any> getData(): T = getData(T::class)
 
-    fun <T> getOptionalData(type: KClass<*>): T? {
+    fun <T> getOptionalData(kClass: KClass<*>): T? {
+        val type = getType(kClass)
         val data = dataMap[type]
 
         @Suppress("UNCHECKED_CAST")
@@ -60,7 +62,7 @@ class EcsState(
         val newDataMap = if (updatedData.isEmpty()) {
             dataMap
         } else {
-            dataMap + updatedData.map { it::class to it }.toMap()
+            dataMap + updatedData.map { getType(it::class) to it }.toMap()
         }
 
         return EcsState(entities, newStorageMap, newDataMap)

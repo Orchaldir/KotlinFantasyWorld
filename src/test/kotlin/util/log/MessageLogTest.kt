@@ -6,6 +6,7 @@ import assertk.assertions.isNotSameAs
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import util.ecs.EcsState
+import util.ecs.getType
 
 class MessageLogTest {
 
@@ -39,7 +40,7 @@ class MessageLogTest {
     @Test
     fun `Add a message to the state`() {
         val log = MessageLog(listOf(message0))
-        val state = EcsState(dataMap = mapOf(MessageLog::class to log))
+        val state = EcsState(dataMap = mapOf(getType(MessageLog::class) to log))
 
         val newState = addMessage(state, message1)
 

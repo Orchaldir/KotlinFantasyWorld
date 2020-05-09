@@ -10,7 +10,7 @@ private val logger = KotlinLogging.logger {}
 class EcsBuilder(
     private val entities: MutableSet<Int>,
     private val storageMap: MutableMap<String, ComponentStorage<*>>,
-    private val dataMap: MutableMap<KClass<*>, Any>
+    private val dataMap: MutableMap<String, Any>
 ) {
     var entity = getFirstFreeId()
         private set
@@ -60,8 +60,9 @@ class EcsBuilder(
 
     // data
 
-    fun <T : Any> addData(type: KClass<*>, data: T) {
-        logger.info("Add data for ${type.simpleName}")
+    fun <T : Any> addData(kClass: KClass<*>, data: T) {
+        val type = getType(kClass)
+        logger.info("Add data for $type")
         dataMap[type] = data
     }
 
