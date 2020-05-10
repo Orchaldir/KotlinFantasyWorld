@@ -13,8 +13,7 @@ import javafx.scene.paint.Color
 import javafx.stage.Stage
 import mu.KotlinLogging
 import util.app.TileApplication
-import util.math.Octant
-import util.math.getGlobal
+import util.math.*
 import util.math.rectangle.Size
 import kotlin.random.Random
 import kotlin.system.exitProcess
@@ -52,18 +51,6 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
         return Config(mapSize, position, x, y, range, isBlocking)
     }
 
-    data class Slope(val x: Int, val y: Int)
-
-    private fun calculateTopX(top: Slope, localX: Int) = if (top.x == 1) localX else
-        ((localX * 2 + 1) * top.y + top.x - 1) / (top.x * 2)
-
-    private fun calculateBottomX(bottom: Slope, localX: Int) = if (bottom.y == 0) 0 else
-        ((localX * 2 - 1) * bottom.y + bottom.x) / (bottom.x * 2)
-
-    private fun createSlopeAboveCurrent(x: Int, y: Int) = Slope(x * 2 - 1, y * 2 + 1)
-
-    private fun createSlopeBelowPrevious(x: Int, y: Int) = Slope(x * 2 + 1, y * 2 + 1)
-
     enum class Status {
         UNDEFINED,
         BLOCKING,
@@ -96,8 +83,8 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
         logger.info("$octant startX=$startX top=$top bottom=$bottom")
 
         for (localX in startX until config.range) {
-            val topY = calculateTopX(top, localX)
-            val bottomY = calculateBottomX(bottom, localX)
+            val topY = top.calculateTopX(localX)
+            val bottomY = bottom.calculateBottomX(localX)
 
             logger.info("x=$localX topY=$topY bottomY=$bottomY")
 
