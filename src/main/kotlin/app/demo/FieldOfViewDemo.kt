@@ -1,7 +1,7 @@
 package app.demo
 
+import app.demo.FieldOfViewDemo.Status.BLOCKING
 import app.demo.FieldOfViewDemo.Status.CLEAR
-import app.demo.FieldOfViewDemo.Status.OPAQUE
 import game.GameRenderer
 import game.map.GameMapBuilder
 import game.map.Terrain
@@ -39,9 +39,19 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
 
     data class Slope(val x: Int, val y: Int)
 
+    private fun calculateTopX(top: Slope, localX: Int) = if (top.x == 1) localX else
+        ((localX * 2 + 1) * top.y + top.x - 1) / (top.x * 2)
+
+    private fun calculateBottomX(bottom: Slope, localX: Int) = if (bottom.y == 0) 0 else
+        ((localX * 2 - 1) * bottom.y + bottom.x) / (bottom.x * 2)
+
+    private fun createSlopeAboveCurrent(x: Int, y: Int) = Slope(x * 2 - 1, y * 2 + 1)
+
+    private fun createSlopeBelowPrevious(x: Int, y: Int) = Slope(x * 2 + 1, y * 2 + 1)
+
     enum class Status {
         UNDEFINED,
-        OPAQUE,
+        BLOCKING,
         CLEAR;
     }
 
@@ -73,10 +83,8 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
         logger.info("$octant startX=$startX top=$top bottom=$bottom")
 
         for (localX in startX until range) {
-            val topY = if (top.x == 1) localX else
-                ((localX * 2 + 1) * top.y + top.x - 1) / (top.x * 2)
-            val bottomY = if (bottom.y == 0) 0 else
-                ((localX * 2 - 1) * bottom.y + bottom.x) / (bottom.x * 2)
+            val topY = calculateTopX(top, localX)
+            val bottomY = calculateBottomX(bottom, localX)
 
             logger.info("x=$localX topY=$topY bottomY=$bottomY")
 
@@ -88,13 +96,13 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
                 val index = map.size.getIndex(x, y)
                 visibleCells.add(index)
 
-                val isOpaque = !map.terrainList[index].isWalkable()
+                val isBlocking = !map.terrainList[index].isWalkable()
 
-                logger.info("  x=$localX y=$localY isOpaque=$isOpaque status=$status")
+                logger.info("  x=$localX y=$localY isBlocking=$isBlocking previous=$status")
 
-                if (isOpaque) {
+                if (isBlocking) {
                     if (status == CLEAR) {
-                        val newBottom = Slope(localX * 2 - 1, localY * 2 + 1)
+                        val newBottom = createSlopeAboveCurrent(localX, localY)
 
                         if (localY == bottomY) {
                             bottom = newBottom
@@ -107,9 +115,9 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
                             newBottom
                         )
                     }
-                    status = OPAQUE
+                    status = BLOCKING
                 } else {
-                    if (status == OPAQUE) top = Slope(localX * 2 + 1, localY * 2 + 1)
+                    if (status == BLOCKING) top = createSlopeBelowPrevious(localX, localY)
 
                     status = CLEAR
                 }
