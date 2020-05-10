@@ -12,7 +12,7 @@ enum class Octant {
     NORTH_WEST;
 }
 
-fun getGlobal(octant: Octant, originX: Int, originY: Int, x: Int, y: Int) = when (octant) {
+fun Octant.getGlobal(originX: Int, originY: Int, x: Int, y: Int) = when (this) {
     Octant.NORTH -> Pair(originX + y, originY + x)
     Octant.NORTH_EAST -> Pair(originX + x, originY + y)
     Octant.EAST -> Pair(originX + x, originY - y)

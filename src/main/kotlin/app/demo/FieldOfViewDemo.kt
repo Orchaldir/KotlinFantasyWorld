@@ -5,6 +5,7 @@ import app.demo.FieldOfViewDemo.Status.OPAQUE
 import game.GameRenderer
 import game.map.GameMapBuilder
 import game.map.Terrain
+import game.map.Walkable
 import javafx.application.Application
 import javafx.scene.input.KeyCode
 import javafx.scene.input.MouseButton
@@ -44,14 +45,14 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
         CLEAR;
     }
 
-    private fun calculateShadowCastFieldOfView(): MutableSet<Int> {
-        val visibleCells = mutableSetOf<Int>(position)
+    private fun calculateShadowCastFieldOfView(position: Int, range: Int): MutableSet<Int> {
+        val visibleCells = mutableSetOf(position)
         val (x, y) = map.size.getPos(position)
         val top = Slope(1, 1)
         val bottom = Slope(1, 0)
 
         Octant.values().forEach {
-            calculateShadowCastFieldOfView(visibleCells, it, x, y, Int.MAX_VALUE, 1, top, bottom)
+            calculateShadowCastFieldOfView(visibleCells, it, x, y, range, 1, top, bottom)
         }
 
         return visibleCells
@@ -82,7 +83,7 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
             var status = Status.UNDEFINED
 
             for (localY in topY downTo bottomY) {
-                val (x, y) = getGlobal(octant, originX, originY, localX, localY)
+                val (x, y) = octant.getGlobal(originX, originY, localX, localY)
 
                 val index = map.size.getIndex(x, y)
                 visibleCells.add(index)
@@ -121,25 +122,19 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
     private fun render() {
         logger.info("render()")
 
-        val visibleCells = calculateShadowCastFieldOfView()
-
         renderer.clear()
-        visibleCells.forEach {
-            val (x, y) = size.getPos(it)
-            tileRenderer.renderFullTile(Color.GREEN, x, y)
-        }
+
+        calculateShadowCastFieldOfView(position, 10).forEach { renderNode(it, Color.GREEN) }
+        renderNode(position, Color.BLUE)
+
         mapRender.renderMap(tileRenderer, map)
-        renderNode(position, "@", Color.BLUE)
 
         logger.info("render(): finished")
     }
 
-    private fun renderNode(position: Int?, tile: String, color: Color, nodeSize: Int = 1) {
-        if (position is Int) {
-            val (x, y) = size.getPos(position)
-            tileRenderer.renderFullTile(Color.BLACK, x, y, nodeSize)
-            tileRenderer.renderText(tile, color, x, y, nodeSize)
-        }
+    private fun renderNode(position: Int, color: Color) {
+        val (x, y) = size.getPos(position)
+        tileRenderer.renderFullTile(color, x, y)
     }
 
     override fun onKeyReleased(keyCode: KeyCode) {
@@ -155,8 +150,12 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
         logger.info("onTileClicked(): x=$x y=$y button=$button")
 
         if (mapRender.area.isInside(x, y)) {
-            position = mapRender.area.convert(x, y)
-            render()
+            val newPosition = mapRender.area.convert(x, y)
+
+            if (map.checkWalkability(newPosition, 0) is Walkable) {
+                position = newPosition
+                render()
+            }
         }
     }
 }
