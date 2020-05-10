@@ -1,7 +1,5 @@
 package app.demo
 
-import app.demo.FieldOfViewDemo.Status.BLOCKING
-import app.demo.FieldOfViewDemo.Status.CLEAR
 import game.GameRenderer
 import game.map.GameMapBuilder
 import game.map.Terrain
@@ -13,8 +11,8 @@ import javafx.scene.paint.Color
 import javafx.stage.Stage
 import mu.KotlinLogging
 import util.app.TileApplication
-import util.math.*
-import util.math.rectangle.Size
+import util.math.fov.ShadowCasting
+import util.math.fov.createFovConfig
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
@@ -29,6 +27,7 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
         build()
     }
     private val mapRender = GameRenderer(0, 0, size)
+    private val fovAlgorithm = ShadowCasting()
 
     private var position = 990
 
@@ -37,102 +36,13 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
         render()
     }
 
-    data class Config(
-        val mapSize: Size,
-        val position: Int,
-        val x: Int,
-        val y: Int,
-        val range: Int,
-        val isBlocking: (position: Int) -> Boolean
-    )
-
-    fun createConfig(mapSize: Size, position: Int, range: Int, isBlocking: (position: Int) -> Boolean): Config {
-        val (x, y) = mapSize.getPos(position)
-        return Config(mapSize, position, x, y, range, isBlocking)
-    }
-
-    enum class Status {
-        UNDEFINED,
-        BLOCKING,
-        CLEAR;
-    }
-
-    private fun calculateShadowCastFieldOfView(config: Config): MutableSet<Int> {
-        val visibleCells = mutableSetOf(config.position)
-
-        val top = Slope(1, 1)
-        val bottom = Slope(1, 0)
-
-        Octant.values().forEach {
-            calculateShadowCastFieldOfView(config, visibleCells, it, 1, top, bottom)
-        }
-
-        return visibleCells
-    }
-
-    private fun calculateShadowCastFieldOfView(
-        config: Config,
-        visibleCells: MutableSet<Int>,
-        octant: Octant,
-        startX: Int,
-        parentTop: Slope,
-        parentBottom: Slope
-    ) {
-        var top = parentTop
-        var bottom = parentBottom
-        logger.info("$octant startX=$startX top=$top bottom=$bottom")
-
-        for (localX in startX until config.range) {
-            val topY = top.calculateTopX(localX)
-            val bottomY = bottom.calculateBottomX(localX)
-
-            logger.info("x=$localX topY=$topY bottomY=$bottomY")
-
-            var status = Status.UNDEFINED
-
-            for (localY in topY downTo bottomY) {
-                val (x, y) = octant.getGlobal(config.x, config.y, localX, localY)
-
-                val index = config.mapSize.getIndex(x, y)
-                visibleCells.add(index)
-
-                val isBlocking = config.isBlocking(index)
-
-                logger.info("  x=$localX y=$localY isBlocking=$isBlocking previous=$status")
-
-                if (isBlocking) {
-                    if (status == CLEAR) {
-                        val newBottom = createSlopeAboveCurrent(localX, localY)
-
-                        if (localY == bottomY) {
-                            bottom = newBottom
-                            break
-                        } else calculateShadowCastFieldOfView(
-                            config, visibleCells, octant,
-                            localX + 1,
-                            top,
-                            newBottom
-                        )
-                    }
-                    status = BLOCKING
-                } else {
-                    if (status == BLOCKING) top = createSlopeBelowPrevious(localX, localY)
-
-                    status = CLEAR
-                }
-            }
-
-            if (status != CLEAR) break
-        }
-    }
-
     private fun render() {
         logger.info("render()")
 
         renderer.clear()
 
-        val config = createConfig(map.size, position, 10) { position -> !map.terrainList[position].isWalkable() }
-        calculateShadowCastFieldOfView(config).forEach { renderNode(it, Color.GREEN) }
+        val config = createFovConfig(map.size, position, 10) { position -> !map.terrainList[position].isWalkable() }
+        fovAlgorithm.calculateVisibleCells(config).forEach { renderNode(it, Color.GREEN) }
         renderNode(position, Color.BLUE)
 
         mapRender.renderMap(tileRenderer, map)
