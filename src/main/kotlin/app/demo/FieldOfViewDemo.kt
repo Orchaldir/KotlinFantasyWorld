@@ -15,6 +15,7 @@ import mu.KotlinLogging
 import util.app.TileApplication
 import util.math.Octant
 import util.math.getGlobal
+import util.math.rectangle.Size
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
@@ -37,6 +38,20 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
         render()
     }
 
+    data class Config(
+        val mapSize: Size,
+        val position: Int,
+        val x: Int,
+        val y: Int,
+        val range: Int,
+        val isBlocking: (position: Int) -> Boolean
+    )
+
+    fun createConfig(mapSize: Size, position: Int, range: Int, isBlocking: (position: Int) -> Boolean): Config {
+        val (x, y) = mapSize.getPos(position)
+        return Config(mapSize, position, x, y, range, isBlocking)
+    }
+
     data class Slope(val x: Int, val y: Int)
 
     private fun calculateTopX(top: Slope, localX: Int) = if (top.x == 1) localX else
@@ -55,25 +70,23 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
         CLEAR;
     }
 
-    private fun calculateShadowCastFieldOfView(position: Int, range: Int): MutableSet<Int> {
-        val visibleCells = mutableSetOf(position)
-        val (x, y) = map.size.getPos(position)
+    private fun calculateShadowCastFieldOfView(config: Config): MutableSet<Int> {
+        val visibleCells = mutableSetOf(config.position)
+
         val top = Slope(1, 1)
         val bottom = Slope(1, 0)
 
         Octant.values().forEach {
-            calculateShadowCastFieldOfView(visibleCells, it, x, y, range, 1, top, bottom)
+            calculateShadowCastFieldOfView(config, visibleCells, it, 1, top, bottom)
         }
 
         return visibleCells
     }
 
     private fun calculateShadowCastFieldOfView(
+        config: Config,
         visibleCells: MutableSet<Int>,
         octant: Octant,
-        originX: Int,
-        originY: Int,
-        range: Int,
         startX: Int,
         parentTop: Slope,
         parentBottom: Slope
@@ -82,7 +95,7 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
         var bottom = parentBottom
         logger.info("$octant startX=$startX top=$top bottom=$bottom")
 
-        for (localX in startX until range) {
+        for (localX in startX until config.range) {
             val topY = calculateTopX(top, localX)
             val bottomY = calculateBottomX(bottom, localX)
 
@@ -91,12 +104,12 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
             var status = Status.UNDEFINED
 
             for (localY in topY downTo bottomY) {
-                val (x, y) = octant.getGlobal(originX, originY, localX, localY)
+                val (x, y) = octant.getGlobal(config.x, config.y, localX, localY)
 
-                val index = map.size.getIndex(x, y)
+                val index = config.mapSize.getIndex(x, y)
                 visibleCells.add(index)
 
-                val isBlocking = !map.terrainList[index].isWalkable()
+                val isBlocking = config.isBlocking(index)
 
                 logger.info("  x=$localX y=$localY isBlocking=$isBlocking previous=$status")
 
@@ -108,8 +121,7 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
                             bottom = newBottom
                             break
                         } else calculateShadowCastFieldOfView(
-                            visibleCells, octant, originX, originY,
-                            range,
+                            config, visibleCells, octant,
                             localX + 1,
                             top,
                             newBottom
@@ -132,7 +144,8 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
 
         renderer.clear()
 
-        calculateShadowCastFieldOfView(position, 10).forEach { renderNode(it, Color.GREEN) }
+        val config = createConfig(map.size, position, 10) { position -> !map.terrainList[position].isWalkable() }
+        calculateShadowCastFieldOfView(config).forEach { renderNode(it, Color.GREEN) }
         renderNode(position, Color.BLUE)
 
         mapRender.renderMap(tileRenderer, map)
