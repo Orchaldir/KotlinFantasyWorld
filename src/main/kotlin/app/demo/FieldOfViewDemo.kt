@@ -59,11 +59,10 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
 
         renderer.clear()
 
-        perception.knownTiles.forEach { renderNode(it, Color.GRAY) }
         perception.visibleTiles.forEach { renderNode(it, Color.GREEN) }
         renderNode(position, Color.BLUE)
 
-        mapRender.renderMap(tileRenderer, map)
+        mapRender.renderTiles(tileRenderer, map, perception.knownTiles)
 
         logger.info("render(): finished")
     }

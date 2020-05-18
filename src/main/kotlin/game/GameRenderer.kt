@@ -51,20 +51,38 @@ class GameRenderer(
 
                 val mapIndex = area.size.getIndex(x + offsetX, y + offsetY)
 
-                if (map.entities.containsKey(mapIndex)) {
-                    continue
-                }
-
-                val terrain = map.terrainList[mapIndex]
-                val symbol = if (terrain == Terrain.FLOOR) {
-                    "."
-                } else {
-                    "#"
-                }
-
-                renderer.renderUnicodeTile(symbol, Color.WHITE, area.x + x, area.y + y)
+                renderTile(renderer, map, mapIndex, x, y)
             }
         }
+    }
+
+    fun renderTiles(renderer: TileRenderer, map: GameMap, indices: Set<Int>) {
+        for (index in indices) {
+            val (x, y) = area.size.getPos(index)
+
+            renderTile(renderer, map, index, x, y)
+        }
+    }
+
+    private fun renderTile(
+        renderer: TileRenderer,
+        map: GameMap,
+        index: Int,
+        x: Int,
+        y: Int
+    ) {
+        if (map.entities.containsKey(index)) {
+            return
+        }
+
+        val terrain = map.terrainList[index]
+        val symbol = if (terrain == Terrain.FLOOR) {
+            "."
+        } else {
+            "#"
+        }
+
+        renderer.renderUnicodeTile(symbol, Color.WHITE, area.x + x, area.y + y)
     }
 
     fun renderOccupancyMap(renderer: TileRenderer, map: OccupancyMap) {
