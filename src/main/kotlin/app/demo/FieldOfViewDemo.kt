@@ -1,6 +1,7 @@
 package app.demo
 
 import game.GameRenderer
+import game.component.Perception
 import game.map.GameMapBuilder
 import game.map.Terrain
 import game.map.Walkable
@@ -28,11 +29,28 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
     }
     private val mapRender = GameRenderer(0, 0, size)
     private val fovAlgorithm = ShadowCasting()
+    private var perception = Perception(10)
 
     private var position = 990
 
     override fun start(primaryStage: Stage) {
         init(primaryStage, "FieldOfView Demo")
+        update()
+    }
+
+    private fun update() {
+        logger.info("update()")
+
+        val config = createFovConfig(
+            map.size,
+            position,
+            perception.maxRange
+        ) { position -> !map.terrainList[position].isWalkable() }
+
+        val visibleCells = fovAlgorithm.calculateVisibleCells(config)
+
+        perception = perception.update(visibleCells)
+
         render()
     }
 
@@ -41,8 +59,8 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
 
         renderer.clear()
 
-        val config = createFovConfig(map.size, position, 10) { position -> !map.terrainList[position].isWalkable() }
-        fovAlgorithm.calculateVisibleCells(config).forEach { renderNode(it, Color.GREEN) }
+        perception.knownTiles.forEach { renderNode(it, Color.GRAY) }
+        perception.visibleTiles.forEach { renderNode(it, Color.GREEN) }
         renderNode(position, Color.BLUE)
 
         mapRender.renderMap(tileRenderer, map)
@@ -72,7 +90,7 @@ class FieldOfViewDemo : TileApplication(60, 45, 20, 20) {
 
             if (map.checkWalkability(newPosition, 0) is Walkable) {
                 position = newPosition
-                render()
+                update()
             }
         }
     }
