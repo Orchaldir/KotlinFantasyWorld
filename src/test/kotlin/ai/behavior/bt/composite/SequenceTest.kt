@@ -1,11 +1,7 @@
 package ai.behavior.bt.composite
 
-import ai.behavior.bt.Behavior
-import ai.behavior.bt.Failure
-import ai.behavior.bt.PerformAction
-import ai.behavior.bt.Success
+import ai.behavior.bt.*
 import assertk.assertThat
-import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -26,73 +22,50 @@ class SequenceTest {
 
     @Test
     fun `First behavior executes an action`() {
-        every { b0.execute(state) } returns PerformAction(1)
-
-        assertThat(sequence.execute(state)).isEqualTo(PerformAction(1))
-
-        verify { b0.execute(state) }
-        confirmVerified(b0)
-        confirmVerified(b1)
-        confirmVerified(b2)
+        test(0, PerformAction(1))
     }
 
     @Test
     fun `Second behavior executes an action`() {
-        every { b0.execute(state) } returns success
-        every { b1.execute(state) } returns PerformAction(2)
-
-        assertThat(sequence.execute(state)).isEqualTo(PerformAction(2))
-
-        verify { b0.execute(state) }
-        verify { b1.execute(state) }
-        confirmVerified(b0)
-        confirmVerified(b1)
-        confirmVerified(b2)
+        test(1, PerformAction(2))
     }
 
     @Test
     fun `Third behavior executes an action`() {
-        every { b0.execute(state) } returns success
-        every { b1.execute(state) } returns success
-        every { b2.execute(state) } returns PerformAction(3)
-
-        assertThat(sequence.execute(state)).isEqualTo(PerformAction(3))
-
-        verify { b0.execute(state) }
-        verify { b1.execute(state) }
-        verify { b2.execute(state) }
-        confirmVerified(b0)
-        confirmVerified(b1)
-        confirmVerified(b2)
+        test(2, PerformAction(3))
     }
 
     @Test
     fun `All behaviors return success`() {
-        every { b0.execute(state) } returns success
-        every { b1.execute(state) } returns success
-        every { b2.execute(state) } returns success
+        test(3, success)
+    }
 
-        assertThat(sequence.execute(state)).isInstanceOf(Success::class)
+    @Test
+    fun `Second behavior fails`() {
+        test(1, Failure())
+    }
+
+    private fun test(index: Int, status: Status<Int>) {
+        mockExecute(b0, status, index, 0)
+        mockExecute(b1, status, index, 1)
+        mockExecute(b2, status, index, 2)
+
+        assertThat(sequence.execute(state)).isInstanceOf(status::class)
 
         verify { b0.execute(state) }
-        verify { b1.execute(state) }
-        verify { b2.execute(state) }
+        if (index > 0) verify { b1.execute(state) }
+        if (index > 1) verify { b2.execute(state) }
         confirmVerified(b0)
         confirmVerified(b1)
         confirmVerified(b2)
     }
 
-    @Test
-    fun `Second behavior fails`() {
-        every { b0.execute(state) } returns success
-        every { b1.execute(state) } returns Failure()
-
-        assertThat(sequence.execute(state)).isInstanceOf(Failure::class)
-
-        verify { b0.execute(state) }
-        verify { b1.execute(state) }
-        confirmVerified(b0)
-        confirmVerified(b1)
-        confirmVerified(b2)
+    private fun mockExecute(
+        behavior: Behavior<Int, String>,
+        status: Status<Int>,
+        index: Int,
+        desired: Int
+    ) {
+        every { behavior.execute(state) } returns if (index == desired) status else success
     }
 }
