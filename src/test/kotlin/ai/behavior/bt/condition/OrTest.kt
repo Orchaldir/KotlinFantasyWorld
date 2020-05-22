@@ -8,8 +8,10 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 
-class AndTest {
+class OrTest {
 
     private val c0 = mockk<Condition<Int>>()
     private val c1 = mockk<Condition<Int>>()
@@ -20,7 +22,7 @@ class AndTest {
 
     @Test
     fun `Test name`() {
-        val and = And(name, listOf(c0, c1, c2))
+        val and = Or(name, listOf(c0, c1, c2))
 
         assertThat(and.getName()).isSameAs(name)
     }
@@ -31,9 +33,9 @@ class AndTest {
         every { c1.getName() } returns "1"
         every { c2.getName() } returns "2"
 
-        val and = And(listOf(c0, c1, c2))
+        val and = Or(listOf(c0, c1, c2))
 
-        assertThat(and.getName()).isEqualTo("And(0, 1, 2)")
+        assertThat(and.getName()).isEqualTo("Or(0, 1, 2)")
     }
 
     @Test
@@ -42,32 +44,39 @@ class AndTest {
     }
 
     @Test
+    fun `All conditions are false`() {
+        testCheck(r0 = false, r1 = false, r2 = false, result = false)
+    }
+
+    @Test
     fun `First condition is false`() {
-        testCheck(r0 = false, r1 = true, r2 = true, result = false)
+        testCheck(r0 = false, r1 = true, r2 = true, result = true)
     }
 
     @Test
     fun `Second condition is false`() {
-        testCheck(r0 = true, r1 = false, r2 = true, result = false)
+        testCheck(r0 = true, r1 = false, r2 = true, result = true)
     }
 
     @Test
     fun `Third condition is false`() {
-        testCheck(r0 = true, r1 = true, r2 = false, result = false)
+        testCheck(r0 = true, r1 = true, r2 = false, result = true)
     }
 
+    @ParameterizedTest
+    @MethodSource("provideTestArguments")
     private fun testCheck(r0: Boolean, r1: Boolean, r2: Boolean, result: Boolean) {
         every { c0.check(state) } returns r0
         every { c1.check(state) } returns r1
         every { c2.check(state) } returns r2
 
-        val and = And(name, listOf(c0, c1, c2))
+        val and = Or(name, listOf(c0, c1, c2))
 
         assertThat(and.check(state)).isEqualTo(result)
 
         verify { c0.check(state) }
-        if (r0) verify { c1.check(state) }
-        if (r0 && r1) verify { c2.check(state) }
+        if (!r0) verify { c1.check(state) }
+        if (!r0 && !r1) verify { c2.check(state) }
         confirmVerified(c0)
         confirmVerified(c1)
         confirmVerified(c2)
