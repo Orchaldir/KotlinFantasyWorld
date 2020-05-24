@@ -9,9 +9,9 @@ private val logger = KotlinLogging.logger {}
 class AStar<T> {
 
     fun find(graph: Graph<T>, start: Int, goal: Int, pathSize: Int) =
-        find(graph, start, listOf(goal), pathSize)
+        find(graph, start, setOf(goal), pathSize)
 
-    fun find(graph: Graph<T>, start: Int, goals: List<Int>, pathSize: Int): PathfindingResult {
+    fun find(graph: Graph<T>, start: Int, goals: Set<Int>, pathSize: Int): PathfindingResult {
         logger.info("Find path from $start to $goals.")
 
         val openNodes = PriorityQueue<AStarNode>()

@@ -36,7 +36,7 @@ class AStarTest {
     fun `Find a valid plan to the first goal of 2`() {
         val aStar = AStar<Boolean>()
 
-        val path = aStar.find(largeGraph, 2, listOf(13, 15), 2)
+        val path = aStar.find(largeGraph, 2, setOf(13, 15), 2)
 
         assertThat(path).isEqualTo(Path(size = 2, totalCost = 5, indices = listOf(1, 0, 6, 12, 13)))
     }
@@ -45,7 +45,7 @@ class AStarTest {
     fun `Find a valid plan to the second goal of 2`() {
         val aStar = AStar<Boolean>()
 
-        val path = aStar.find(largeGraph, 5, listOf(13, 15), 2)
+        val path = aStar.find(largeGraph, 5, setOf(13, 15), 2)
 
         assertThat(path).isEqualTo(Path(size = 2, totalCost = 4, indices = listOf(11, 17, 16, 15)))
     }
@@ -65,7 +65,7 @@ class AStarTest {
         val graph = OccupancyMap(Chebyshev, values, Size(3, 1))
         val aStar = AStar<Boolean>()
 
-        assertThat(aStar.find(graph, 0, 2, 1)).isEqualTo(NoPathFound(listOf(2), 1))
+        assertThat(aStar.find(graph, 0, 2, 1)).isEqualTo(NoPathFound(setOf(2), 1))
     }
 
     @Test
@@ -75,7 +75,7 @@ class AStarTest {
 
         val aStar = AStar<Boolean>()
 
-        assertThat(aStar.find(graph, 0, 2, 2)).isEqualTo(NoPathFound(listOf(2), 2))
+        assertThat(aStar.find(graph, 0, 2, 2)).isEqualTo(NoPathFound(setOf(2), 2))
     }
 
     @Test
@@ -85,7 +85,7 @@ class AStarTest {
 
         val aStar = AStar<Boolean>()
 
-        assertThat(aStar.find(graph, 0, 2, 3)).isEqualTo(NoPathFound(listOf(2), 3))
+        assertThat(aStar.find(graph, 0, 2, 3)).isEqualTo(NoPathFound(setOf(2), 3))
     }
 
     @Test
@@ -95,7 +95,7 @@ class AStarTest {
 
         val aStar = AStar<Boolean>()
 
-        assertThat(aStar.find(graph, 1, listOf(0, 2), 3)).isEqualTo(
+        assertThat(aStar.find(graph, 1, setOf(0, 2), 3)).isEqualTo(
             Path(
                 size = 3,
                 totalCost = 1,
@@ -111,6 +111,6 @@ class AStarTest {
 
         val aStar = AStar<Boolean>()
 
-        assertThat(aStar.find(graph, 1, listOf(0, 2), 3)).isEqualTo(NoPathFound(listOf(0, 2), 3))
+        assertThat(aStar.find(graph, 1, setOf(0, 2), 3)).isEqualTo(NoPathFound(setOf(0, 2), 3))
     }
 }
