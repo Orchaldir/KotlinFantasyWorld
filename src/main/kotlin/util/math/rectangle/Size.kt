@@ -1,7 +1,6 @@
 package util.math.rectangle
 
 import util.math.Direction
-import util.math.Direction.*
 import util.requireGreater
 
 data class Size(
@@ -56,21 +55,11 @@ data class Size(
         val diffX = toX - fromX
         val diffY = toY - fromY
 
-        return if (diffX == 0 && diffY == -1) NORTH
-        else if (diffX == 1 && diffY == 0) EAST
-        else if (diffX == 0 && diffY == 1) SOUTH
-        else if (diffX == -1 && diffY == 0) WEST
-        else throw IllegalArgumentException("From $from & to $to are not neighbors!")
+        return Direction.values().firstOrNull { d -> d.isMatch(diffX, diffY) }
+            ?: throw IllegalArgumentException("From $from & to $to are not neighbors!")
     }
 
-    fun getNeighbor(index: Int, direction: Direction): Int? {
-        return when (direction) {
-            NORTH -> getOffset(index, 0, -1)
-            EAST -> getOffset(index, 1, 0)
-            SOUTH -> getOffset(index, 0, 1)
-            WEST -> getOffset(index, -1, 0)
-        }
-    }
+    fun getNeighbor(index: Int, direction: Direction) = getOffset(index, direction.x, direction.y)
 
     private fun getOffset(index: Int, deltaX: Int, deltaY: Int): Int? {
         val (x, y) = getPos(index)
