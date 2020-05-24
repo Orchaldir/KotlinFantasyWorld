@@ -11,7 +11,7 @@ data class BigBody(val position: Int, val size: Int, val direction: Direction = 
 data class SnakeBody(val positions: List<Int>, val direction: Direction = NORTH) : Body()
 
 fun calculateDistanceToPosition(calculator: DistanceCalculator, mapSize: Size, body: Body, position: Int): Int {
-    val origins = getPositions(mapSize, body)
+    val origins = getPositionsUnderBody(mapSize, body)
 
     if (origins.isEmpty()) throw IllegalStateException("No valid origins!")
 
@@ -19,18 +19,34 @@ fun calculateDistanceToPosition(calculator: DistanceCalculator, mapSize: Size, b
 }
 
 fun calculateDistance(calculator: DistanceCalculator, mapSize: Size, from: Body, to: Body): Int {
-    val origins = getPositions(mapSize, from)
+    val origins = getPositionsUnderBody(mapSize, from)
 
     if (origins.isEmpty()) throw IllegalStateException("No valid origins!")
 
-    val destinations = getPositions(mapSize, to)
+    val destinations = getPositionsUnderBody(mapSize, to)
 
     if (destinations.isEmpty()) throw IllegalStateException("No valid destinations!")
 
     return origins.flatMap { o -> destinations.map { d -> mapSize.getDistance(calculator, o, d) } }.min()!!
 }
 
-private fun getPositions(mapSize: Size, body: Body): List<Int> = when (body) {
+fun getPositionsAround(mapSize: Size, body: Body, target: Body): Set<Int> = when (target) {
+    is SnakeBody -> TODO()
+    is SimpleBody -> {
+        val position = getPosition(target)
+        val size = getSize(body)
+
+        mapSize.getNeighbors(position, 1, size)
+    }
+    is BigBody -> {
+        val position = getPosition(target)
+        val size = getSize(body)
+
+        mapSize.getNeighbors(position, target.size, size)
+    }
+}
+
+private fun getPositionsUnderBody(mapSize: Size, body: Body): List<Int> = when (body) {
     is SimpleBody -> listOf(body.position)
     is BigBody -> mapSize.getIndices(body.position, body.size)
     is SnakeBody -> listOf(body.positions.first())

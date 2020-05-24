@@ -115,7 +115,7 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
             add(Statistics(mapOf(divineMagic to 5, fighting to 8, speed to 6, toughness to 6)))
             add(Description("Paladin") as Text)
             buildEntity()
-            add(BigBody(gameMap.size.getIndex(15, 10), 2, WEST) as Body)
+            add(BigBody(gameMap.size.getIndex(15, 10), 6, WEST) as Body)
             add(Combat(listOf(meleeAttack), defense))
             add(AI as Controller)
             add(Graphic(ImageTile(skeletonImage)))
@@ -279,9 +279,17 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
             val goal = mapRender.area.convert(x, y)
             val start = getPosition(body)
             val distanceCalculator = state.getData<DistanceCalculator>()
-            val occupancyMap = state.getData<GameMap>().createOccupancyMap(distanceCalculator, entitySize, entity)
+            val gameMap = state.getData<GameMap>()
+            val goalEntity = gameMap.entities[goal]
+            val occupancyMap = gameMap.createOccupancyMap(distanceCalculator, entitySize, entity)
 
-            pathfinding.find(occupancyMap, start, goal, entitySize)
+            if (goalEntity == null) {
+                pathfinding.find(occupancyMap, start, goal, entitySize)
+            } else {
+                val goalBody = state.getStorage<Body>()[goalEntity]!!
+                val goals = getPositionsAround(gameMap.size, body, goalBody)
+                pathfinding.find(occupancyMap, start, goals, entitySize)
+            }
         } else NotSearched
     }
 

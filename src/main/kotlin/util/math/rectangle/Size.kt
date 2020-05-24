@@ -73,6 +73,32 @@ data class Size(
         }
     }
 
+    fun getNeighbors(index: Int, size: Int, neighborSize: Int): Set<Int> {
+        val positions = mutableSetOf<Int>()
+        val (x, y) = getPos(index)
+
+        for (dx in -neighborSize..size) {
+            addNeighbor(positions, x, y, dx, -neighborSize)
+            addNeighbor(positions, x, y, dx, size)
+        }
+
+        for (dy in (1 - neighborSize) until size) {
+            addNeighbor(positions, x, y, -neighborSize, dy)
+            addNeighbor(positions, x, y, size, dy)
+        }
+
+        return positions
+    }
+
+    private fun addNeighbor(positions: MutableSet<Int>, x: Int, y: Int, deltaX: Int, deltaY: Int) {
+        val offsetX = x + deltaX
+        val offsetY = y + deltaY
+
+        if (isInside(offsetX, offsetY)) {
+            positions.add(getIndex(offsetX, offsetY))
+        }
+    }
+
     // distance
 
     fun getDistance(calculator: DistanceCalculator, from: Int, to: Int): Int {
