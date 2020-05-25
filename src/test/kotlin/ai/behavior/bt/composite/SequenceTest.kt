@@ -15,6 +15,8 @@ class SequenceTest {
     private val b1 = mockk<Behavior<Int, String>>()
     private val b2 = mockk<Behavior<Int, String>>()
 
+    private val blackboard = mockk<Blackboard>()
+
     private val success = Success<Int>()
 
     private val sequence = Sequence(listOf(b0, b1, b2))
@@ -50,14 +52,16 @@ class SequenceTest {
         mockExecute(b1, status, index, 1)
         mockExecute(b2, status, index, 2)
 
-        assertThat(sequence.execute(state)).isInstanceOf(status::class)
+        assertThat(sequence.execute(state, blackboard)).isInstanceOf(status::class)
 
-        verify { b0.execute(state) }
-        if (index > 0) verify { b1.execute(state) }
-        if (index > 1) verify { b2.execute(state) }
+        verify { b0.execute(state, blackboard) }
+        if (index > 0) verify { b1.execute(state, blackboard) }
+        if (index > 1) verify { b2.execute(state, blackboard) }
         confirmVerified(b0)
         confirmVerified(b1)
         confirmVerified(b2)
+
+        confirmVerified(blackboard)
     }
 
     private fun mockExecute(
@@ -66,6 +70,6 @@ class SequenceTest {
         index: Int,
         desired: Int
     ) {
-        every { behavior.execute(state) } returns if (index == desired) status else success
+        every { behavior.execute(state, blackboard) } returns if (index == desired) status else success
     }
 }
