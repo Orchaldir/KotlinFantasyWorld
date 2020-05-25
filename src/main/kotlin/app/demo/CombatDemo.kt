@@ -1,5 +1,8 @@
 package app.demo
 
+import ai.behavior.bt.Blackboard
+import ai.behavior.bt.PerformAction
+import ai.behavior.bt.Success
 import ai.pathfinding.AStar
 import ai.pathfinding.NotSearched
 import ai.pathfinding.Path
@@ -7,6 +10,7 @@ import ai.pathfinding.PathfindingResult
 import game.GameRenderer
 import game.InvalidAbilityUsageException
 import game.action.*
+import game.behavior.bt.MoveToGoal
 import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
@@ -112,10 +116,10 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
             add(Player as Controller)
             add(Graphic(ImageTile(paladinImage)))
             add(Health())
-            add(Statistics(mapOf(divineMagic to 5, fighting to 8, speed to 6, toughness to 6)))
+            add(Statistics(mapOf(divineMagic to 5, fighting to 8, speed to 8, toughness to 6)))
             add(Description("Paladin") as Text)
             buildEntity()
-            add(BigBody(gameMap.size.getIndex(15, 10), 6, WEST) as Body)
+            add(BigBody(gameMap.size.getIndex(15, 10), 2, WEST) as Body)
             add(Combat(listOf(meleeAttack), defense))
             add(AI as Controller)
             add(Graphic(ImageTile(skeletonImage)))
@@ -140,8 +144,30 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
         }
 
         store = DefaultStore(ecsState, reducer, listOf(::logAction))
-        store.subscribe(this::render)
+        store.subscribe(this::update)
         store.dispatch(Init)
+    }
+
+    private fun update(state: EcsState) {
+        val entity = getCurrentEntity(state)
+
+        val controller = state.getStorage<Controller>()[entity]
+
+        if (controller is AI) {
+            logger.info("AI for entity $entity")
+            val blackboard = Blackboard()
+            blackboard.put("self", entity)
+            blackboard.put("target", 0)
+            val behavior = MoveToGoal()
+
+            when (val status = behavior.execute(state, blackboard)) {
+                is PerformAction -> store.dispatch(status.action)
+                is Success -> store.dispatch(FinishTurn(entity))
+                else -> logger.info("Result of behavior is $status")
+            }
+        } else {
+            render(state)
+        }
     }
 
     private fun render(state: EcsState) {
