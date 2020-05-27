@@ -5,7 +5,7 @@ import ai.behavior.bt.Blackboard
 import ai.behavior.bt.Status
 import ai.behavior.bt.Success
 
-data class Sequence<A, S>(val behaviors: List<Behavior<A, S>>) : Behavior<A, S> {
+data class SequenceBehavior<A, S>(val behaviors: List<Behavior<A, S>>) : Behavior<A, S> {
 
     override fun execute(state: S, blackboard: Blackboard): Status<A> {
         for (behavior in behaviors) {

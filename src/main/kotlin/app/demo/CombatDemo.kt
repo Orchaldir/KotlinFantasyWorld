@@ -10,7 +10,7 @@ import ai.pathfinding.PathfindingResult
 import game.GameRenderer
 import game.InvalidAbilityUsageException
 import game.action.*
-import game.behavior.bt.MoveToGoal
+import game.behavior.bt.MoveToGoalBehavior
 import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder

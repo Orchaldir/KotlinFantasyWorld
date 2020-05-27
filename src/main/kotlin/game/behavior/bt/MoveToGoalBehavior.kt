@@ -19,7 +19,7 @@ import util.math.rectangle.DistanceCalculator
 
 private val logger = KotlinLogging.logger {}
 
-class MoveToGoal : Behavior<Action, EcsState> {
+class MoveToGoalBehavior : Behavior<Action, EcsState> {
 
     override fun execute(state: EcsState, blackboard: Blackboard): Status<Action> {
         val self = blackboard.get<Int>("self")
