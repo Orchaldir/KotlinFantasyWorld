@@ -3,6 +3,7 @@ package app.demo
 import ai.behavior.bt.Blackboard
 import ai.behavior.bt.PerformAction
 import ai.behavior.bt.Success
+import ai.behavior.bt.composite.SequenceBehavior
 import ai.pathfinding.AStar
 import ai.pathfinding.NotSearched
 import ai.pathfinding.Path
@@ -11,6 +12,7 @@ import game.GameRenderer
 import game.InvalidAbilityUsageException
 import game.action.*
 import game.behavior.bt.MoveToGoalBehavior
+import game.behavior.bt.UseAbilityBehavior
 import game.component.*
 import game.map.GameMap
 import game.map.GameMapBuilder
@@ -63,6 +65,8 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
 
     private val pathfinding = AStar<Boolean>()
     private var pathfindingResult: PathfindingResult = NotSearched
+
+    private val behavior = SequenceBehavior(listOf(MoveToGoalBehavior(), UseAbilityBehavior()))
 
     private var selectedAbility: Int? = null
     private var abilityCheckResult: AbilityCheckResult = NoTarget
@@ -157,8 +161,8 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
             logger.info("AI for entity $entity")
             val blackboard = Blackboard()
             blackboard.put("self", entity)
+            blackboard.put("ability", 0)
             blackboard.put("target", 0)
-            val behavior = MoveToGoal()
 
             when (val status = behavior.execute(state, blackboard)) {
                 is PerformAction -> store.dispatch(status.action)

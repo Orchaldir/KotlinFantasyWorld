@@ -46,7 +46,7 @@ fun getPositionsAround(mapSize: Size, body: Body, target: Body): Set<Int> = when
     }
 }
 
-private fun getPositionsUnderBody(mapSize: Size, body: Body): List<Int> = when (body) {
+fun getPositionsUnderBody(mapSize: Size, body: Body): List<Int> = when (body) {
     is SimpleBody -> listOf(body.position)
     is BigBody -> mapSize.getIndices(body.position, body.size)
     is SnakeBody -> listOf(body.positions.first())
