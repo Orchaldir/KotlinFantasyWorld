@@ -11,6 +11,7 @@ import ai.pathfinding.PathfindingResult
 import game.GameRenderer
 import game.InvalidAbilityUsageException
 import game.action.*
+import game.behavior.bt.FindGoalsBehavior
 import game.behavior.bt.MoveToGoalBehavior
 import game.behavior.bt.UseAbilityBehavior
 import game.component.*
@@ -66,7 +67,7 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
     private val pathfinding = AStar<Boolean>()
     private var pathfindingResult: PathfindingResult = NotSearched
 
-    private val behavior = SequenceBehavior(listOf(MoveToGoalBehavior(), UseAbilityBehavior()))
+    private val behavior = SequenceBehavior(listOf(FindGoalsBehavior(), MoveToGoalBehavior(), UseAbilityBehavior()))
 
     private var selectedAbility: Int? = null
     private var abilityCheckResult: AbilityCheckResult = NoTarget

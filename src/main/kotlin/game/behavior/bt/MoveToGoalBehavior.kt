@@ -9,7 +9,6 @@ import game.action.FinishTurn
 import game.action.FollowPath
 import game.component.Body
 import game.component.getPosition
-import game.component.getPositionsAround
 import game.component.getSize
 import game.map.GameMap
 import game.rpg.time.TurnData
@@ -23,9 +22,9 @@ class MoveToGoalBehavior : Behavior<Action, EcsState> {
 
     override fun execute(state: EcsState, blackboard: Blackboard): Status<Action> {
         val self = blackboard.get<Int>("self")
-        val target = blackboard.get<Int>("target")
+        val goals = blackboard.get<Set<Int>>("goals")
 
-        logger.info("Move entity $self towards entity $target")
+        logger.info("Move entity $self towards $goals")
 
         val turnData = state.getData<TurnData>()
 
@@ -36,9 +35,6 @@ class MoveToGoalBehavior : Behavior<Action, EcsState> {
         val distanceCalculator = state.getData<DistanceCalculator>()
         val gameMap = state.getData<GameMap>()
         val occupancyMap = gameMap.createOccupancyMap(distanceCalculator, selfSize, self)
-
-        val targetBody = state.getStorage<Body>()[target]!!
-        val goals = getPositionsAround(gameMap.size, selfBody, targetBody)
 
         val pathfinding = AStar<Boolean>()
         val result = pathfinding.find(occupancyMap, selfPosition, goals, selfSize)
