@@ -317,8 +317,9 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
             if (goalEntity == null) {
                 pathfinding.find(occupancyMap, start, goal, entitySize)
             } else {
+                val bodySize = getSize(body)
                 val goalBody = state.getStorage<Body>()[goalEntity]!!
-                val goals = getPositionsAround(gameMap.size, body, goalBody)
+                val goals = getPositionsAround(distanceCalculator, gameMap.size, goalBody, bodySize)
                 pathfinding.find(occupancyMap, start, goals, entitySize)
             }
         } else NotSearched

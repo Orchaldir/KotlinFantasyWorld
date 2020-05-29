@@ -30,21 +30,21 @@ fun calculateDistance(calculator: DistanceCalculator, mapSize: Size, from: Body,
     return origins.flatMap { o -> destinations.map { d -> mapSize.getDistance(calculator, o, d) } }.min()!!
 }
 
-fun getPositionsAround(mapSize: Size, body: Body, target: Body): Set<Int> = when (target) {
-    is SnakeBody -> TODO()
-    is SimpleBody -> {
-        val position = getPosition(target)
-        val size = getSize(body)
+fun getPositionsAround(
+    calculator: DistanceCalculator,
+    mapSize: Size,
+    body: Body,
+    distanceFilter: (node: Int) -> Boolean
+): Set<Int> = (0..mapSize.cells).filter {
+    distanceFilter(calculateDistanceToPosition(calculator, mapSize, body, it))
+}.toSet()
 
-        mapSize.getNeighbors(position, 1, size)
-    }
-    is BigBody -> {
-        val position = getPosition(target)
-        val size = getSize(body)
-
-        mapSize.getNeighbors(position, target.size, size)
-    }
-}
+fun getPositionsAround(
+    calculator: DistanceCalculator,
+    mapSize: Size,
+    body: Body,
+    distance: Int
+) = getPositionsAround(calculator, mapSize, body) { d -> d == distance }
 
 fun getPositionsUnderBody(mapSize: Size, body: Body): List<Int> = when (body) {
     is SimpleBody -> listOf(body.position)
