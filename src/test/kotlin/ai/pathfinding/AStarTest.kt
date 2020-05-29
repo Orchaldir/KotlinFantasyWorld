@@ -90,16 +90,16 @@ class AStarTest {
 
     @Test
     fun `1 of 2 goals is an  obstacle`() {
-        val values = listOf(f, f, o)
-        val graph = OccupancyMap(Chebyshev, values, Size(3, 1))
+        val values = listOf(f, f, f, o)
+        val graph = OccupancyMap(Chebyshev, values, Size(4, 1))
 
         val aStar = AStar<Boolean>()
 
-        assertThat(aStar.find(graph, 1, setOf(0, 2), 3)).isEqualTo(
+        assertThat(aStar.find(graph, 2, setOf(0, 3), 3)).isEqualTo(
             Path(
                 size = 3,
-                totalCost = 1,
-                indices = listOf(0)
+                totalCost = 2,
+                indices = listOf(1, 0)
             )
         )
     }

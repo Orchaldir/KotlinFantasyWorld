@@ -24,12 +24,12 @@ class AStar<T> {
                 return GoalAlreadyReached
             } else if (graph.isValid(goal)) {
                 isAnyGoalReachable = true
-            }
 
-            val goalNode = AStarNode(goal)
-            goalNode.costSoFar = 0
-            openNodes.add(goalNode)
-            list[goal] = goalNode
+                val goalNode = AStarNode(goal)
+                goalNode.costSoFar = 0
+                openNodes.add(goalNode)
+                list[goal] = goalNode
+            }
         }
 
         if (!isAnyGoalReachable) {
