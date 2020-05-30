@@ -19,7 +19,7 @@ class SequenceBehaviorTest {
 
     private val success = Success<Int>()
 
-    private val sequence = SequenceBehavior(listOf(b0, b1, b2))
+    private val sequence = SequenceBehavior(b0, b1, b2)
     private val state = "STATE"
 
     @Test

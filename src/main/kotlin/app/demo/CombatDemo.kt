@@ -67,7 +67,7 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
     private val pathfinding = AStar<Boolean>()
     private var pathfindingResult: PathfindingResult = NotSearched
 
-    private val behavior = SequenceBehavior(listOf(FindGoalsBehavior(), MoveToGoalBehavior(), UseAbilityBehavior()))
+    private val behavior = SequenceBehavior(FindGoalsBehavior(), MoveToGoalBehavior(), UseAbilityBehavior())
 
     private var selectedAbility: Int? = null
     private var abilityCheckResult: AbilityCheckResult = NoTarget

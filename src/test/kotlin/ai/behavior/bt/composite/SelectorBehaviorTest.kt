@@ -20,7 +20,7 @@ class SelectorBehaviorTest {
     private val failure = Failure<Int>()
     private val success = Success<Int>()
 
-    private val selector = SelectorBehavior(listOf(b0, b1, b2))
+    private val selector = SelectorBehavior(b0, b1, b2)
     private val state = "STATE"
 
     @Test
