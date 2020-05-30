@@ -27,7 +27,7 @@ class FindGoalsBehavior : Behavior<Action, EcsState> {
         val gameMap = state.getData<GameMap>()
 
         val targetBody = state.getStorage<Body>()[target]!!
-        val goals = getPositionsAround(distanceCalculator, gameMap.size, targetBody, selfSize)
+        val goals = getPositionsAround(distanceCalculator, gameMap.size, targetBody, selfSize, 1)
 
         return if (goals.isEmpty()) {
             Failure()

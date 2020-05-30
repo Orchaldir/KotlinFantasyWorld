@@ -1,6 +1,7 @@
 package game.component
 
 import assertk.assertThat
+import assertk.assertions.containsAll
 import assertk.assertions.isEqualTo
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -9,7 +10,9 @@ import io.mockk.verify
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import util.math.Direction.*
+import util.math.rectangle.Chebyshev
 import util.math.rectangle.DistanceCalculator
+import util.math.rectangle.Manhattan
 import util.math.rectangle.Size
 
 class BodyTest {
@@ -53,10 +56,14 @@ class BodyTest {
             val body = SnakeBody(listOf(5, 6, 7))
 
             every { size.getDistance(calculator, 5, 8) } returns 9
+            every { size.getDistance(calculator, 6, 8) } returns 10
+            every { size.getDistance(calculator, 7, 8) } returns 11
 
             assertThat(calculateDistanceToPosition(calculator, size, body, 8)).isEqualTo(9)
 
             verify(exactly = 1) { size.getDistance(calculator, 5, 8) }
+            verify(exactly = 1) { size.getDistance(calculator, 6, 8) }
+            verify(exactly = 1) { size.getDistance(calculator, 7, 8) }
             confirmVerified(size)
         }
     }
@@ -109,11 +116,53 @@ class BodyTest {
             val target = SnakeBody(listOf(1, 2))
 
             every { size.getDistance(calculator, 4, 1) } returns 10
+            every { size.getDistance(calculator, 4, 2) } returns 11
 
             assertThat(calculateDistance(calculator, size, body, target)).isEqualTo(10)
 
             verify(exactly = 1) { size.getDistance(calculator, 4, 1) }
+            verify(exactly = 1) { size.getDistance(calculator, 4, 2) }
             confirmVerified(size)
+        }
+    }
+
+    @Nested
+    inner class GetPositionsAround {
+
+        @Test
+        fun `Simple around simple body at distance 1`() {
+            val body = SimpleBody(4)
+            val mapSize = Size(3, 3)
+
+            assertThat(getPositionsAround(Chebyshev, mapSize, body, 1, 1))
+                .containsAll(0, 1, 2, 3, 5, 6, 7, 8)
+        }
+
+        @Test
+        fun `Simple around big body at distance 1`() {
+            val body = BigBody(5, 2)
+            val mapSize = Size(4, 4)
+
+            assertThat(getPositionsAround(Manhattan, mapSize, body, 1, 1))
+                .containsAll(1, 2, 4, 7, 8, 11, 13, 14)
+        }
+
+        @Test
+        fun `Simple around snake at distance 2`() {
+            val body = SnakeBody(listOf(6, 7, 8))
+            val mapSize = Size(5, 3)
+
+            assertThat(getPositionsAround(Chebyshev, mapSize, body, 1, 1))
+                .containsAll(0, 1, 2, 3, 4, 5, 9, 10, 11, 13, 14)
+        }
+
+        @Test
+        fun `Big around big body at distance 1`() {
+            val body = BigBody(0, 2)
+            val mapSize = Size(4, 4)
+
+            assertThat(getPositionsAround(Chebyshev, mapSize, body, 2, 1))
+                .containsAll(2, 6, 10, 9, 8)
         }
     }
 

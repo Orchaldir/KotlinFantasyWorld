@@ -18,38 +18,54 @@ fun calculateDistanceToPosition(calculator: DistanceCalculator, mapSize: Size, b
     return origins.map { mapSize.getDistance(calculator, it, position) }.min()!!
 }
 
-fun calculateDistance(calculator: DistanceCalculator, mapSize: Size, from: Body, to: Body): Int {
+fun calculateDistanceToPositions(calculator: DistanceCalculator, mapSize: Size, from: Body, positions: List<Int>): Int {
     val origins = getPositionsUnderBody(mapSize, from)
 
-    if (origins.isEmpty()) throw IllegalStateException("No valid origins!")
+    if (origins.isEmpty() || positions.isEmpty()) return Int.MAX_VALUE
 
-    val destinations = getPositionsUnderBody(mapSize, to)
+    return origins.flatMap { o -> positions.map { d -> mapSize.getDistance(calculator, o, d) } }.min()!!
+}
 
-    if (destinations.isEmpty()) throw IllegalStateException("No valid destinations!")
+fun calculateDistance(calculator: DistanceCalculator, mapSize: Size, from: Body, to: Body) =
+    calculateDistanceToPositions(calculator, mapSize, from, getPositionsUnderBody(mapSize, to))
 
-    return origins.flatMap { o -> destinations.map { d -> mapSize.getDistance(calculator, o, d) } }.min()!!
+fun getPositionsAround(
+    calculator: DistanceCalculator,
+    mapSize: Size,
+    body: Body,
+    positionSize: Int,
+    distanceFilter: (node: Int) -> Boolean
+): Set<Int> {
+    return if (positionSize == 1) {
+        (0..mapSize.cells).filter {
+            distanceFilter(calculateDistanceToPosition(calculator, mapSize, body, it))
+        }.toSet()
+    } else {
+        (0..mapSize.cells).filter {
+            distanceFilter(
+                calculateDistanceToPositions(
+                    calculator,
+                    mapSize,
+                    body,
+                    mapSize.getIndices(it, positionSize)
+                )
+            )
+        }.toSet()
+    }
 }
 
 fun getPositionsAround(
     calculator: DistanceCalculator,
     mapSize: Size,
     body: Body,
-    distanceFilter: (node: Int) -> Boolean
-): Set<Int> = (0..mapSize.cells).filter {
-    distanceFilter(calculateDistanceToPosition(calculator, mapSize, body, it))
-}.toSet()
-
-fun getPositionsAround(
-    calculator: DistanceCalculator,
-    mapSize: Size,
-    body: Body,
+    positionSize: Int,
     distance: Int
-) = getPositionsAround(calculator, mapSize, body) { d -> d == distance }
+) = getPositionsAround(calculator, mapSize, body, positionSize) { d -> d == distance }
 
 fun getPositionsUnderBody(mapSize: Size, body: Body): List<Int> = when (body) {
     is SimpleBody -> listOf(body.position)
     is BigBody -> mapSize.getIndices(body.position, body.size)
-    is SnakeBody -> listOf(body.positions.first())
+    is SnakeBody -> body.positions
 }
 
 fun getPosition(body: Body) = when (body) {
