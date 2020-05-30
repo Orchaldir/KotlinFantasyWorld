@@ -159,7 +159,7 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
         val controller = state.getStorage<Controller>()[entity]
 
         if (controller is AI) {
-            logger.info("AI for entity $entity")
+            logger.info("AI for entity $entity: {}", getText(state, entity))
             val blackboard = Blackboard()
             blackboard.put("self", entity)
             blackboard.put("ability", 0)
@@ -176,7 +176,7 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
     }
 
     private fun render(state: EcsState) {
-        logger.info("render()")
+        logger.debug("render()")
 
         renderer.clear()
 
@@ -200,7 +200,7 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
             size.y - 1
         )
 
-        logger.info("render(): finished")
+        logger.debug("render(): finished")
     }
 
     private fun renderAction(state: EcsState, selectedAbility: Int?) {
@@ -248,12 +248,12 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
             KeyCode.DIGIT2 -> selectedAbility = getAbilityIndexOrNull(state, entity, 1)
             KeyCode.DIGIT3 -> selectedAbility = getAbilityIndexOrNull(state, entity, 2)
             KeyCode.ESCAPE -> exitProcess(0)
-            else -> logger.info("onKeyReleased(): keyCode=$keyCode")
+            else -> logger.debug("onKeyReleased(): keyCode=$keyCode")
         }
     }
 
     override fun onTileClicked(x: Int, y: Int, button: MouseButton) {
-        logger.info("onTileClicked(): x=$x y=$y")
+        logger.debug("onTileClicked(): x=$x y=$y")
 
         if (mapRender.area.isInside(x, y)) {
             val state = store.getState()
@@ -279,7 +279,7 @@ class CombatDemo : TileApplication(60, 45, 20, 20) {
     }
 
     override fun onMouseMoved(x: Int, y: Int) {
-        logger.info("onMouseMoved(): x=$x y=$y")
+        logger.debug("onMouseMoved(): x=$x y=$y")
 
         if (selectedAbility == null) {
             pathfindingResult = updatePath(x, y)

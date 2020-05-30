@@ -21,7 +21,7 @@ data class Blackboard(private val dataMap: MutableMap<String, Any>) {
     inline fun <reified T : Any> get(key: String): T = get(T::class, key)
 
     fun <T : Any> put(key: String, data: T) {
-        logger.info("Put '$data' for '$key'")
+        logger.debug("Put '$data' for '$key'")
         dataMap[key] = data
     }
 }

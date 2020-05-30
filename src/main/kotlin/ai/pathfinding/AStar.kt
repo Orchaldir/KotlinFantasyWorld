@@ -12,7 +12,7 @@ class AStar<T> {
         find(graph, start, setOf(goal), pathSize)
 
     fun find(graph: Graph<T>, start: Int, goals: Set<Int>, pathSize: Int): PathfindingResult {
-        logger.info("Find path from $start to $goals.")
+        logger.debug("Find path from $start to $goals.")
 
         val openNodes = PriorityQueue<AStarNode>()
         val list = arrayOfNulls<AStarNode>(graph.getSize())
@@ -20,7 +20,7 @@ class AStar<T> {
 
         for (goal in goals) {
             if (start == goal) {
-                logger.info("Goal is already reached")
+                logger.debug("Goal is already reached")
                 return GoalAlreadyReached
             } else if (graph.isValid(goal)) {
                 isAnyGoalReachable = true
@@ -33,7 +33,7 @@ class AStar<T> {
         }
 
         if (!isAnyGoalReachable) {
-            logger.info("All goals are an obstacle")
+            logger.debug("All goals are an obstacle")
             return NoPathFound(goals = goals, size = pathSize)
         }
 
@@ -63,7 +63,7 @@ class AStar<T> {
             }
         }
 
-        logger.info("Failed to find a path.")
+        logger.debug("Failed to find a path.")
 
         return NoPathFound(goals = goals, size = pathSize)
     }
@@ -77,7 +77,7 @@ class AStar<T> {
             currentNode = currentNode.previous
         }
 
-        logger.info("Found path with ${indices.size} nodes.")
+        logger.debug("Found path with ${indices.size} nodes.")
         return Path(size = pathSize, totalCost = startNode.costSoFar, indices = indices)
     }
 
